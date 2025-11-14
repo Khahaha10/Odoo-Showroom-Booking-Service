@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="view_crm_lead_form_inherit_car_showroom" model="ir.ui.view">
+        <field name="name">crm.lead.form.car.showroom</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/group/group[1]" position="after">
+                <group string="Showroom Visit">
+                    <field name="vehicle_id"/>
+                    <field name="visit_date"/>
+                    <field name="visit_time"/>
+                    <field name="visit_purpose"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

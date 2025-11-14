@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_infinys_vehicle_brand,infinys.vehicle.brand,model_infinys_vehicle_brand,base.group_user,1,1,1,1
+access_infinys_vehicle_fuel_type,infinys.vehicle.fuel.type,model_infinys_vehicle_fuel_type,base.group_user,1,1,1,1
+access_infinys_vehicle_type,infinys.vehicle.type,model_infinys_vehicle_type,base.group_user,1,1,1,1
+access_infinys_vehicle_model,infinys.vehicle.model,model_infinys_vehicle_model,base.group_user,1,1,1,1
+access_infinys_customer_vehicle,infinys.customer.vehicle,model_infinys_customer_vehicle,base.group_user,1,1,1,1
+access_infinys_service_booking,infinys.service.booking,model_infinys_service_booking,base.group_user,1,1,1,1
+access_car_vehicle_user,car.vehicle user,model_car_vehicle,base.group_user,1,1,1,1
+access_car_vehicle_image_user,car.vehicle.image user,model_car_vehicle_image,base.group_user,1,1,1,1
