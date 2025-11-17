@@ -101,7 +101,7 @@
       <div id="wrap" class="oe_structure">
         <section class="container py-5">
           <a href="/cars" class="btn btn-link mb-3">
-            Back to car list
+← Back to car list
           </a>
 
           <div class="row">
@@ -201,9 +201,9 @@
   <template id="car_visit_form" name="Car Visit Form">
     <t t-call="website.layout">
       <div id="wrap" class="oe_structure">
-        <section class="container py-5">
+        <section class="container">
           <a href="/" class="btn btn-link mb-3">
-            Back to home
+← Back to home
           </a>
 
           <h1 class="mb-3">Schedule a showroom visit</h1>

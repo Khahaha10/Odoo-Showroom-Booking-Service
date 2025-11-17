@@ -8,12 +8,34 @@ class WebsiteCarShowroom(http.Controller):
     @http.route(["/cars"], type="http", auth="public", website=True)
     def cars_list(self, **kwargs):
         Car = request.env["car.vehicle"].sudo()
-        cars = Car.search(
-            [("website_published", "=", True), ("active", "=", True)],
-            order="name",
-        )
+        domain = [("website_published", "=", True), ("active", "=", True)]
+
+        brand_id = kwargs.get("brand_id")
+        if brand_id:
+            domain.append(("brand_id", "=", int(brand_id)))
+
+        min_price = kwargs.get("min_price")
+        if min_price:
+            domain.append(("price", ">=", float(min_price)))
+
+        max_price = kwargs.get("max_price")
+        if max_price:
+            domain.append(("price", "<=", float(max_price)))
+
+        cars = Car.search(domain, order="name")
+
+        brands = request.env["infinys.vehicle.brand"].sudo().search([])
+
+        render_values = {
+            "cars": cars,
+            "brands": brands,
+            "selected_brand_id": int(brand_id) if brand_id else None,
+            "min_price": min_price,
+            "max_price": max_price,
+        }
+
         return request.render(
-            "infinys_service_showroom.car_showroom_list", {"cars": cars}
+            "infinys_service_showroom.car_showroom_list", render_values
         )
 
     @http.route(
