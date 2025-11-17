@@ -12,7 +12,7 @@
   <template id="service_booking_form_template" name="Service Booking Form">
     <t t-call="website.layout">
       <div id="wrap" class="oe_structure">
-        <section class="container">
+        <section class="container py-5">
           <h1 class="mb-3">Service Booking</h1>
           <form action="/service_booking/submit" method="post" class="row g-3">
             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
