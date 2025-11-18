@@ -3,7 +3,7 @@ from odoo import models, fields, api
 
 
 class CarVehicle(models.Model):
-    _name = "car.vehicle"
+    _name = "showroom.car.vehicle"
     _description = "Showroom Vehicle"
     _order = "name"
 
@@ -12,12 +12,12 @@ class CarVehicle(models.Model):
     website_published = fields.Boolean("Published on Website", default=False)
 
     brand_id = fields.Many2one(
-        "infinys.vehicle.brand",
+        "service.vehicle.brand",
         string="Brand",
         required=True,
     )
     model_id = fields.Many2one(
-        "infinys.vehicle.model",
+        "service.vehicle.model",
         string="Model",
         required=True,
     )
@@ -40,12 +40,12 @@ class CarVehicle(models.Model):
             return {"domain": {"type_id": []}}
 
     type_id = fields.Many2one(
-        "infinys.vehicle.type",
+        "service.vehicle.type",
         string="Type",
         required=True,
     )
     fuel_type_id = fields.Many2one(
-        "infinys.vehicle.fuel.type",
+        "service.vehicle.fuel.type",
         string="Fuel Type",
         required=True,
     )
@@ -72,20 +72,20 @@ class CarVehicle(models.Model):
 
     main_image = fields.Image("Main Image")
     image_ids = fields.One2many(
-        "car.vehicle.image",
+        "showroom.car.vehicle.image",
         "vehicle_id",
         string="Gallery Images",
     )
 
 
 class CarVehicleImage(models.Model):
-    _name = "car.vehicle.image"
+    _name = "showroom.car.vehicle.image"
     _description = "Vehicle Gallery Image"
     _order = "id"
 
     name = fields.Char("Title")
     vehicle_id = fields.Many2one(
-        "car.vehicle",
+        "showroom.car.vehicle",
         string="Vehicle",
         required=True,
         ondelete="cascade",

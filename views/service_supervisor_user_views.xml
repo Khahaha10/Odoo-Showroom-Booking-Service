@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_supervisor_user" model="ir.actions.act_window">
+            <field name="name">Supervisor User</field>
+            <field name="res_model">service.supervisor.user</field>
+            <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a New Supervisor User
+                </p>
+            </field>
+        </record>
+
+        <record id="supervisor_user_view_form" model="ir.ui.view">
+            <field name="name">service.supervisor.user.view.form</field>
+            <field name="model">service.supervisor.user</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="user_id"/>
+                            <field name="user_title" readonly="1"/>
+                            <field name="user_email" readonly="1"/>
+                            <field name="user_phone" readonly="1"/>
+                            <field name="user_mobile" readonly="1"/>
+                            <field name="active"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="supervisor_user_view_tree" model="ir.ui.view">
+            <field name="name">service.supervisor.user.view.list</field>
+            <field name="model">service.supervisor.user</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="user_id"/>
+                    <field name="user_title" readonly="1"/>
+                    <field name="user_email" readonly="1"/>
+                    <field name="user_phone" readonly="1"/>
+                    <field name="user_mobile" readonly="1"/>
+                    <field name="active"/>
+                </list>
+            </field>
+        </record>
+
+    </data>
+</odoo>

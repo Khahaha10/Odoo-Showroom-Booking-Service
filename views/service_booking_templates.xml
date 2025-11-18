@@ -11,81 +11,15 @@
 
   <template id="service_booking_form_template" name="Service Booking Form">
     <t t-call="website.layout">
-      <div id="wrap" class="oe_structure">
-        <section class="container py-5">
-          <h1 class="mb-3">Service Booking</h1>
-          <form action="/service_booking/submit" method="post" class="row g-3">
-            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-            <div class="col-12 col-md-6">
-              <label for="name" class="form-label">Name</label>
-              <input type="text" name="name" id="name" class="form-control" required="1"/>
-            </div>
-            <div class="col-12 col-md-6">
-              <label for="phone" class="form-label">Contact Number</label>
-              <input type="text" name="phone" id="phone" class="form-control" required="1"/>
-            </div>
-            <div class="col-12 col-md-6">
-              <label for="email" class="form-label">Email</label>
-              <input type="email" name="email" id="email" class="form-control"/>
-            </div>
-            <div class="col-12 col-md-6">
-              <label for="plat_number" class="form-label">Plat Number</label>
-              <input type="text" name="plat_number" id="plat_number" class="form-control" required="1"/>
-            </div>
-            <div class="col-12 col-md-6">
-              <label for="vehicle_brand_id" class="form-label">Vehicle Brand</label>
-              <select name="vehicle_brand_id" id="vehicle_brand_id" class="form-select" required="1">
-                <t t-foreach="brands" t-as="brand">
-                  <option t-att-value="brand.id">
-                    <t t-esc="brand.name"/>
-                  </option>
-                </t>
-              </select>
-            </div>
-            <div class="col-12 col-md-6">
-              <label for="vehicle_model_id" class="form-label">Vehicle Model</label>
-              <select name="vehicle_model_id" id="vehicle_model_id" class="form-select" required="1">
-                <t t-foreach="models" t-as="model">
-                  <option t-att-value="model.id">
-                    <t t-esc="model.name"/>
-                  </option>
-                </t>
-              </select>
-            </div>
-            <div class="col-12 col-md-6">
-              <label for="plan_service_date" class="form-label">Plan Service Date</label>
-              <input type="date" name="plan_service_date" id="plan_service_date" class="form-control" required="1"/>
-            </div>
-            <div class="col-12 col-md-6">
-              <label for="service_type" class="form-label">Service Type</label>
-              <select name="service_type" id="service_type" class="form-select" required="1">
-                <option value="maintenance">Maintenance</option>
-                <option value="repair">Repair</option>
-                <option value="inspection">Inspection</option>
-              </select>
-            </div>
-            <div class="col-12">
-              <label for="notes" class="form-label">Additional Notes</label>
-              <textarea name="notes" id="notes" class="form-control" rows="4"/>
-            </div>
-            <div class="col-12">
-              <button type="submit" class="btn btn-primary btn-lg">Submit</button>
-            </div>
-          </form>
-        </section>
-      </div>
-    </t>
-  </template>
-  <template id="service_booking_success_template" name="Service Booking Success">
-    <t t-call="website.layout">
-      <div id="wrap" class="oe_structure">
-        <section class="container py-5 text-center">
-          <h1 class="mb-3">Thank you!</h1>
-          <p class="mb-4">
-            Your service booking has been received. Our team will contact you to confirm the schedule.
-          </p>
-          <a href="/" class="btn btn-primary">Back to homepage</a>
-        </section>
+      <div class="container">
+        <h2>Service Booking Form</h2>
+        <form action="/service_booking/submit" method="post">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" name="name" class="form-control"/>
+          </div>
+          <button type="submit" class="btn btn-primary mt-2">Submit</button>
+        </form>
       </div>
     </t>
   </template>

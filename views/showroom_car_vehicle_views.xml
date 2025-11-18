@@ -2,8 +2,8 @@
 <odoo>
 
   <record id="view_car_vehicle_list" model="ir.ui.view">
-    <field name="name">car.vehicle.list</field>
-    <field name="model">car.vehicle</field>
+    <field name="name">showroom.car.vehicle.list</field>
+    <field name="model">showroom.car.vehicle</field>
     <field name="arch" type="xml">
       <list string="Showroom Vehicles">
         <field name="name"/>
@@ -18,8 +18,8 @@
   </record>
 
   <record id="view_car_vehicle_form" model="ir.ui.view">
-    <field name="name">car.vehicle.form</field>
-    <field name="model">car.vehicle</field>
+    <field name="name">showroom.car.vehicle.form</field>
+    <field name="model">showroom.car.vehicle</field>
     <field name="arch" type="xml">
       <form string="Showroom Vehicle">
         <sheet>
@@ -69,7 +69,7 @@
 
   <record id="action_car_vehicle" model="ir.actions.act_window">
     <field name="name">Showroom Vehicles</field>
-    <field name="res_model">car.vehicle</field>
+    <field name="res_model">showroom.car.vehicle</field>
     <field name="view_mode">list,form</field>
   </record>
 

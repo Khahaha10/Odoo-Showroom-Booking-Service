@@ -6,7 +6,7 @@ class CrmLead(models.Model):
     _inherit = "crm.lead"
 
     vehicle_id = fields.Many2one(
-        "car.vehicle",
+        "showroom.car.vehicle",
         string="Vehicle",
     )
     visit_date = fields.Date("Visit Date")

@@ -7,7 +7,7 @@ class WebsiteCarShowroom(http.Controller):
 
     @http.route(["/cars"], type="http", auth="public", website=True)
     def cars_list(self, **kwargs):
-        Car = request.env["car.vehicle"].sudo()
+        Car = request.env["showroom.car.vehicle"].sudo()
         domain = [("website_published", "=", True), ("active", "=", True)]
 
         brand_id = kwargs.get("brand_id")
@@ -24,7 +24,7 @@ class WebsiteCarShowroom(http.Controller):
 
         cars = Car.search(domain, order="name")
 
-        brands = request.env["infinys.vehicle.brand"].sudo().search([])
+        brands = request.env["service.vehicle.brand"].sudo().search([])
 
         render_values = {
             "cars": cars,
@@ -39,7 +39,10 @@ class WebsiteCarShowroom(http.Controller):
         )
 
     @http.route(
-        ['/cars/<model("car.vehicle"):car>'], type="http", auth="public", website=True
+        ['/cars/<model("showroom.car.vehicle"):car>'],
+        type="http",
+        auth="public",
+        website=True,
     )
     def car_detail(self, car, **kwargs):
         if not (car.website_published and car.active):
@@ -51,7 +54,7 @@ class WebsiteCarShowroom(http.Controller):
 
     @http.route(["/visit-schedule"], type="http", auth="public", website=True)
     def visit_schedule(self, vehicle_id=None, **kwargs):
-        Car = request.env["car.vehicle"].sudo()
+        Car = request.env["showroom.car.vehicle"].sudo()
         vehicle = None
         if vehicle_id:
             try:
@@ -86,7 +89,9 @@ class WebsiteCarShowroom(http.Controller):
         vehicle = None
         if vehicle_id:
             try:
-                vehicle = request.env["car.vehicle"].sudo().browse(int(vehicle_id))
+                vehicle = (
+                    request.env["showroom.car.vehicle"].sudo().browse(int(vehicle_id))
+                )
                 if not vehicle.exists():
                     vehicle = None
             except Exception:
@@ -107,12 +112,16 @@ class WebsiteCarShowroom(http.Controller):
             )
         )
         if not partner:
-            partner = request.env["res.partner"].sudo().create(
-                {
-                    "name": name,
-                    "phone": phone,
-                    "email": email,
-                }
+            partner = (
+                request.env["res.partner"]
+                .sudo()
+                .create(
+                    {
+                        "name": name,
+                        "phone": phone,
+                        "email": email,
+                    }
+                )
             )
         else:
             # Update partner's phone and email if they are different

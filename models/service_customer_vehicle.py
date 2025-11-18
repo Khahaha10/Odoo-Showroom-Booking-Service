@@ -1,10 +1,12 @@
-from datetime import date
-from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
+import logging
+from odoo import api, fields, models
+from odoo.exceptions import UserError
+
+_logger = logging.getLogger(__name__)
 
 
 class CustomerVehicle(models.Model):
-    _name = "infinys.customer.vehicle"
+    _name = "service.customer.vehicle"
     _description = "Customer Vehicle"
     ordering = "id desc, name asc"
 
@@ -16,21 +18,21 @@ class CustomerVehicle(models.Model):
     )
 
     vehicle_brand_id = fields.Many2one(
-        "infinys.vehicle.brand",
+        "service.vehicle.brand",
         string="Vehicle Brand",
         required=True,
         help="Select the brand of the vehicle",
     )
 
     vehicle_model_id = fields.Many2one(
-        "infinys.vehicle.model",
+        "service.vehicle.model",
         string="Vehicle Model",
         required=True,
         help="Select the model of the vehicle",
     )
 
     vehicle_type_id = fields.Many2one(
-        "infinys.vehicle.type",
+        "service.vehicle.type",
         string="Vehicle Type",
         required=True,
         help="Select the type of the vehicle",
@@ -55,7 +57,7 @@ class CustomerVehicle(models.Model):
     )
 
     vehicle_fuel_type = fields.Many2one(
-        "infinys.vehicle.fuel.type",
+        "service.vehicle.fuel.type",
         string="Vehicle Fuel Type",
         help="Select the fuel type of the vehicle",
     )

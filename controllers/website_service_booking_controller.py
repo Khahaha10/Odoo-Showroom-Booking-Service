@@ -7,8 +7,8 @@ class WebsiteServiceBooking(http.Controller):
 
     @http.route(["/service-booking/new"], type="http", auth="public", website=True)
     def service_booking_form(self, **kwargs):
-        brands = request.env["infinys.vehicle.brand"].sudo().search([])
-        models = request.env["infinys.vehicle.model"].sudo().search([])
+        brands = request.env["service.vehicle.brand"].sudo().search([])
+        models = request.env["service.vehicle.model"].sudo().search([])
         return request.render(
             "infinys_service_showroom.service_booking_form_template",
             {"brands": brands, "models": models},
@@ -24,12 +24,16 @@ class WebsiteServiceBooking(http.Controller):
             .search([("name", "=", post.get("name"))], limit=1)
         )
         if not partner:
-            partner = request.env["res.partner"].sudo().create(
-                {
-                    "name": post.get("name"),
-                    "phone": post.get("phone"),
-                    "email": post.get("email"),
-                }
+            partner = (
+                request.env["res.partner"]
+                .sudo()
+                .create(
+                    {
+                        "name": post.get("name"),
+                        "phone": post.get("phone"),
+                        "email": post.get("email"),
+                    }
+                )
             )
         else:
             partner.sudo().write(
@@ -40,18 +44,18 @@ class WebsiteServiceBooking(http.Controller):
             )
 
         booking = (
-            request.env["infinys.service.booking"]
+            request.env["service.booking"]
             .sudo()
             .create(
                 {
-                    "partner_id": partner.id,
+                    "customer_name": partner.id,
                     "plat_number": post.get("plat_number"),
                     "vehicle_brand": int(post.get("vehicle_brand_id")),
                     "vehicle_model": int(post.get("vehicle_model_id")),
                     "plan_service_date": post.get("plan_service_date"),
                     "service_type": post.get("service_type"),
-                    "notes": post.get("notes"),
-                    "total_amount": 0,  # Assuming 0 for now
+                    "internal_notes": post.get("notes"),
+                    "total_amount": 0,
                 }
             )
         )

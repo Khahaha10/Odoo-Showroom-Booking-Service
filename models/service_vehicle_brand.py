@@ -1,10 +1,12 @@
-from datetime import date
-from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
+import logging
+from odoo import api, fields, models
+from odoo.exceptions import UserError
+
+_logger = logging.getLogger(__name__)
 
 
 class VehicleBrand(models.Model):
-    _name = "infinys.vehicle.brand"
+    _name = "service.vehicle.brand"
     _description = "Vehicle Brand"
 
     name = fields.Char(string="Brand Name", required=True)

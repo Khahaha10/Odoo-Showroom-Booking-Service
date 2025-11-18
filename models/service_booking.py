@@ -1,79 +1,93 @@
-from datetime import date
-from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
+import logging
+from odoo import api, fields, models
+from odoo.exceptions import UserError
+
+_logger = logging.getLogger(__name__)
 
 
 class ServiceBooking(models.Model):
-    _name = "infinys.service.booking"
-    _description = "Service Booking"
-    _rec_name = "partner_id"
+    _name = "service.booking"
+    _description = "Service Booking Header"
+    _rec_name = "customer_name"
     ordering = "plan_service_date desc"
 
     name = fields.Char(
         string="Booking Number", help="Enter the booking number for the vehicle service"
     )
 
-    partner_id = fields.Many2one(
+    customer_name = fields.Many2one(
         "res.partner",
-        string="Contact",
+        string="Customer Name",
         required=True,
         help="Choose customer name",
     )
-    phone = fields.Char(
-        string="Contact Number",
-        required=True,
-        related="partner_id.phone",
-        readonly=False,
-    )
-    email = fields.Char(string="Email", related="partner_id.email", readonly=False)
+    contact_number = fields.Char(string="Contact Number", required=True)
+    contact_email = fields.Char(string="Email")
+
+    plat_number = fields.Char(string="Plat Number", required=True)
     vehicle_brand = fields.Many2one(
-        "infinys.vehicle.brand",
+        "service.vehicle.brand",
         string="Vehicle Brand",
         required=True,
         help="Choose vehicle brand",
     )
     vehicle_model = fields.Many2one(
-        "infinys.vehicle.model",
+        "service.vehicle.model",
         string="Vehicle Model",
         required=True,
         help="Choose vehicle brand",
     )
 
+    vehicle_year_manufacture = fields.Integer(string="Year of Manufacture")
+    kilometers = fields.Integer(string="Current Kilometers")
+
+    complaint_issue = fields.Text(string="Complaints")
+
     plan_service_date = fields.Date(
-        string="Plan Service Date", required=True, default=fields.Date.context_today
+        string="Booking Date", required=True, default=fields.Date.context_today
     )
+
     service_date = fields.Date(
         string="Service Date", required=True, default=fields.Date.context_today
     )
-    plat_number = fields.Char(string="Plat Number", required=True)
-
-    service_type = fields.Selection(
-        [
-            ("maintenance", "Maintenance"),
-            ("repair", "Repair"),
-            ("inspection", "Inspection"),
-        ],
+    service_type = fields.Many2one(
+        "service.type",
         string="Service Type",
         required=True,
+        help="Service type",
     )
 
-    notes = fields.Text(string="Additional Notes")
+    return_date = fields.Date(string="Return Date")
 
-    total_amount = fields.Float(string="Total Amount", required=True)
+    internal_notes = fields.Text(string="Notes")
 
-    sales_id = fields.Many2one("sale.order", string="Sales Order")
+    supervisor_user_id = fields.Many2one(
+        "service.supervisor.user", string="Supervisor", help="Select supervisor user"
+    )
+
+    media_document = fields.Many2many("ir.attachment", string="Attachments")
+
+    total_amount = fields.Float(string="Total Amount")
+    total_sparepart = fields.Float(string="Total Sparepart")
+    total_service_fee = fields.Float(string="Total Service Fee")
+    tax_id = fields.Many2one("account.tax", string="Tax")
+
+    invoice_id = fields.Many2one("account.move", string="Invoice")
 
     error_msg = fields.Text(string="Error Message")
+
     state = fields.Selection(
         [
-            ("booking", "Booking"),
-            ("in_progress", "In Progress"),
-            ("completed", "Completed"),
-            ("cancelled", "Cancelled"),
+            ("booking", "BOOKING"),
+            ("assigned", "ASSIGNED"),
+            ("in_progress", "IN PROGRESS"),
+            ("returned", "RETURNED"),
+            ("cancelled", "CANCELLED"),
+            ("completed", "COMPLETED"),
         ],
-        string="Status",
         default="booking",
-        required=True,
+        string="Status",
+        tracking=1,
     )
 
     @api.constrains("plan_service_date")
@@ -89,3 +103,11 @@ class ServiceBooking(models.Model):
         for record in self:
             if record.plat_number:
                 record.plat_number = record.plat_number.upper()
+
+    @api.model
+    def create(self, vals):
+        if vals.get("name", "/") in ("/", False, None):
+            vals["name"] = (
+                self.env["ir.sequence"].next_by_code("infinys.vehicle.service") or "/"
+            )
+        return super().create(vals)

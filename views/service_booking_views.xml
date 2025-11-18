@@ -3,7 +3,7 @@
     <data>
         <record id="action_service_booking" model="ir.actions.act_window">
             <field name="name">Service Booking</field>
-            <field name="res_model">infinys.service.booking</field>
+            <field name="res_model">service.booking</field>
             <field name="view_mode">list,form</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
@@ -13,45 +13,77 @@
         </record>
 
         <record id="service_booking_view_form" model="ir.ui.view">
-            <field name="name">infinys.service.booking.view.form</field>
-            <field name="model">infinys.service.booking</field>
-            <field name="arch" type="xml">
+            <field name="name">service.booking.view.form</field>
+                <field name="model">service.booking</field>            <field name="arch" type="xml">
                 <form>
                     <sheet>
                         <div class="oe_title">
                             <field name="error_msg" widget="text" readonly="1" />
-                            <label for="name" string="Subject"/>
-                            <h1>
+                            <label for="name" string="Booking Number"/>
+                            <h3>
                                 <field class="text-break" name="name" placeholder="Booking Number" required="1"/>
-                            </h1>
+                            </h3>
                         </div>
                         <group>
-                            <group>
-                                <field name="partner_id"/>
-                                <field name="phone"/>
-                                <field name="email"/>
-                                <field name="plan_service_date"/>
+                            <group name="customer_information" string="Customer Information">
+                                <field name="customer_name"/>
+                                <field name="contact_number"/>
+                                <field name="contact_email"/>
+                                <field name="plan_service_date" widget="datetime"/>
                                 <field name="service_type"/>
+                                <field name="complaint_issue" string="Complaints" widget="textarea"/>
                             </group>
-                            <group>
+                            <group name="vehicle_information" string="Vehicle Information">
                                 <field name="plat_number"/>
                                 <field name="vehicle_brand"/>
                                 <field name="vehicle_model"/>
+                                <field name="vehicle_year_manufacture"/>
+                                <field name="kilometers"/>
+                                <field name="media_document" widget="many2many_binary" string="Media Documents"/>
                             </group>
                         </group>
+                        <notebook>
+                            <page string="Notes">
+                                <group>
+                                    <field name="supervisor_user_id" widget="many2one_avatar_user"/>
+                                    <field name="internal_notes" widget="textarea"/>
+                                </group>
+                            </page>
+                            <page string="Spareparts">
+                            </page>
+                            <page string="Services">
+                            </page>
+                            <page string="Images/Documents">
+                            </page>
+                            <page string="Insepection Checklist">
+                            </page>
+                            <page string="Totals">
+                                <group>
+                                    <field name="total_sparepart"/>
+                                    <field name="total_service_fee"/>
+                                    <field name="total_amount"/>
+                                </group>
+                            </page>
+                        </notebook>
                     </sheet>
                 </form>
             </field>
         </record>
 
         <record id="service_booking_view_tree" model="ir.ui.view">
-            <field name="name">infinys.service.booking.view.list</field>
-            <field name="model">infinys.service.booking</field>
-            <field name="arch" type="xml">
+            <field name="name">service.booking.view.list</field>
+                <field name="model">service.booking</field>            <field name="arch" type="xml">
                 <list>
 
                     <field name="name"/>
-
+                    <field name="contact_number"/>
+                    <field name="contact_email"/>
+                    <field name="plan_service_date" widget="datetime"/>
+                    <field name="service_type"/>
+                    <field name="plat_number"/>
+                    <field name="vehicle_brand"/>
+                    <field name="vehicle_model"/>
+                    <field name="state"/>
                 </list>
             </field>
         </record>

@@ -59,7 +59,7 @@
                 <div class="card w-100 h-100 shadow-sm">
                   <t t-if="car.main_image">
                     <div class="aspect-ratio-16by9">
-                      <img t-att-src="'/web/image/car.vehicle/%s/main_image' % car.id" t-att-alt="car.name" class="card-img-top img-fluid"/>
+                      <img t-att-src="'/web/image/showroom.car.vehicle/%s/main_image' % car.id" t-att-alt="car.name" class="card-img-top img-fluid"/>
                     </div>
                   </t>
                   <div class="card-body d-flex flex-column">
@@ -112,7 +112,7 @@
                   <t t-if="car.main_image">
                     <div class="carousel-item active">
                       <div class="car-gallery-item">
-                        <img t-att-src="'/web/image/car.vehicle/%s/main_image' % car.id" t-att-alt="car.name" class="d-block w-100 img-fluid rounded"/>
+                        <img t-att-src="'/web/image/showroom.car.vehicle/%s/main_image' % car.id" t-att-alt="car.name" class="d-block w-100 img-fluid rounded"/>
                       </div>
                     </div>
                   </t>
@@ -120,7 +120,7 @@
                   <t t-foreach="car.image_ids" t-as="img">
                     <div class="carousel-item">
                       <div class="car-gallery-item">
-                        <img t-att-src="'/web/image/car.vehicle.image/%s/image' % img.id" t-att-alt="img.name or car.name" class="d-block w-100 img-fluid rounded"/>
+                        <img t-att-src="'/web/image/showroom.car.vehicle.image/%s/image' % img.id" t-att-alt="img.name or car.name" class="d-block w-100 img-fluid rounded"/>
                       </div>
                     </div>
                   </t>
@@ -141,14 +141,14 @@
 
                 <t t-if="car.main_image">
                   <div class="car-thumb-wrapper">
-                    <img t-att-src="'/web/image/car.vehicle/%s/main_image' % car.id" t-att-alt="car.name" class="img-fluid" t-att-data-bs-target="'#carGallery-%s' % car.id" data-bs-slide-to="0"/>
+                    <img t-att-src="'/web/image/showroom.car.vehicle/%s/main_image' % car.id" t-att-alt="car.name" class="img-fluid" t-att-data-bs-target="'#carGallery-%s' % car.id" data-bs-slide-to="0"/>
                   </div>
                 </t>
 
                 <t t-foreach="car.image_ids" t-as="img">
                   <t t-set="thumb_index" t-value="thumb_index + 1"/>
                   <div class="car-thumb-wrapper">
-                    <img t-att-src="'/web/image/car.vehicle.image/%s/image' % img.id" t-att-alt="img.name or car.name" class="img-fluid" t-att-data-bs-target="'#carGallery-%s' % car.id" t-att-data-bs-slide-to="thumb_index"/>
+                    <img t-att-src="'/web/image/showroom.car.vehicle.image/%s/image' % img.id" t-att-alt="img.name or car.name" class="img-fluid" t-att-data-bs-target="'#carGallery-%s' % car.id" t-att-data-bs-slide-to="thumb_index"/>
                   </div>
                 </t>
               </div>
