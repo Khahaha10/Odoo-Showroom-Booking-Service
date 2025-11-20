@@ -1,6 +1,7 @@
 import logging
-from odoo import api, fields, models
-from odoo.exceptions import UserError
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError, ValidationError
+from datetime import date
 
 _logger = logging.getLogger(__name__)
 
@@ -78,16 +79,19 @@ class ServiceBooking(models.Model):
 
     state = fields.Selection(
         [
-            ("booking", "BOOKING"),
-            ("assigned", "ASSIGNED"),
-            ("in_progress", "IN PROGRESS"),
-            ("returned", "RETURNED"),
-            ("cancelled", "CANCELLED"),
-            ("completed", "COMPLETED"),
+            ("booking", "Booking"),
+            ("assigned", "Assigned"),
+            ("in_progress", "In Progress"),
+            ("completed", "Completed"),
+            ("cancelled", "Cancelled"),
         ],
         default="booking",
         string="Status",
         tracking=1,
+    )
+
+    state_idx = fields.Integer(
+        string="State Index", compute="_compute_state_idx", store=True, index=True
     )
 
     @api.constrains("plan_service_date")
@@ -98,16 +102,39 @@ class ServiceBooking(models.Model):
             if record.plan_service_date < date.today():
                 raise ValidationError(_("Service date cannot be in the past."))
 
-    @api.constrains("plat_number")
-    def _plat_number(self):
-        for record in self:
-            if record.plat_number:
-                record.plat_number = record.plat_number.upper()
-
     @api.model
     def create(self, vals):
+        if "plat_number" in vals and vals["plat_number"]:
+            vals["plat_number"] = vals["plat_number"].upper()
         if vals.get("name", "/") in ("/", False, None):
             vals["name"] = (
                 self.env["ir.sequence"].next_by_code("infinys.vehicle.service") or "/"
             )
         return super().create(vals)
+
+    def write(self, vals):
+        if "plat_number" in vals and vals["plat_number"]:
+            vals["plat_number"] = vals["plat_number"].upper()
+        return super().write(vals)
+
+    def action_cancel(self):
+        for rec in self:
+            rec.state = "cancelled"
+
+    @api.depends("state", "state_idx")
+    def _compute_state_idx(self):
+        self.state_idx = 1
+        for record in self:
+            idx = 1
+            match record.state:
+                case "booking":
+                    idx = 1
+                case "assigned":
+                    idx = 2
+                case "in_progress":
+                    idx = 3
+                case "completed":
+                    idx = 4
+                case "cancelled":
+                    idx = 5
+            record.state_idx = idx

@@ -11,16 +11,103 @@
 
   <template id="service_booking_form_template" name="Service Booking Form">
     <t t-call="website.layout">
-      <div class="container">
-        <h2>Service Booking Form</h2>
-        <form action="/service_booking/submit" method="post">
-          <div class="form-group">
-            <label>Name</label>
-            <input type="text" name="name" class="form-control"/>
-          </div>
-          <button type="submit" class="btn btn-primary mt-2">Submit</button>
-        </form>
+      <div id="wrap" class="oe_structure">
+        <section class="container py-5">
+          <h1 class="text-center mb-4">Service Booking</h1>
+          <form action="/service_booking/submit" method="post" class="row g-3" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+            <div class="col-lg-6">
+                <div class="row g-3">
+                    <h3 class="mt-5">Customer Information</h3>
+                    <div class="col-12">
+                      <label for="customer_name" class="form-label">Customer Name</label>
+                      <input type="text" class="form-control" name="customer_name" required="1"/>
+                    </div>
+                    <div class="col-12">
+                      <label for="contact_number" class="form-label">Contact Number</label>
+                      <input type="text" class="form-control" name="contact_number" required="1"/>
+                    </div>
+                    <div class="col-12">
+                      <label for="contact_email" class="form-label">Email</label>
+                      <input type="email" class="form-control" name="contact_email"/>
+                    </div>
+                    <div class="col-12">
+                      <label for="plan_service_date" class="form-label">Planned Service Date</label>
+                      <input type="datetime-local" class="form-control" name="plan_service_date" required="1"/>
+                    </div>
+                    <div class="col-12">
+                      <label for="service_type" class="form-label">Service Type</label>
+                      <select class="form-select" name="service_type" required="1">
+                        <t t-foreach="service_types" t-as="st">
+                          <option t-att-value="st.id"><t t-esc="st.name"/></option>
+                        </t>
+                      </select>
+                    </div>
+                    <div class="col-12">
+                      <label for="complaint_issue" class="form-label">Complaints</label>
+                      <textarea class="form-control" name="complaint_issue" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="row g-3">
+                    <h3 class="mt-5">Vehicle Information</h3>
+                    <div class="col-12">
+                      <label for="plat_number" class="form-label">Plat Number</label>
+                      <input type="text" class="form-control" name="plat_number" required="1"/>
+                    </div>
+                    <div class="col-12">
+                      <label for="vehicle_brand" class="form-label">Vehicle Brand</label>
+                      <select class="form-select" name="vehicle_brand" required="1">
+                         <t t-foreach="brands" t-as="brand">
+                            <option t-att-value="brand.id"><t t-esc="brand.name"/></option>
+                         </t>
+                      </select>
+                    </div>
+                    <div class="col-12">
+                      <label for="vehicle_model" class="form-label">Vehicle Model</label>
+                      <select class="form-select" name="vehicle_model" required="1">
+                        <t t-foreach="models" t-as="model">
+                            <option t-att-value="model.id"><t t-esc="model.name"/></option>
+                        </t>
+                      </select>
+                    </div>
+                    <div class="col-12">
+                      <label for="vehicle_year_manufacture" class="form-label">Year of Manufacture</label>
+                      <input type="number" class="form-control" name="vehicle_year_manufacture"/>
+                    </div>
+                    <div class="col-12">
+                      <label for="kilometers" class="form-label">Kilometers</label>
+                      <input type="number" class="form-control" name="kilometers"/>
+                    </div>
+                    <div class="col-12">
+                      <label for="media_document" class="form-label">Media Documents</label>
+                      <input type="file" class="form-control" name="media_document" multiple="multiple"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 text-center mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">Submit Booking</button>
+            </div>
+          </form>
+        </section>
       </div>
     </t>
   </template>
+
+  <template id="service_booking_success_template" name="Service Booking Success">
+    <t t-call="website.layout">
+      <div id="wrap">
+        <div class="container">
+          <h1>Thank You!</h1>
+          <div class="alert alert-success" role="alert">
+            Your service booking has been submitted successfully. Your booking number is <t t-esc="booking.name"/>.
+          </div>
+        </div>
+      </div>
+    </t>
+  </template>
+
 </odoo>
