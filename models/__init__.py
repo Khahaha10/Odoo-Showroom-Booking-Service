@@ -16,3 +16,4 @@ from . import service_vehicle_brand
 from . import service_vehicle_fuel_type
 from . import service_vehicle_model
 from . import service_vehicle_type
+from . import res_partner

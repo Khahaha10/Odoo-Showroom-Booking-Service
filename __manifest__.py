@@ -19,6 +19,8 @@
         "security/infinys_vehicle_service_groups.xml",
         "security/ir.model.access.csv",
         "data/service_booking_sequence.xml",
+        "views/service_customer_vehicle_views.xml",
+        "views/res_partner_views.xml",
         "views/showroom_res_config_settings_views.xml",
         "views/showroom_car_vehicle_views.xml",
         "views/showroom_crm_lead_views.xml",

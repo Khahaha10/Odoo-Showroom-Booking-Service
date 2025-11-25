@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="service_customer_vehicle_list_view" model="ir.ui.view">
+            <field name="name">service.customer.vehicle.list</field>
+            <field name="model">service.customer.vehicle</field>
+            <field name="arch" type="xml">
+                <list string="Vehicles">
+                    <field name="vehicle_plate_no"/>
+                    <field name="vehicle_brand_id"/>
+                    <field name="vehicle_model_id"/>
+                    <field name="vehicle_year"/>
+                </list>
+            </field>
+        </record>
+    </data>
+</odoo>

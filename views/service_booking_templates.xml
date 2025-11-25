@@ -22,15 +22,15 @@
                     <h3 class="mt-5">Customer Information</h3>
                     <div class="col-12">
                       <label for="customer_name" class="form-label">Customer Name</label>
-                      <input type="text" class="form-control" name="customer_name" required="1"/>
+                      <input type="text" class="form-control" name="customer_name" required="1" t-att-value="customer_name" t-att-readonly="'readonly' if customer_name else None"/>
                     </div>
                     <div class="col-12">
                       <label for="contact_number" class="form-label">Contact Number</label>
-                      <input type="text" class="form-control" name="contact_number" required="1"/>
+                      <input type="text" class="form-control" name="contact_number" required="1" t-att-value="customer_phone"/>
                     </div>
                     <div class="col-12">
                       <label for="contact_email" class="form-label">Email</label>
-                      <input type="email" class="form-control" name="contact_email"/>
+                      <input type="email" class="form-control" name="contact_email" t-att-value="customer_email"/>
                     </div>
                     <div class="col-12">
                       <label for="plan_service_date" class="form-label">Planned Service Date</label>
@@ -45,8 +45,8 @@
                       </select>
                     </div>
                     <div class="col-12">
-                      <label for="complaint_issue" class="form-label">Complaints</label>
-                      <textarea class="form-control" name="complaint_issue" rows="3"></textarea>
+                      <label for="media_document" class="form-label">Media Documents</label>
+                      <input type="file" class="form-control" name="media_document" multiple="multiple"/>
                     </div>
                 </div>
             </div>
@@ -54,13 +54,25 @@
             <div class="col-lg-6">
                 <div class="row g-3">
                     <h3 class="mt-5">Vehicle Information</h3>
+                    <div t-if="customer_vehicles" class="col-12">
+                        <label for="customer_vehicle_select" class="form-label">My Vehicles</label>
+                        <select id="customer_vehicle_select" class="form-select">
+                            <option value="">Select a vehicle...</option>
+                            <t t-foreach="customer_vehicles" t-as="vehicle">
+                                <option t-att-value="vehicle.id" 
+                                        t-att-data-vehicle="{'plate': vehicle.vehicle_plate_no, 'brand_id': vehicle.vehicle_brand_id.id, 'model_id': vehicle.vehicle_model_id.id, 'year': vehicle.vehicle_year}">
+                                    <t t-esc="vehicle.vehicle_plate_no"/> - <t t-esc="vehicle.vehicle_model_id.name"/>
+                                </option>
+                            </t>
+                        </select>
+                    </div>
                     <div class="col-12">
                       <label for="plat_number" class="form-label">Plat Number</label>
-                      <input type="text" class="form-control" name="plat_number" required="1"/>
+                      <input type="text" class="form-control" id="plat_number" name="plat_number" required="1"/>
                     </div>
                     <div class="col-12">
                       <label for="vehicle_brand" class="form-label">Vehicle Brand</label>
-                      <select class="form-select" name="vehicle_brand" required="1">
+                      <select class="form-select" id="vehicle_brand" name="vehicle_brand" required="1">
                          <t t-foreach="brands" t-as="brand">
                             <option t-att-value="brand.id"><t t-esc="brand.name"/></option>
                          </t>
@@ -68,7 +80,7 @@
                     </div>
                     <div class="col-12">
                       <label for="vehicle_model" class="form-label">Vehicle Model</label>
-                      <select class="form-select" name="vehicle_model" required="1">
+                      <select class="form-select" id="vehicle_model" name="vehicle_model" required="1">
                         <t t-foreach="models" t-as="model">
                             <option t-att-value="model.id"><t t-esc="model.name"/></option>
                         </t>
@@ -76,17 +88,17 @@
                     </div>
                     <div class="col-12">
                       <label for="vehicle_year_manufacture" class="form-label">Year of Manufacture</label>
-                      <input type="number" class="form-control" name="vehicle_year_manufacture"/>
+                      <input type="number" class="form-control" id="vehicle_year_manufacture" name="vehicle_year_manufacture"/>
                     </div>
                     <div class="col-12">
                       <label for="kilometers" class="form-label">Kilometers</label>
                       <input type="number" class="form-control" name="kilometers"/>
                     </div>
-                    <div class="col-12">
-                      <label for="media_document" class="form-label">Media Documents</label>
-                      <input type="file" class="form-control" name="media_document" multiple="multiple"/>
-                    </div>
                 </div>
+            </div>
+            <div class="col-12 mt-3">
+              <label for="complaint_issue" class="form-label">Complaints</label>
+              <textarea class="form-control" name="complaint_issue" rows="3"></textarea>
             </div>
             <div class="col-12 text-center mt-4">
                 <button type="submit" class="btn btn-primary btn-lg">Submit Booking</button>
@@ -94,6 +106,23 @@
           </form>
         </section>
       </div>
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const vehicleSelect = document.getElementById('customer_vehicle_select');
+            if (vehicleSelect) {
+                vehicleSelect.addEventListener('change', function() {
+                    const selectedOption = this.options[this.selectedIndex];
+                    if (selectedOption.value) {
+                        const vehicleData = JSON.parse(selectedOption.getAttribute('data-vehicle').replace(/'/g, '"'));
+                        document.getElementById('plat_number').value = vehicleData.plate;
+                        document.getElementById('vehicle_brand').value = vehicleData.brand_id;
+                        document.getElementById('vehicle_model').value = vehicleData.model_id;
+                        document.getElementById('vehicle_year_manufacture').value = vehicleData.year;
+                    }
+                });
+            }
+        });
+      </script>
     </t>
   </template>
 

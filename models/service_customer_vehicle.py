@@ -8,8 +8,10 @@ _logger = logging.getLogger(__name__)
 class CustomerVehicle(models.Model):
     _name = "service.customer.vehicle"
     _description = "Customer Vehicle"
+    _rec_name = "name"
     ordering = "id desc, name asc"
 
+    name = fields.Char(string="Name", compute="_compute_name", store=True)
     customer_id = fields.Many2one(
         "res.partner",
         string="Customer",
@@ -31,33 +33,20 @@ class CustomerVehicle(models.Model):
         help="Select the model of the vehicle",
     )
 
-    vehicle_type_id = fields.Many2one(
-        "service.vehicle.type",
-        string="Vehicle Type",
-        required=True,
-        help="Select the type of the vehicle",
-    )
-
     vehicle_plate_no = fields.Char(
         string="Vehicle Plate No",
         required=True,
         help="Enter the plate number of the vehicle",
     )
 
-    vehicle_color = fields.Char(
-        string="Vehicle Color", required=True, help="Enter the color of the vehicle"
-    )
-
     vehicle_year = fields.Integer(
         string="Vehicle Year", required=True, help="Enter the year of the vehicle"
     )
 
-    vehicle_mileage = fields.Integer(
-        string="Vehicle Mileage", required=True, help="Enter the mileage of the vehicle"
-    )
-
-    vehicle_fuel_type = fields.Many2one(
-        "service.vehicle.fuel.type",
-        string="Vehicle Fuel Type",
-        help="Select the fuel type of the vehicle",
-    )
+    @api.depends("vehicle_plate_no", "vehicle_model_id.name")
+    def _compute_name(self):
+        for record in self:
+            name = record.vehicle_plate_no
+            if record.vehicle_model_id:
+                name = f"{record.vehicle_plate_no} - {record.vehicle_model_id.name}"
+            record.name = name

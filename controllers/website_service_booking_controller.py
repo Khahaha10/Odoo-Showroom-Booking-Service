@@ -11,9 +11,31 @@ class WebsiteServiceBooking(http.Controller):
         brands = request.env["service.vehicle.brand"].sudo().search([])
         models = request.env["service.vehicle.model"].sudo().search([])
         service_types = request.env["service.type"].sudo().search([])
+        
+        user = request.env.user
+        customer_vehicles = []
+        customer_name = ""
+        customer_email = ""
+        customer_phone = ""
+
+        if user.sudo().partner_id != request.env.ref('base.public_partner'):
+            customer = user.sudo().partner_id
+            customer_name = customer.name
+            customer_email = customer.email
+            customer_phone = customer.phone
+            customer_vehicles = request.env["service.customer.vehicle"].sudo().search([('customer_id', '=', customer.id)])
+
         return request.render(
             "infinys_service_showroom.service_booking_form_template",
-            {"brands": brands, "models": models, "service_types": service_types},
+            {
+                "brands": brands, 
+                "models": models, 
+                "service_types": service_types,
+                "customer_vehicles": customer_vehicles,
+                "customer_name": customer_name,
+                "customer_email": customer_email,
+                "customer_phone": customer_phone,
+            },
         )
 
     @http.route(

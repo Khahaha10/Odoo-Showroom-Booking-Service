@@ -38,6 +38,11 @@ class ServiceBooking(models.Model):
         required=True,
         help="Choose vehicle brand",
     )
+    vehicle_type = fields.Many2one(
+        'service.vehicle.type',
+        string='Vehicle Type',
+        required=False
+    )
 
     vehicle_year_manufacture = fields.Integer(string="Year of Manufacture")
     kilometers = fields.Integer(string="Current Kilometers")
@@ -110,7 +115,25 @@ class ServiceBooking(models.Model):
             vals["name"] = (
                 self.env["ir.sequence"].next_by_code("infinys.vehicle.service") or "/"
             )
-        return super().create(vals)
+        res = super().create(vals)
+        if res.customer_name and res.plat_number:
+            vehicle = self.env["service.customer.vehicle"].search(
+                [
+                    ("customer_id", "=", res.customer_name.id),
+                    ("vehicle_plate_no", "=", res.plat_number),
+                ]
+            )
+            if not vehicle:
+                self.env["service.customer.vehicle"].create(
+                    {
+                        "customer_id": res.customer_name.id,
+                        "vehicle_plate_no": res.plat_number,
+                        "vehicle_brand_id": res.vehicle_brand.id,
+                        "vehicle_model_id": res.vehicle_model.id,
+                        "vehicle_year": res.vehicle_year_manufacture,
+                    }
+                )
+        return res
 
     def write(self, vals):
         if "plat_number" in vals and vals["plat_number"]:
