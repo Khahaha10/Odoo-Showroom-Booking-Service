@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <menuitem id="menu_infinys_vehicle_service_root" name="Vehicle Booking" web_icon="infinys_service_showroom,static/description/booking.png" sequence="10"/>
-
-    <menuitem id="menu_car_showroom_root" name="Car Showroom" parent="menu_infinys_vehicle_service_root" sequence="5" groups="infinys_service_showroom.group_infinys_showroom"/>
-
-    <menuitem id="menu_car_showroom" name="Car Showroom" parent="menu_car_showroom_root" action="action_car_vehicle" sequence="10"/>
+    <menuitem id="menu_infinys_vehicle_service_root" name="Vehicle Booking" web_icon="infinys_service_showroom,static/description/booking.png" sequence="10" action="action_service_booking"/>
 
     <menuitem id="menu_infinys_service_booking_root" name="Service Booking" parent="menu_infinys_vehicle_service_root" sequence="10" groups="infinys_service_showroom.group_infinys_booking_service"/>
 
     <menuitem id="menu_infinys_service_booking" name="Service Booking" parent="menu_infinys_service_booking_root" action="action_service_booking" sequence="10"/>
 
+    <menuitem id="menu_car_showroom_root" name="Car Showroom" parent="menu_infinys_vehicle_service_root" sequence="20" groups="infinys_service_showroom.group_infinys_showroom"/>
 
-    <menuitem id="menu_infinys_vehicle_info_root" name="Vehicle Information" parent="menu_infinys_vehicle_service_root" sequence="20"/>
+    <menuitem id="menu_car_showroom" name="Car Showroom" parent="menu_car_showroom_root" action="action_car_vehicle" sequence="10"/>
+
+    <menuitem id="menu_infinys_vehicle_info_root" name="Vehicle Information" parent="menu_infinys_vehicle_service_root" sequence="30"/>
 
     <menuitem id="menu_infinys_vehicle_fuel_type" name="Vehicle Fuel Types" parent="menu_infinys_vehicle_info_root" action="action_vehicle_fuel_type" sequence="20"/>
 
@@ -23,7 +22,7 @@
     <menuitem id="menu_infinys_vehicle_model" name="Vehicle Models" parent="menu_infinys_vehicle_info_root" action="action_vehicle_model" sequence="50"/>
 
 
-    <menuitem id="menu_infinys_configuration_root" name="Configuration" parent="menu_infinys_vehicle_service_root" sequence="30"/>
+    <menuitem id="menu_infinys_configuration_root" name="Configuration" parent="menu_infinys_vehicle_service_root" sequence="40"/>
 
     <menuitem id="infinys_vehicle_menu_settings" name="Settings" parent="menu_infinys_configuration_root" action="infinys_vehicle_config_settings_action" groups="base.group_system" sequence="10"/>
 

@@ -12,23 +12,23 @@
                     <div class="row mt16 o_settings_container">
                         <div class="col-12 col-lg-6 o_setting_box">
                             <div class="o_setting_left_pane">
-                                <field name="module_infinys_showroom"/>
-                            </div>
-                            <div class="o_setting_right_pane">
-                                <label for="module_infinys_showroom"/>
-                                <div class="text-muted">
-                                    Enable showroom features to manage and sell vehicles.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-lg-6 o_setting_box">
-                            <div class="o_setting_left_pane">
                                 <field name="module_infinys_booking_service"/>
                             </div>
                             <div class="o_setting_right_pane">
                                 <label for="module_infinys_booking_service"/>
                                 <div class="text-muted">
                                     Enable service booking features for vehicle maintenance.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="module_infinys_showroom"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="module_infinys_showroom"/>
+                                <div class="text-muted">
+                                    Enable showroom features to manage and sell vehicles.
                                 </div>
                             </div>
                         </div>
