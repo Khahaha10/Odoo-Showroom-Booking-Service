@@ -79,6 +79,14 @@ class ServiceBooking(models.Model):
     completed_datetime = fields.Datetime(string="Completed Time", readonly=True)
     cancel_reason = fields.Text(string="Cancel Reason")
 
+    media_document = fields.Many2many("ir.attachment", "service_booking_media_rel", "booking_id", "attachment_id", string="Attachments")
+    internal_media_document = fields.Many2many("ir.attachment", "service_booking_internal_media_rel", "booking_id", "attachment_id", string="Internal Documents")
+
+    total_sparepart = fields.Float(
+        string="Total Sparepart",
+        compute="_compute_totals",
+        store=True,
+    )
     total_service_fee = fields.Float(string="Total Service Fee")
     tax_id = fields.Many2one("account.tax", string="Tax")
 

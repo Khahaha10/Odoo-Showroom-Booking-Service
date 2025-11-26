@@ -123,6 +123,7 @@
                             <page string="Services">
                             </page>
                             <page string="Images/Documents">
+                                <field name="internal_media_document" widget="many2many_binary" readonly="is_checklist_readonly"/>
                             </page>
                             <page string="Insepection Checklist">
                                 <field name="inspection_checklist_line_ids" readonly="is_checklist_readonly">
