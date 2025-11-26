@@ -107,6 +107,23 @@ class ServiceBooking(models.Model):
         string="State Index", compute="_compute_state_idx", store=True, index=True
     )
 
+    inspection_checklist_line_ids = fields.One2many(
+        "service.inspection.checklist.line",
+        "service_booking_id",
+        string="Inspection Checklist",
+    )
+
+    is_checklist_readonly = fields.Boolean(
+        string="Is Checklist Readonly",
+        compute="_compute_is_checklist_readonly",
+        store=False,
+    )
+
+    @api.depends("state")
+    def _compute_is_checklist_readonly(self):
+        for record in self:
+            record.is_checklist_readonly = record.state in ('completed', 'cancelled')
+
     @api.constrains("plan_service_date")
     def _plan_service_date(self):
         for record in self:
@@ -141,12 +158,26 @@ class ServiceBooking(models.Model):
                         "vehicle_year": res.vehicle_year_manufacture,
                     }
                 )
+        res._populate_inspection_checklist() # Call new method
         return res
+
+    def _populate_inspection_checklist(self):
+        for record in self:
+            if not record.inspection_checklist_line_ids:
+                inspection_types = self.env["service.inspection.type"].search([("active", "=", True)])
+                for insp_type in inspection_types:
+                    record.env["service.inspection.checklist.line"].create({
+                        "service_booking_id": record.id,
+                        "inspection_type_id": insp_type.id,
+                        "checklist_ok": False,
+                    })
 
     def write(self, vals):
         if "plat_number" in vals and vals["plat_number"]:
             vals["plat_number"] = vals["plat_number"].upper()
-        return super().write(vals)
+        res = super().write(vals)
+        self._populate_inspection_checklist() # Call new method for write
+        return res
 
     def action_assign(self):
         self.ensure_one()

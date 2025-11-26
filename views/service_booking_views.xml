@@ -66,7 +66,7 @@
                         <button name="action_start" type="object" string="Start Service" class="oe_highlight" invisible="state != 'assigned'" confirm="Are you sure you want to start this service?"/>
                         <button name="action_complete" type="object" string="Completed" class="oe_highlight" invisible="state != 'in_progress'" confirm="Are you sure you want to complete this service?"/>
                         <button name="action_cancel" type="object" string="Cancel" invisible="state in ['cancelled', 'completed']"/>
-                        <field name="state" widget="statusbar" statusbar_visible="booking,assigned,in_progress,completed,cancelled" options="{'clickable': '1'}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="booking,assigned,in_progress,completed,cancelled"/>
                     </header>
                     <sheet>
                         <div class="oe_title">
@@ -117,6 +117,12 @@
                             <page string="Images/Documents">
                             </page>
                             <page string="Insepection Checklist">
+                                <field name="inspection_checklist_line_ids" readonly="is_checklist_readonly">
+                                    <list editable="bottom">
+                                        <field name="inspection_type_id"/>
+                                        <field name="checklist_ok"/>
+                                    </list>
+                                </field>
                             </page>
                             <page string="Totals">
                                 <group>
