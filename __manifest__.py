@@ -29,6 +29,7 @@
         "views/service_vehicle_type_views.xml",
         "views/service_vehicle_model_views.xml",
         "views/service_booking_views.xml",
+        "views/service_booking_wizard_views.xml",
         "views/showroom_website_car_templates.xml",
         "views/service_booking_templates.xml",
         "views/service_inspection_type_views.xml",

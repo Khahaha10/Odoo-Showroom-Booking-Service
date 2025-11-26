@@ -71,6 +71,14 @@ class ServiceBooking(models.Model):
         "service.supervisor.user", string="Supervisor", help="Select supervisor user"
     )
 
+    assigned_technician_id = fields.Many2one(
+        "res.users", string="Assigned Technician", help="Select the technician assigned to this service"
+    )
+    assigned_datetime = fields.Datetime(string="Assigned Time", readonly=True)
+    in_progress_datetime = fields.Datetime(string="In Progress Time", readonly=True)
+    completed_datetime = fields.Datetime(string="Completed Time", readonly=True)
+    cancel_reason = fields.Text(string="Cancel Reason")
+
     media_document = fields.Many2many("ir.attachment", string="Attachments")
 
     total_amount = fields.Float(string="Total Amount")
@@ -140,9 +148,41 @@ class ServiceBooking(models.Model):
             vals["plat_number"] = vals["plat_number"].upper()
         return super().write(vals)
 
+    def action_assign(self):
+        self.ensure_one()
+        return {
+            'name': _('Assign Technician'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'service.booking.assign.technician.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_booking_id': self.id},
+        }
+
+    def action_start(self):
+        for rec in self:
+            rec.write({
+                'state': 'in_progress',
+                'in_progress_datetime': fields.Datetime.now(),
+            })
+
+    def action_complete(self):
+        for rec in self:
+            rec.write({
+                'state': 'completed',
+                'completed_datetime': fields.Datetime.now(),
+            })
+
     def action_cancel(self):
         for rec in self:
-            rec.state = "cancelled"
+            return {
+                'name': _('Cancel Service Booking'),
+                'type': 'ir.actions.act_window',
+                'res_model': 'service.booking.cancel.wizard',
+                'view_mode': 'form',
+                'target': 'new',
+                'context': {'default_booking_id': self.id},
+            }
 
     @api.depends("state", "state_idx")
     def _compute_state_idx(self):

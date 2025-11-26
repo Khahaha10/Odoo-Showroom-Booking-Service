@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Form view for Assign Technician Wizard -->
+        <record id="service_booking_assign_technician_wizard_form" model="ir.ui.view">
+            <field name="name">service.booking.assign.technician.wizard.form</field>
+            <field name="model">service.booking.assign.technician.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Assign Technician">
+                    <group>
+                        <field name="booking_id" invisible="1"/>
+                        <field name="technician_id" />
+                    </group>
+                    <footer>
+                        <button name="assign_technician_action" type="object" string="Assign" class="oe_highlight"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Form view for Cancel Service Booking Wizard -->
+        <record id="service_booking_cancel_wizard_form" model="ir.ui.view">
+            <field name="name">service.booking.cancel.wizard.form</field>
+            <field name="model">service.booking.cancel.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Cancel Service Booking">
+                    <group>
+                        <field name="booking_id" invisible="1"/>
+                        <field name="cancel_reason" />
+                    </group>
+                    <footer>
+                        <button name="cancel_booking_action" type="object" string="Confirm Cancellation" class="oe_highlight"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>
