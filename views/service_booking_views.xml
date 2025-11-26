@@ -111,6 +111,14 @@
                                 </group>
                             </page>
                             <page string="Spareparts">
+                                <field name="spare_part_line_ids" readonly="is_checklist_readonly">
+                                    <list editable="bottom">
+                                        <field name="product_id" domain="[('vehicle_part_ok', '=', True)]"/>
+                                        <field name="qty"/>
+                                        <field name="unit_price" readonly="1"/>
+                                        <field name="subtotal" readonly="1"/>
+                                    </list>
+                                </field>
                             </page>
                             <page string="Services">
                             </page>
@@ -136,7 +144,7 @@
                 </form>
             </field>
         </record>
-        <record id="service_booking_view_tree" model="ir.ui.view">
+        <record id="service_booking_view_list" model="ir.ui.view">
             <field name="name">service.booking.view.list</field>
             <field name="model">service.booking</field>
             <field name="arch" type="xml">

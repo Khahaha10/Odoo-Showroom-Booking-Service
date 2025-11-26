@@ -79,14 +79,22 @@ class ServiceBooking(models.Model):
     completed_datetime = fields.Datetime(string="Completed Time", readonly=True)
     cancel_reason = fields.Text(string="Cancel Reason")
 
-    media_document = fields.Many2many("ir.attachment", string="Attachments")
-
-    total_amount = fields.Float(string="Total Amount")
-    total_sparepart = fields.Float(string="Total Sparepart")
     total_service_fee = fields.Float(string="Total Service Fee")
     tax_id = fields.Many2one("account.tax", string="Tax")
 
+    total_amount = fields.Float(
+        string="Total Amount",
+        compute="_compute_totals",
+        store=True,
+    )
+
     invoice_id = fields.Many2one("account.move", string="Invoice")
+
+    @api.depends("spare_part_line_ids.subtotal", "total_service_fee")
+    def _compute_totals(self):
+        for record in self:
+            record.total_sparepart = sum(record.spare_part_line_ids.mapped("subtotal"))
+            record.total_amount = record.total_sparepart + record.total_service_fee
 
     error_msg = fields.Text(string="Error Message")
 
@@ -111,6 +119,12 @@ class ServiceBooking(models.Model):
         "service.inspection.checklist.line",
         "service_booking_id",
         string="Inspection Checklist",
+    )
+
+    spare_part_line_ids = fields.One2many(
+        "service.parts.used.line",
+        "service_booking_id",
+        string="Spare Parts Used",
     )
 
     is_checklist_readonly = fields.Boolean(
