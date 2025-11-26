@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 {
     "name": "Infinys Vehicle Showroom & Service",
     "summary": "Manage vehicle showroom sales and service bookings.",

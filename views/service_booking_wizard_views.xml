@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- Form view for Assign Technician Wizard -->
         <record id="service_booking_assign_technician_wizard_form" model="ir.ui.view">
             <field name="name">service.booking.assign.technician.wizard.form</field>
             <field name="model">service.booking.assign.technician.wizard</field>
@@ -19,7 +18,6 @@
             </field>
         </record>
 
-        <!-- Form view for Cancel Service Booking Wizard -->
         <record id="service_booking_cancel_wizard_form" model="ir.ui.view">
             <field name="name">service.booking.cancel.wizard.form</field>
             <field name="model">service.booking.cancel.wizard</field>

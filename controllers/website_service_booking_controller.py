@@ -1,4 +1,3 @@
-# infinys_car_showroom/controllers/main.py
 from odoo import http
 from odoo.http import request
 import base64

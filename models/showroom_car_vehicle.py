@@ -1,4 +1,3 @@
-# infinys_car_showroom/models/car_vehicle.py
 from odoo import models, fields, api
 
 

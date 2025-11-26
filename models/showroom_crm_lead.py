@@ -1,4 +1,3 @@
-# infinys_car_showroom/models/crm_lead.py
 from odoo import models, fields
 
 

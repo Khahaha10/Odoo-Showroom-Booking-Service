@@ -1,4 +1,3 @@
-# infinys_service_showroom/controllers/main.py
 from odoo import http
 from odoo.http import request
 
@@ -97,7 +96,6 @@ class WebsiteCarShowroom(http.Controller):
             except Exception:
                 vehicle = None
 
-        # Find or create res.partner
         partner = (
             request.env["res.partner"]
             .sudo()
@@ -124,7 +122,6 @@ class WebsiteCarShowroom(http.Controller):
                 )
             )
         else:
-            # Update partner's phone and email if they are different
             partner.sudo().write(
                 {
                     "phone": phone,
@@ -141,7 +138,7 @@ class WebsiteCarShowroom(http.Controller):
             "visit_date": visit_date or False,
             "visit_time": visit_time or False,
             "visit_purpose": visit_purpose or False,
-            "partner_id": partner.id,  # Link to the created/found partner
+            "partner_id": partner.id,
         }
 
         if vehicle:

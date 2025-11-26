@@ -158,7 +158,7 @@ class ServiceBooking(models.Model):
                         "vehicle_year": res.vehicle_year_manufacture,
                     }
                 )
-        res._populate_inspection_checklist() # Call new method
+        res._populate_inspection_checklist()
         return res
 
     def _populate_inspection_checklist(self):
@@ -176,7 +176,7 @@ class ServiceBooking(models.Model):
         if "plat_number" in vals and vals["plat_number"]:
             vals["plat_number"] = vals["plat_number"].upper()
         res = super().write(vals)
-        self._populate_inspection_checklist() # Call new method for write
+        self._populate_inspection_checklist()
         return res
 
     def action_assign(self):
