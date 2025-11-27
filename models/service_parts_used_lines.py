@@ -16,7 +16,7 @@ class PartUsedLines(models.Model):
         ondelete="cascade",
     )
     product_id = fields.Many2one("product.product", string="Part", required=True)
-    qty = fields.Float(string="Qty", default=1.0)
+    qty = fields.Float(string="Quantity", default=1.0)
     unit_price = fields.Float(
         string="Unit Price", related="product_id.list_price", readonly=1
     )
@@ -24,7 +24,7 @@ class PartUsedLines(models.Model):
         string="On Hand", related="product_id.qty_available", readonly=1
     )
 
-    subtotal = fields.Float(string="Price", compute="_compute_subtotal", store=True)
+    subtotal = fields.Float(string="Subtotal", compute="_compute_subtotal", store=True)
 
     @api.depends("qty", "unit_price")
     def _compute_subtotal(self):
