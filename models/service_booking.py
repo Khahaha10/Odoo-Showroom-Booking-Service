@@ -87,7 +87,11 @@ class ServiceBooking(models.Model):
         compute="_compute_totals",
         store=True,
     )
-    total_service_fee = fields.Float(string="Total Service Fee")
+    total_service_fee = fields.Float(
+        string="Total Service Fee",
+        compute="_compute_totals",
+        store=True,
+    )
     tax_id = fields.Many2one("account.tax", string="Tax")
 
     total_amount = fields.Float(
@@ -98,10 +102,11 @@ class ServiceBooking(models.Model):
 
     invoice_id = fields.Many2one("account.move", string="Invoice")
 
-    @api.depends("spare_part_line_ids.subtotal", "total_service_fee")
+    @api.depends("spare_part_line_ids.subtotal", "service_line_ids.subtotal")
     def _compute_totals(self):
         for record in self:
             record.total_sparepart = sum(record.spare_part_line_ids.mapped("subtotal"))
+            record.total_service_fee = sum(record.service_line_ids.mapped("subtotal"))
             record.total_amount = record.total_sparepart + record.total_service_fee
 
     error_msg = fields.Text(string="Error Message")
@@ -133,6 +138,12 @@ class ServiceBooking(models.Model):
         "service.parts.used.line",
         "service_booking_id",
         string="Spare Parts Used",
+    )
+
+    service_line_ids = fields.One2many(
+        "service.used.line",
+        "service_booking_id",
+        string="Services Used",
     )
 
     is_checklist_readonly = fields.Boolean(

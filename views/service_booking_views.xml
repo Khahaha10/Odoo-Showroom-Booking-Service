@@ -114,6 +114,7 @@
                                 <field name="spare_part_line_ids" readonly="is_checklist_readonly">
                                     <list editable="bottom">
                                         <field name="product_id" domain="[('vehicle_part_ok', '=', True)]"/>
+                                        <field name="on_hand_qty" readonly="1"/>
                                         <field name="qty"/>
                                         <field name="unit_price" readonly="1"/>
                                         <field name="subtotal" readonly="1"/>
@@ -121,6 +122,14 @@
                                 </field>
                             </page>
                             <page string="Services">
+                                <field name="service_line_ids" readonly="is_checklist_readonly">
+                                    <list editable="bottom">
+                                        <field name="product_id" domain="[('type', '=', 'service')]"/>
+                                        <field name="qty"/>
+                                        <field name="unit_price" readonly="1"/>
+                                        <field name="subtotal" readonly="1"/>
+                                    </list>
+                                </field>
                             </page>
                             <page string="Images/Documents">
                                 <field name="internal_media_document" widget="many2many_binary" readonly="is_checklist_readonly"/>
@@ -136,7 +145,7 @@
                             <page string="Totals">
                                 <group>
                                     <field name="total_sparepart"/>
-                                    <field name="total_service_fee"/>
+                                    <field name="total_service_fee" readonly="1"/>
                                     <field name="total_amount"/>
                                 </group>
                             </page>
