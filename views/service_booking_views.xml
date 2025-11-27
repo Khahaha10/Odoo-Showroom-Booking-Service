@@ -163,8 +163,6 @@
                                     <field name="total_sparepart"/>
                                     <field name="total_service_fee" readonly="1"/>
                                     <field name="total_amount"/>
-                                    <field name="sale_order_id"/>
-                                    <field name="stock_picking_id"/>
                                 </group>
                             </page>
                         </notebook>
