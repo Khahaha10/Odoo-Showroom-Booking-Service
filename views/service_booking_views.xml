@@ -69,6 +69,22 @@
                         <field name="state" widget="statusbar" statusbar_visible="booking,assigned,in_progress,completed,cancelled"/>
                     </header>
                     <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button type="object"
+                                name="action_view_sale_order"
+                                class="oe_stat_button"
+                                icon="fa-pencil-square-o"
+                                invisible="sale_order_count == 0">
+                                <field name="sale_order_count" widget="statinfo" string="Sale Order"/>
+                            </button>
+                            <button type="object"
+                                name="action_view_delivery_order"
+                                class="oe_stat_button"
+                                icon="fa-truck"
+                                invisible="delivery_order_count == 0">
+                                <field name="delivery_order_count" widget="statinfo" string="Delivery Order"/>
+                            </button>
+                        </div>
                         <div class="oe_title">
                             <field name="error_msg" widget="text" readonly="1" />
                             <label for="name" string="Booking Number"/>
@@ -147,6 +163,8 @@
                                     <field name="total_sparepart"/>
                                     <field name="total_service_fee" readonly="1"/>
                                     <field name="total_amount"/>
+                                    <field name="sale_order_id"/>
+                                    <field name="stock_picking_id"/>
                                 </group>
                             </page>
                         </notebook>

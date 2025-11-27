@@ -101,6 +101,37 @@ class ServiceBooking(models.Model):
     )
 
     invoice_id = fields.Many2one("account.move", string="Invoice")
+    sale_order_id = fields.Many2one("sale.order", string="Sale Order", copy=False, readonly=True)
+    stock_picking_id = fields.Many2one("stock.picking", string="Delivery Order", copy=False, readonly=True)
+    sale_order_count = fields.Integer(compute='_compute_order_count', string='Sale Order Count')
+    delivery_order_count = fields.Integer(compute='_compute_order_count', string='Delivery Order Count')
+
+    def _compute_order_count(self):
+        for rec in self:
+            rec.sale_order_count = 1 if rec.sale_order_id else 0
+            rec.delivery_order_count = 1 if rec.stock_picking_id else 0
+
+    def action_view_sale_order(self):
+        return {
+            'name': _('Sale Order'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'sale.order',
+            'view_mode': 'form',
+            'res_id': self.sale_order_id.id,
+            'target': 'current',
+        }
+
+    def action_view_delivery_order(self):
+        return {
+            'name': _('Delivery Order'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'stock.picking',
+            'view_mode': 'form',
+            'res_id': self.stock_picking_id.id,
+            'target': 'current',
+        }
+
+
 
     @api.depends("spare_part_line_ids.subtotal", "service_line_ids.subtotal")
     def _compute_totals(self):
@@ -232,6 +263,67 @@ class ServiceBooking(models.Model):
 
     def action_complete(self):
         for rec in self:
+            if rec.spare_part_line_ids or rec.service_line_ids:
+                sale_order = self.env['sale.order'].create({
+                    'partner_id': rec.customer_name.id,
+                    'origin': rec.name,
+                })
+                if rec.spare_part_line_ids:
+                    self.env['sale.order.line'].create({
+                        'order_id': sale_order.id,
+                        'name': 'Spare Parts',
+                        'display_type': 'line_section',
+                    })
+                    for part in rec.spare_part_line_ids:
+                        self.env['sale.order.line'].create({
+                            'order_id': sale_order.id,
+                            'product_id': part.product_id.id,
+                            'product_uom_qty': part.qty,
+                            'price_unit': part.unit_price,
+                        })
+                if rec.service_line_ids:
+                    self.env['sale.order.line'].create({
+                        'order_id': sale_order.id,
+                        'name': 'Services',
+                        'display_type': 'line_section',
+                    })
+                    for service in rec.service_line_ids:
+                        self.env['sale.order.line'].create({
+                            'order_id': sale_order.id,
+                            'product_id': service.product_id.id,
+                            'product_uom_qty': service.qty,
+                            'price_unit': service.unit_price,
+                        })
+                rec.sale_order_id = sale_order.id
+
+            if rec.spare_part_line_ids:
+                default_warehouse = self.env['stock.warehouse'].search([('company_id', '=', self.env.user.company_id.id)], limit=1)
+                picking_type = default_warehouse.out_type_id if default_warehouse else self.env['stock.picking.type'].search([('code', '=', 'outgoing')], limit=1)
+                if not picking_type:
+                    picking_type = self.env['stock.picking.type'].search([('code', '=', 'outgoing')], limit=1)
+
+                if picking_type:
+                    stock_picking = self.env['stock.picking'].create({
+                        'partner_id': rec.customer_name.id,
+                        'picking_type_id': picking_type.id,
+                        'location_id': picking_type.default_location_src_id.id,
+                        'location_dest_id': rec.customer_name.property_stock_customer.id,
+                        'origin': rec.name,
+                    })
+                    for part in rec.spare_part_line_ids:
+                        self.env['stock.move'].create({
+                            'name': part.product_id.name,
+                            'product_id': part.product_id.id,
+                            'product_uom_qty': part.qty,
+                            'product_uom': part.product_id.uom_id.id,
+                            'picking_id': stock_picking.id,
+                            'location_id': picking_type.default_location_src_id.id,
+                            'location_dest_id': rec.customer_name.property_stock_customer.id,
+                        })
+                    stock_picking.action_confirm()
+                    stock_picking.action_assign()
+                    rec.stock_picking_id = stock_picking.id
+
             rec.write({
                 'state': 'completed',
                 'completed_datetime': fields.Datetime.now(),
