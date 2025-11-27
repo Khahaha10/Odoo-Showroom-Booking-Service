@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 class ServiceBooking(models.Model):
     _name = "service.booking"
     _description = "Service Booking Header"
-    _rec_name = "customer_name"
+    _rec_name = "name"
     ordering = "plan_service_date desc"
 
     name = fields.Char(
