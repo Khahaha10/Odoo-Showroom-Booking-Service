@@ -7,7 +7,7 @@
         <field name="inherit_id" ref="base.res_config_settings_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//form[hasclass('oe_form_configuration')]" position="inside">
-                <div class="app_settings_block" data-string="Infinys Vehicle" string="Infinys Vehicle" data-key="infinys_service_showroom">
+                <app data-string="Service &amp; Showroom" string="Service &amp; Showroom" name="infinys_service_showroom" logo="/infinys_service_showroom/static/description/booking.png">
                     <h2>Vehicle Management</h2>
                     <div class="row mt16 o_settings_container">
                         <div class="col-12 col-lg-6 o_setting_box">
@@ -64,9 +64,9 @@
                             <div class="o_setting_left_pane">
                             </div>
                             <div class="o_setting_right_pane">
-                                <label for="whatsapp_phone_number"/>
-                                <div class="text-muted">
-                                    Enter the WhatsApp number for showroom inquiries.
+                            <label for="whatsapp_phone_number"/>
+                            <div class="text-muted">
+                                Enter the WhatsApp number for showroom inquiries.
                                 </div>
                                 <field name="whatsapp_phone_number" placeholder="628123456789"/>
                             </div>
@@ -75,15 +75,15 @@
                             <div class="o_setting_left_pane">
                             </div>
                             <div class="o_setting_right_pane">
-                                <label for="whatsapp_prefill_message"/>
-                                <div class="text-muted">
-                                    Default message to prefill. Use {car_name} for the car's name.
+                            <label for="whatsapp_prefill_message"/>
+                            <div class="text-muted">
+                                Default message to prefill. Use {car_name} for the car's name.
                                 </div>
                                 <field name="whatsapp_prefill_message" class="w-100 o_full_width" widget="text"/>
                             </div>
                         </div>
                     </div>
-                </div>
+                </app>
             </xpath>
         </field>
     </record>

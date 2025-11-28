@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <menuitem id="menu_infinys_vehicle_service_root" name="Showroom &amp; Service" web_icon="infinys_service_showroom,static/description/booking.png" sequence="10"/>
+    <menuitem id="menu_infinys_vehicle_service_root" name="Service &amp; Showroom" web_icon="infinys_service_showroom,static/description/booking.png" sequence="10"/>
 
     <menuitem id="menu_infinys_service_booking_root" name="Service Booking" parent="menu_infinys_vehicle_service_root" sequence="10" groups="infinys_service_showroom.group_infinys_booking_service"/>
 

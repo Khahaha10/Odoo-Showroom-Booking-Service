@@ -1,5 +1,5 @@
 {
-    "name": "Infinys Vehicle Showroom & Service",
+    "name": "Infinys Vehicle Service & Showroom",
     "summary": "Manage vehicle showroom sales and service bookings.",
     "description": """
         A comprehensive module to manage both a car showroom and vehicle service center.
