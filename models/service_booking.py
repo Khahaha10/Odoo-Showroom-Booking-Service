@@ -37,12 +37,22 @@ class ServiceBooking(models.Model):
         string="Vehicle Model",
         required=True,
         help="Choose vehicle brand",
+        domain="[('vehicle_brand', '=', vehicle_brand)]"
     )
     vehicle_type = fields.Many2one(
         'service.vehicle.type',
         string='Vehicle Type',
         required=False
     )
+
+    @api.onchange('vehicle_brand')
+    def _onchange_vehicle_brand(self):
+        if self.vehicle_brand:
+            self.vehicle_model = False
+            return {'domain': {'vehicle_model': [('vehicle_brand', '=', self.vehicle_brand.id)]}}
+        else:
+            self.vehicle_model = False
+            return {'domain': {'vehicle_model': []}}
 
     vehicle_year_manufacture = fields.Integer(string="Year of Manufacture")
     kilometers = fields.Integer(string="Current Kilometers")
