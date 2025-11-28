@@ -187,9 +187,15 @@
                 </t>
               </div>
 
-              <a t-att-href="'/visit-schedule?vehicle_id=%s' % car.id" class="btn btn-primary btn-lg">
+              <a t-att-href="'/visit-schedule?vehicle_id=%s' % car.id" class="btn btn-primary btn-md">
                 Schedule a visit
               </a>
+              <t t-if="whatsapp_phone_number">
+                  <a t-attf-href="https://api.whatsapp.com/send/?phone={{whatsapp_phone_number}}&amp;text={{whatsapp_prefill_message.replace('{car_name}', car.name)}}&amp;type=phone_number&amp;app_absent=0"
+                     target="_blank" class="btn btn-success btn-md ms-2">
+                      <i class="fa fa-whatsapp me-2"/> Chat via WhatsApp
+                  </a>
+              </t>
 
             </div>
           </div>

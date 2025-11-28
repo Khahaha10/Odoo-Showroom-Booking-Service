@@ -47,8 +47,22 @@ class WebsiteCarShowroom(http.Controller):
         if not (car.website_published and car.active):
             return request.not_found()
 
+        ICPSudo = request.env["ir.config_parameter"].sudo()
+        whatsapp_phone_number = ICPSudo.get_param(
+            "infinys_service_showroom.whatsapp_phone_number", default=""
+        )
+        whatsapp_prefill_message = ICPSudo.get_param(
+            "infinys_service_showroom.whatsapp_prefill_message", default=""
+        )
+
+        render_values = {
+            "car": car,
+            "whatsapp_phone_number": whatsapp_phone_number,
+            "whatsapp_prefill_message": whatsapp_prefill_message,
+        }
+
         return request.render(
-            "infinys_service_showroom.car_showroom_detail", {"car": car}
+            "infinys_service_showroom.car_showroom_detail", render_values
         )
 
     @http.route(["/visit-schedule"], type="http", auth="public", website=True)
