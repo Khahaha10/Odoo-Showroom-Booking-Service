@@ -105,12 +105,13 @@ class ServiceBooking(models.Model):
     stock_picking_id = fields.Many2one("stock.picking", string="Delivery Order", copy=False, readonly=True)
     sale_order_count = fields.Integer(compute='_compute_order_count', string='Sale Order Count')
     delivery_order_count = fields.Integer(compute='_compute_order_count', string='Delivery Order Count')
-
+    invoice_count = fields.Integer(compute='_compute_order_count', string='Invoice Count')
+         
     def _compute_order_count(self):
         for rec in self:
             rec.sale_order_count = 1 if rec.sale_order_id else 0
             rec.delivery_order_count = 1 if rec.stock_picking_id else 0
-
+            rec.invoice_count = 1 if rec.invoice_id else 0
     def action_view_sale_order(self):
         return {
             'name': _('Sale Order'),
@@ -131,7 +132,15 @@ class ServiceBooking(models.Model):
             'target': 'current',
         }
 
-
+    def action_view_invoice(self):
+        return {
+            'name': _('Invoice'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.move',
+            'view_mode': 'form',
+            'res_id': self.invoice_id.id,
+            'target': 'current',
+        }
 
     @api.depends("spare_part_line_ids.subtotal", "service_line_ids.subtotal")
     def _compute_totals(self):
@@ -262,7 +271,16 @@ class ServiceBooking(models.Model):
             })
 
     def action_complete(self):
+        ICPSudo = self.env["ir.config_parameter"].sudo()
+        automate_delivery_order_done = ICPSudo.get_param(
+            "infinys_service_showroom.automate_delivery_order_done", default="False"
+        ).lower() == "true"
+        automate_invoice_creation = ICPSudo.get_param(
+            "infinys_service_showroom.automate_invoice_creation", default="False"
+        ).lower() == "true"
+
         for rec in self:
+            sale_order = self.env['sale.order']
             if rec.spare_part_line_ids or rec.service_line_ids:
                 sale_order = self.env['sale.order'].create({
                     'partner_id': rec.customer_name.id,
@@ -274,27 +292,34 @@ class ServiceBooking(models.Model):
                         'name': 'Spare Parts',
                         'display_type': 'line_section',
                     })
-                    for part in rec.spare_part_line_ids:
-                        self.env['sale.order.line'].create({
-                            'order_id': sale_order.id,
-                            'product_id': part.product_id.id,
-                            'product_uom_qty': part.qty,
-                            'price_unit': part.unit_price,
-                        })
+                for part in rec.spare_part_line_ids:
+                    self.env['sale.order.line'].create({
+                        'order_id': sale_order.id,
+                        'product_id': part.product_id.id,
+                        'product_uom_qty': part.qty,
+                        'price_unit': part.unit_price,
+                    })
                 if rec.service_line_ids:
                     self.env['sale.order.line'].create({
                         'order_id': sale_order.id,
                         'name': 'Services',
                         'display_type': 'line_section',
                     })
-                    for service in rec.service_line_ids:
-                        self.env['sale.order.line'].create({
-                            'order_id': sale_order.id,
-                            'product_id': service.product_id.id,
-                            'product_uom_qty': service.qty,
-                            'price_unit': service.unit_price,
-                        })
+                for service in rec.service_line_ids:
+                    self.env['sale.order.line'].create({
+                        'order_id': sale_order.id,
+                        'product_id': service.product_id.id,
+                        'product_uom_qty': service.qty,
+                        'price_unit': service.unit_price,
+                    })
                 rec.sale_order_id = sale_order.id
+
+                if automate_invoice_creation:
+                    if sale_order:
+                        sale_order.action_confirm()
+                        invoices = sale_order._create_invoices()
+                        if invoices:
+                            rec.invoice_id = invoices[0].id
 
             if rec.spare_part_line_ids:
                 default_warehouse = self.env['stock.warehouse'].search([('company_id', '=', self.env.user.company_id.id)], limit=1)
@@ -322,6 +347,8 @@ class ServiceBooking(models.Model):
                         })
                     stock_picking.action_confirm()
                     stock_picking.action_assign()
+                    if automate_delivery_order_done:
+                        stock_picking.button_validate()
                     rec.stock_picking_id = stock_picking.id
 
             rec.write({
@@ -344,7 +371,7 @@ class ServiceBooking(models.Model):
     def _compute_state_idx(self):
         self.state_idx = 1
         for record in self:
-            idx = 1
+            idx = 1 
             match record.state:
                 case "booking":
                     idx = 1

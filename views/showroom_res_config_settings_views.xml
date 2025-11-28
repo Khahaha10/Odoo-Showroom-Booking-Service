@@ -33,6 +33,31 @@
                             </div>
                         </div>
                     </div>
+                    <h2>Automation Settings</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="automate_delivery_order_done"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="automate_delivery_order_done"/>
+                                <div class="text-muted">
+                                    Automatically mark delivery orders created from service bookings as 'done'.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="automate_invoice_creation"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="automate_invoice_creation"/>
+                                <div class="text-muted">
+                                    Automatically confirm sales orders and create draft invoices from service bookings.
+                                </div>
+                            </div> 
+                        </div>
+                    </div>
                 </div>
             </xpath>
         </field>

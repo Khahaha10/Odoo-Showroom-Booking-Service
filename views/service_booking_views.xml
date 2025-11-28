@@ -71,6 +71,13 @@
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                             <button type="object"
+                                name="action_view_invoice"
+                                class="oe_stat_button"
+                                icon="fa-money"
+                                invisible="invoice_count == 0">
+                                <field name="invoice_count" widget="statinfo" string="Invoice"/>
+                            </button>
+                            <button type="object"
                                 name="action_view_sale_order"
                                 class="oe_stat_button"
                                 icon="fa-pencil-square-o"
