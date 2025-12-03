@@ -1,0 +1,103 @@
+.o_dashboard_card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  width: 100%;
+}
+
+.o_dashboard_item {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 14px 10px;
+  text-align: center;
+}
+
+.o_dashboard_title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+}
+
+.o_dashboard_value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #212529;
+}
+
+.o_dashboard_link {
+  text-decoration: none;
+  color: inherit !important;
+}
+
+.o_kanban_view {
+  max-width: 1400px;
+  margin: auto;
+}
+
+.o_service_dashboard_kanban .o_dashboard_card {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.o_service_dashboard_kanban .o_dashboard_header {
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.o_service_dashboard_kanban .o_dashboard_header h4 {
+  margin-bottom: 0;
+  color: #495057;
+}
+
+.o_service_dashboard_kanban .o_dashboard_link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.o_service_dashboard_kanban .o_dashboard_item {
+  background-color: #f8f9fa;
+  border-radius: 0.3rem;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  transition: background-color 0.2s ease-in-out;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.o_service_dashboard_kanban .o_dashboard_item:hover {
+  background-color: #e2e6ea;
+}
+
+.o_service_dashboard_kanban .o_dashboard_title {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-bottom: 0.25rem;
+}
+
+.o_service_dashboard_kanban .o_dashboard_value {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #343a40;
+}
+
+.o_service_dashboard_kanban .btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+.o_service_dashboard_kanban .btn-info {
+  background-color: #17a2b8;
+  border-color: #17a2b8;
+}
+.o_service_dashboard_kanban .btn {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+}

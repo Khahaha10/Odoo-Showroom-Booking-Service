@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="service_showroom_dashboard_view_kanban" model="ir.ui.view">
+            <field name="name">service.showroom.dashboard.kanban</field>
+            <field name="model">service.showroom.dashboard</field>
+            <field name="arch" type="xml">
+                <kanban class="o_service_dashboard_kanban" records_draggable="0" create="0" group_create="false" can_open="0">
+                    <field name="today_service_bookings_count"/>
+                    <field name="today_service_bookings_booking_count"/>
+                    <field name="today_service_bookings_assigned_count"/>
+                    <field name="today_service_bookings_in_progress_count"/>
+                    <field name="today_service_bookings_completed_count"/>
+                    <field name="today_service_bookings_cancelled_count"/>
+                    <field name="today_showroom_visits_count"/>
+
+                    <templates>
+                        <t t-name="menu">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-12 text-end">
+                                        <a class="dropdown-item" role="menuitem" type="action" name="infinys_vehicle_config_settings_action">Configuration</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                        <t t-name="kanban-box">
+                            <div class="col-12 mb-4">
+                                <div class="o_dashboard_card p-4 w-100">
+                                    <div class="o_dashboard_header pb-3">
+                                        <h4 class="fw-bold">Service Overview</h4>
+                                    </div>
+                                    <div class="text-center pb-3">
+                                        <button type="object" name="get_today_service_bookings_action"
+                                                class="btn btn-primary w-75 fs-5 py-2">
+                                            <span t-esc="record.today_service_bookings_count.raw_value"/> Total Bookings Today
+                                        </button>
+                                    </div>
+
+                                    <div class="container-fluid">
+                                        <div class="row g-3">
+
+                                            <div class="col-6">
+                                                <a type="object" name="get_service_bookings_booking_action" class="o_dashboard_link">
+                                                    <div class="o_dashboard_item">
+                                                        <div class="o_dashboard_title">Booked</div>
+                                                        <div class="o_dashboard_value">
+                                                            <field name="today_service_bookings_booking_count"/>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+
+                                            <div class="col-6">
+                                                <a type="object" name="get_service_bookings_assigned_action" class="o_dashboard_link">
+                                                    <div class="o_dashboard_item">
+                                                        <div class="o_dashboard_title">Assigned</div>
+                                                        <div class="o_dashboard_value">
+                                                            <field name="today_service_bookings_assigned_count"/>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+
+                                            <div class="col-6">
+                                                <a type="object" name="get_service_bookings_in_progress_action" class="o_dashboard_link">
+                                                    <div class="o_dashboard_item">
+                                                        <div class="o_dashboard_title">In Progress</div>
+                                                        <div class="o_dashboard_value">
+                                                            <field name="today_service_bookings_in_progress_count"/>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+
+                                            <div class="col-6">
+                                                <a type="object" name="get_service_bookings_completed_action" class="o_dashboard_link">
+                                                    <div class="o_dashboard_item">
+                                                        <div class="o_dashboard_title">Completed</div>
+                                                        <div class="o_dashboard_value">
+                                                            <field name="today_service_bookings_completed_count"/>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+
+                                            <div class="col-6">
+                                                <a type="object" name="get_service_bookings_cancelled_action" class="o_dashboard_link">
+                                                    <div class="o_dashboard_item">
+                                                        <div class="o_dashboard_title">Cancelled</div>
+                                                        <div class="o_dashboard_value">
+                                                            <field name="today_service_bookings_cancelled_count"/>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-4">
+                                <div class="o_dashboard_card p-4 w-100">
+                                    <div class="o_dashboard_header pb-3">
+                                        <h4 class="fw-bold">Showroom Overview</h4>
+                                    </div>
+
+                                    <div class="text-center pb-3">
+                                        <button type="object" name="get_today_showroom_visits_action"
+                                                class="btn btn-info w-75 fs-5 py-2">
+                                            <span t-esc="record.today_showroom_visits_count.raw_value"/> Today's Visits
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                </templates>
+
+                </kanban>
+            </field>
+        </record>
+
+        <record id="action_service_showroom_dashboard" model="ir.actions.act_window">
+            <field name="name">Service &amp; Showroom Overview</field>
+            <field name="res_model">service.showroom.dashboard</field>
+            <field name="view_mode">kanban</field>
+            <field name="usage">menu</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No data for today's service bookings or showroom visits.
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

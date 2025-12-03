@@ -35,11 +35,13 @@
         "views/service_product_template_views.xml",
         "views/service_type_views.xml",
         "views/service_supervisor_user_views.xml",
+        "views/service_showroom_dashboard_views.xml",
         "views/service_vehicle_menu_views.xml",
     ],
     "assets": {
         "web.assets_frontend": [
             "infinys_service_showroom/static/src/css/car_showroom.css",
+            "infinys_service_showroom/static/src/css/service_dashboard.css",
         ],
     },
     "images": ["static/description/banner.png"],
