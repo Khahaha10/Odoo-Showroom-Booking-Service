@@ -1,6 +1,9 @@
-from odoo import fields, models, api, _
+import logging
+from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
+
+_logger = logging.getLogger(__name__)
 
 class ServiceBookingAssignTechnicianWizard(models.TransientModel):
     _name = 'service.booking.assign.technician.wizard'
@@ -53,9 +56,10 @@ class ServiceBookingCancelWizard(models.TransientModel):
         self.ensure_one()
         if not self.cancel_reason:
             raise UserError(_("Please provide a cancel reason."))
-
+            
         self.booking_id.write({
-            'cancel_reason': self.cancel_reason,
-            'state': 'cancelled',
-        })
-        return {'type': 'ir.actions.act_window_close'}
+                'cancel_reason': self.cancel_reason,
+                'state': 'cancelled',
+            })
+        for activity in self.booking_id.activity_ids:
+            activity.action_feedback()

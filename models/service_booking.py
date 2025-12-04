@@ -450,6 +450,8 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread):
                 'state': 'completed',
                 'completed_datetime': fields.Datetime.now(),
             })
+            for activity in rec.activity_ids:
+                activity.action_feedback()
 
     def action_cancel(self):
         for rec in self:
