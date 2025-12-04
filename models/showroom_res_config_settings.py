@@ -31,6 +31,34 @@ class ResConfigSettings(models.TransientModel):
         default="Halo, saya tertarik dengan mobil {car_name}. Bisakah saya mendapatkan informasi lebih lanjut?",
     )
 
+    # Service Booking Reminder Settings
+    enable_service_booking_reminders = fields.Boolean(
+        string="Enable Service Booking Reminders",
+        help="Globally enable or disable reminders for service bookings.",
+    )
+    reminder_interval_days_assigned = fields.Integer(
+        string="Reminder for Assigned (Days)",
+        default=1,
+        help="Number of days after 'Assigned' status without 'In Progress' to send a reminder.",
+    )
+    reminder_interval_days_in_progress = fields.Integer(
+        string="Reminder for In Progress (Days)",
+        default=1,
+        help="Number of days after 'In Progress' status without 'Completed' to send a reminder.",
+    )
+    reminder_new_booking_supervisor = fields.Boolean(
+        string="New Booking Reminder to Supervisor",
+        help="Send a reminder to the supervisor for new service bookings.",
+    )
+    reminder_assigned_technician_initial = fields.Boolean(
+        string="Initial Reminder to Technician (Assigned)",
+        help="Send an immediate reminder to the technician when a booking is assigned.",
+    )
+    reminder_in_progress_notification = fields.Boolean(
+        string="In Progress Status Change Notification",
+        help="Notify the other party (supervisor/technician) when a booking status changes to 'In Progress'.",
+    )
+
     def get_values(self):
         res = super(ResConfigSettings, self).get_values()
         ICPSudo = self.env["ir.config_parameter"].sudo()
@@ -53,6 +81,24 @@ class ResConfigSettings(models.TransientModel):
             whatsapp_prefill_message=ICPSudo.get_param(
                 "infinys_service_showroom.whatsapp_prefill_message", default="Halo, saya tertarik dengan mobil {car_name}. Bisakah saya mendapatkan informasi lebih lanjut?"
             ),
+            enable_service_booking_reminders=ICPSudo.get_param(
+                "infinys_service_showroom.enable_service_booking_reminders", default="False"
+            ).lower() == "true",
+            reminder_interval_days_assigned=int(ICPSudo.get_param(
+                "infinys_service_showroom.reminder_interval_days_assigned", default="1"
+            )),
+            reminder_interval_days_in_progress=int(ICPSudo.get_param(
+                "infinys_service_showroom.reminder_interval_days_in_progress", default="1"
+            )),
+            reminder_new_booking_supervisor=ICPSudo.get_param(
+                "infinys_service_showroom.reminder_new_booking_supervisor", default="False"
+            ).lower() == "true",
+            reminder_assigned_technician_initial=ICPSudo.get_param(
+                "infinys_service_showroom.reminder_assigned_technician_initial", default="False"
+            ).lower() == "true",
+            reminder_in_progress_notification=ICPSudo.get_param(
+                "infinys_service_showroom.reminder_in_progress_notification", default="False"
+            ).lower() == "true",
         )
         return res
 
@@ -72,6 +118,30 @@ class ResConfigSettings(models.TransientModel):
         )
         ICPSudo.set_param(
             "infinys_service_showroom.whatsapp_prefill_message", self.whatsapp_prefill_message
+        )
+        ICPSudo.set_param(
+            "infinys_service_showroom.enable_service_booking_reminders",
+            str(self.enable_service_booking_reminders)
+        )
+        ICPSudo.set_param(
+            "infinys_service_showroom.reminder_interval_days_assigned",
+            str(self.reminder_interval_days_assigned)
+        )
+        ICPSudo.set_param(
+            "infinys_service_showroom.reminder_interval_days_in_progress",
+            str(self.reminder_interval_days_in_progress)
+        )
+        ICPSudo.set_param(
+            "infinys_service_showroom.reminder_new_booking_supervisor",
+            str(self.reminder_new_booking_supervisor)
+        )
+        ICPSudo.set_param(
+            "infinys_service_showroom.reminder_assigned_technician_initial",
+            str(self.reminder_assigned_technician_initial)
+        )
+        ICPSudo.set_param(
+            "infinys_service_showroom.reminder_in_progress_notification",
+            str(self.reminder_in_progress_notification)
         )
         group_showroom = self.env.ref("infinys_service_showroom.group_infinys_showroom")
         group_booking_service = self.env.ref(

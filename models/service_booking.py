@@ -1,14 +1,17 @@
 import logging
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
-from datetime import date
+from datetime import date, timedelta
+from odoo.addons.mail.models.mail_activity_mixin import MailActivityMixin
+from odoo.addons.mail.models.mail_thread import MailThread
+
 
 _logger = logging.getLogger(__name__)
 
 
-class ServiceBooking(models.Model):
+class ServiceBooking(models.Model, MailActivityMixin, MailThread):
     _name = "service.booking"
-    _description = "Service Booking Header"
+    _description = "Service Booking"
     _rec_name = "name"
     ordering = "plan_service_date desc"
 
@@ -88,6 +91,28 @@ class ServiceBooking(models.Model):
     in_progress_datetime = fields.Datetime(string="In Progress Time", readonly=True)
     completed_datetime = fields.Datetime(string="Completed Time", readonly=True)
     cancel_reason = fields.Text(string="Cancel Reason")
+
+    last_reminder_date_assigned = fields.Date(
+        string="Last Reminder Date (Assigned)",
+        help="Date when the last reminder was sent for 'Assigned' state."
+    )
+    last_reminder_date_in_progress = fields.Date(
+        string="Last Reminder Date (In Progress)",
+        help="Date when the last reminder was sent for 'In Progress' state."
+    )
+
+    def _send_activity_notification(self, user_ids, summary, note):
+        if not user_ids:
+            return
+        for record in self:
+            for user_id in user_ids:
+                record.activity_schedule(
+                    'mail.mail_activity_data_todo',
+                    note=note,
+                    summary=summary,
+                    user_id=user_id.id,
+                    date_deadline=fields.Date.today(),
+                )
 
     media_document = fields.Many2many("ir.attachment", "service_booking_media_rel", "booking_id", "attachment_id", string="Attachments")
     internal_media_document = fields.Many2many("ir.attachment", "service_booking_internal_media_rel", "booking_id", "attachment_id", string="Internal Documents")
@@ -242,6 +267,23 @@ class ServiceBooking(models.Model):
                     }
                 )
         res._populate_inspection_checklist()
+
+        ICPSudo = self.env["ir.config_parameter"].sudo()
+        enable_service_booking_reminders = ICPSudo.get_param(
+            "infinys_service_showroom.enable_service_booking_reminders", "False"
+        ).lower() == "true"
+        reminder_new_booking_supervisor = ICPSudo.get_param(
+            "infinys_service_showroom.reminder_new_booking_supervisor", "False"
+        ).lower() == "true"
+
+        if enable_service_booking_reminders and reminder_new_booking_supervisor:
+            supervisor_users = self.env['res.users'].search([('id', '=', res.supervisor_user_id.user_id.id)])
+            if supervisor_users:
+                res._send_activity_notification(
+                    supervisor_users,
+                    _("New Service Booking: %s needs assignment") % res.name,
+                    _("Please assign technician for Service Booking %s.") % res.name
+                )
         return res
 
     def _populate_inspection_checklist(self):
@@ -256,11 +298,54 @@ class ServiceBooking(models.Model):
                     })
 
     def write(self, vals):
+        old_state = self.state
+        old_assigned_technician_id = self.assigned_technician_id
+        old_in_progress_datetime = self.in_progress_datetime
+
         if "plat_number" in vals and vals["plat_number"]:
             vals["plat_number"] = vals["plat_number"].upper()
+        
         res = super().write(vals)
         self._populate_inspection_checklist()
+
+        ICPSudo = self.env["ir.config_parameter"].sudo()
+        enable_service_booking_reminders = ICPSudo.get_param(
+            "infinys_service_showroom.enable_service_booking_reminders", "False"
+        ).lower() == "true"
+        reminder_assigned_technician_initial = ICPSudo.get_param(
+            "infinys_service_showroom.reminder_assigned_technician_initial", "False"
+        ).lower() == "true"
+        reminder_in_progress_notification = ICPSudo.get_param(
+            "infinys_service_showroom.reminder_in_progress_notification", "False"
+        ).lower() == "true"
+
+        for record in self:
+            if enable_service_booking_reminders and record.state == 'assigned' and old_state != 'assigned':
+                if reminder_assigned_technician_initial and record.assigned_technician_id:
+                    record._send_activity_notification(
+                        record.assigned_technician_id.user_ids, # Assuming assigned_technician_id is a res.users
+                        _("Service Booking %s Assigned") % record.name,
+                        _("You have been assigned to service booking %s. Please start working on it.") % record.name
+                    )
+            
+            if enable_service_booking_reminders and record.state == 'in_progress' and old_state != 'in_progress':
+                if reminder_in_progress_notification:
+                    if self.env.user == record.assigned_technician_id:
+                        if record.supervisor_user_id and record.supervisor_user_id.user_id:
+                            record._send_activity_notification(
+                                record.supervisor_user_id.user_id,
+                                _("Service Booking %s is In Progress") % record.name,
+                                _("Technician %s has started working on Service Booking %s.") % (self.env.user.name, record.name)
+                            )
+                    else:
+                        if record.assigned_technician_id:
+                            record._send_activity_notification(
+                                record.assigned_technician_id.user_ids,
+                                _("Service Booking %s is In Progress") % record.name,
+                                _("Service Booking %s has been marked as in progress.") % record.name
+                            )
         return res
+
 
     def action_assign(self):
         self.ensure_one()
@@ -394,3 +479,90 @@ class ServiceBooking(models.Model):
                 case "cancelled":
                     idx = 5
             record.state_idx = idx
+
+    @api.model
+    def _check_and_send_daily_reminders(self):
+        ICPSudo = self.env["ir.config_parameter"].sudo()
+        enable_service_booking_reminders = ICPSudo.get_param(
+            "infinys_service_showroom.enable_service_booking_reminders", "False"
+        ).lower() == "true"
+
+        if not enable_service_booking_reminders:
+            _logger.info("Service Booking Reminders are disabled.")
+            return
+
+        reminder_interval_days_assigned = int(ICPSudo.get_param(
+            "infinys_service_showroom.reminder_interval_days_assigned", default="1"
+        ))
+        reminder_interval_days_in_progress = int(ICPSudo.get_param(
+            "infinys_service_showroom.reminder_interval_days_in_progress", default="1"
+        ))
+        
+        today = fields.Date.today()
+
+        bookings_to_assign = self.search([
+            ('state', '=', 'booking'),
+            ('assigned_technician_id', '=', False),
+        ])
+        for booking in bookings_to_assign:
+            if booking.supervisor_user_id and booking.supervisor_user_id.user_id:
+                last_activity = self.env['mail.activity'].search([
+                    ('res_id', '=', booking.id),
+                    ('res_model_id', '=', self.env.ref('infinys_service_showroom.model_service_booking').id),
+                    ('user_id', '=', booking.supervisor_user_id.user_id.id),
+                    ('summary', 'ilike', 'New Service Booking%needs assignment'),
+                    ('date_deadline', '=', today),
+                ], limit=1)
+                if not last_activity:
+                    booking._send_activity_notification(
+                        booking.supervisor_user_id.user_id,
+                        _("REMINDER: Service Booking %s needs assignment") % booking.name,
+                        _("Service Booking %s is still awaiting technician assignment. Please assign a technician.") % booking.name
+                    )
+
+        overdue_assigned_bookings = self.search([
+            ('state', '=', 'assigned'),
+            ('assigned_datetime', '!=', False),
+            ('in_progress_datetime', '=', False),
+            ('assigned_datetime', '<=', today - timedelta(days=reminder_interval_days_assigned)),
+        ])
+        for booking in overdue_assigned_bookings:
+            if booking.last_reminder_date_assigned != today:
+                if booking.assigned_technician_id:
+                    booking._send_activity_notification(
+                        booking.assigned_technician_id,
+                        _("REMINDER: Service Booking %s Overdue to Start") % booking.name,
+                        _("Service Booking %s was assigned on %s and has not been started yet.") % (booking.name, booking.assigned_datetime.strftime('%Y-%m-%d'))
+                    )
+                if booking.supervisor_user_id and booking.supervisor_user_id.user_id:
+                    booking._send_activity_notification(
+                        booking.supervisor_user_id.user_id,
+                        _("REMINDER: Service Booking %s Overdue to Start (Supervisor)") % booking.name,
+                        _("Service Booking %s assigned to %s on %s is overdue to start.") % (booking.name, booking.assigned_technician_id.name, booking.assigned_datetime.strftime('%Y-%m-%d'))
+                    )
+                booking.last_reminder_date_assigned = today
+
+
+        overdue_in_progress_bookings = self.search([
+            ('state', '=', 'in_progress'),
+            ('in_progress_datetime', '!=', False),
+            ('completed_datetime', '=', False),
+            ('in_progress_datetime', '<=', today - timedelta(days=reminder_interval_days_in_progress)),
+        ])
+        for booking in overdue_in_progress_bookings:
+            if booking.last_reminder_date_in_progress != today:
+                if booking.assigned_technician_id:
+                    booking._send_activity_notification(
+                        booking.assigned_technician_id,
+                        _("REMINDER: Service Booking %s Overdue to Complete") % booking.name,
+                        _("Service Booking %s has been in progress since %s and is overdue to be completed.") % (booking.name, booking.in_progress_datetime.strftime('%Y-%m-%d'))
+                    )
+                if booking.supervisor_user_id and booking.supervisor_user_id.user_id:
+                    booking._send_activity_notification(
+                        booking.supervisor_user_id.user_id,
+                        _("REMINDER: Service Booking %s Overdue to Complete (Supervisor)") % booking.name,
+                        _("Service Booking %s handled by %s has been in progress since %s and is overdue to be completed.") % (booking.name, booking.assigned_technician_id.name, booking.in_progress_datetime.strftime('%Y-%m-%d'))
+                    )
+                booking.last_reminder_date_in_progress = today
+
+        return True
