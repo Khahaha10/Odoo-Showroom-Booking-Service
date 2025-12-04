@@ -19,19 +19,27 @@ class ServiceBookingAssignTechnicianWizard(models.TransientModel):
         'res.users',
         string='Technician',
         required=True,
-        domain=[('share', '=', False)], # Only internal users
+        domain=[('share', '=', False)],
         help="Select the technician for this service booking."
     )
 
     def assign_technician_action(self):
         self.ensure_one()
+
         if not self.technician_id:
             raise UserError(_("Please select a technician."))
+
+        current_user = self.env.user
+        is_supervisor = self.env['service.supervisor.user'].search([('user_id', '=', current_user.id)], limit=1)
+        
+        if not is_supervisor:
+            raise UserError(_("You do not have permission to assign technicians. Only supervisors can perform this action."))
 
         self.booking_id.write({
             'assigned_technician_id': self.technician_id.id,
             'assigned_datetime': fields.Datetime.now(),
             'state': 'assigned',
+            'supervisor_user_id': is_supervisor.id,
         })
         return {'type': 'ir.actions.act_window_close'}
 
