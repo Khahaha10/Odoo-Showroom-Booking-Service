@@ -30,8 +30,7 @@ class ResConfigSettings(models.TransientModel):
         help="Default message to prefill when opening WhatsApp chat from car details. Use {car_name} placeholder.",
         default="Halo, saya tertarik dengan mobil {car_name}. Bisakah saya mendapatkan informasi lebih lanjut?",
     )
-
-    # Service Booking Reminder Settings
+    
     enable_service_booking_reminders = fields.Boolean(
         string="Enable Service Booking Reminders",
         help="Globally enable or disable reminders for service bookings.",
@@ -57,6 +56,33 @@ class ResConfigSettings(models.TransientModel):
     reminder_in_progress_notification = fields.Boolean(
         string="In Progress Status Change Notification",
         help="Notify the other party (supervisor/technician) when a booking status changes to 'In Progress'.",
+    )
+
+    enable_service_booking_email_reminders = fields.Boolean(
+        string="Enable Email Reminders for Service Bookings",
+        help="Globally enable or disable email reminders for service bookings."
+    )
+    reminder_new_booking_supervisor_email = fields.Boolean(
+        string="New Booking Email to Supervisor",
+        help="Send an email to the supervisor for new service bookings."
+    )
+    reminder_assigned_technician_initial_email = fields.Boolean(
+        string="Initial Email to Technician (Assigned)",
+        help="Send an immediate email to the technician when a booking is assigned."
+    )
+    reminder_in_progress_notification_email = fields.Boolean(
+        string="In Progress Status Change Email",
+        help="Send an email notification to the other party (supervisor/technician) when a booking status changes to 'In Progress'."
+    )
+    reminder_interval_days_assigned_email = fields.Integer(
+        string="Email Reminder for Assigned (Days)",
+        default=1,
+        help="Number of days after 'Assigned' status without 'In Progress' to send an email reminder."
+    )
+    reminder_interval_days_in_progress_email = fields.Integer(
+        string="Email Reminder for In Progress (Days)",
+        default=1,
+        help="Number of days after 'In Progress' status without 'Completed' to send an email reminder."
     )
 
     def get_values(self):
@@ -99,6 +125,24 @@ class ResConfigSettings(models.TransientModel):
             reminder_in_progress_notification=ICPSudo.get_param(
                 "infinys_service_showroom.reminder_in_progress_notification", default="False"
             ).lower() == "true",
+            enable_service_booking_email_reminders=ICPSudo.get_param(
+                "infinys_service_showroom.enable_service_booking_email_reminders", default="False"
+            ).lower() == "true",
+            reminder_new_booking_supervisor_email=ICPSudo.get_param(
+                "infinys_service_showroom.reminder_new_booking_supervisor_email", default="False"
+            ).lower() == "true",
+            reminder_assigned_technician_initial_email=ICPSudo.get_param(
+                "infinys_service_showroom.reminder_assigned_technician_initial_email", default="False"
+            ).lower() == "true",
+            reminder_in_progress_notification_email=ICPSudo.get_param(
+                "infinys_service_showroom.reminder_in_progress_notification_email", default="False"
+            ).lower() == "true",
+            reminder_interval_days_assigned_email=int(ICPSudo.get_param(
+                "infinys_service_showroom.reminder_interval_days_assigned_email", default="1"
+            )),
+            reminder_interval_days_in_progress_email=int(ICPSudo.get_param(
+                "infinys_service_showroom.reminder_interval_days_in_progress_email", default="1"
+            )),
         )
         return res
 
@@ -142,6 +186,30 @@ class ResConfigSettings(models.TransientModel):
         ICPSudo.set_param(
             "infinys_service_showroom.reminder_in_progress_notification",
             str(self.reminder_in_progress_notification)
+        )
+        ICPSudo.set_param(
+            "infinys_service_showroom.enable_service_booking_email_reminders",
+            str(self.enable_service_booking_email_reminders)
+        )
+        ICPSudo.set_param(
+            "infinys_service_showroom.reminder_new_booking_supervisor_email",
+            str(self.reminder_new_booking_supervisor_email)
+        )
+        ICPSudo.set_param(
+            "infinys_service_showroom.reminder_assigned_technician_initial_email",
+            str(self.reminder_assigned_technician_initial_email)
+        )
+        ICPSudo.set_param(
+            "infinys_service_showroom.reminder_in_progress_notification_email",
+            str(self.reminder_in_progress_notification_email)
+        )
+        ICPSudo.set_param(
+            "infinys_service_showroom.reminder_interval_days_assigned_email",
+            str(self.reminder_interval_days_assigned_email)
+        )
+        ICPSudo.set_param(
+            "infinys_service_showroom.reminder_interval_days_in_progress_email",
+            str(self.reminder_interval_days_in_progress_email)
         )
         group_showroom = self.env.ref("infinys_service_showroom.group_infinys_showroom")
         group_booking_service = self.env.ref(

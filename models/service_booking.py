@@ -114,6 +114,159 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread):
                     date_deadline=fields.Date.today(),
                 )
 
+    def _send_reminder_email(self, template_xml_id, recipient_user):
+        if not recipient_user or not recipient_user.partner_id.email:
+            _logger.warning(f"No recipient or email address found for email reminder using template {template_xml_id}.")
+            return
+
+        template = None
+        if template_xml_id not in [
+            'email_template_assigned_technician_overdue_reminder',
+            'email_template_new_booking_supervisor_reminder',
+            'email_template_assigned_supervisor_overdue_reminder',
+            'email_template_in_progress_technician_overdue_reminder',
+            'email_template_in_progress_supervisor_overdue_reminder'
+        ]:
+            template = self.env.ref(f'infinys_service_showroom.{template_xml_id}', raise_if_not_found=False)
+            if not template:
+                _logger.error(f"Email template {template_xml_id} not found and no hardcoded content available.")
+                return
+
+        for record in self:
+            body = ""
+            subject = ""
+            email_from = f"<{self.env.company.email or self.env.user.email}>"
+
+            if template_xml_id == 'email_template_assigned_technician_overdue_reminder':
+                subject = f"REMINDER: Service Booking {record.name} Overdue to Start"
+                body = f"""
+                    <div style="margin: 0px; padding: 0px;">
+                        <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                            Hello {recipient_user.name},
+                            <br/><br/>
+                            This is a reminder that Service Booking <strong>{record.name}</strong> was assigned to you on <strong>{record.assigned_datetime.strftime('%Y-%m-%d')}</strong> and has not been started yet.
+                            <br/><br/>
+                            <strong>Customer:</strong> {record.customer_name.name} <br/>
+                            <strong>Vehicle:</strong> {record.vehicle_brand.name} {record.vehicle_model.name} ({record.plat_number}) <br/>
+                            <strong>Booking Date:</strong> {record.plan_service_date} <br/>
+                            <strong>Complaint:</strong> {record.complaint_issue or 'N/A'}
+                            <br/><br/>
+                            Please start working on this service booking.
+                            <br/><br/>
+                            <a href="/web#model=service.booking&amp;id={record.id}&amp;view_type=form" style="background-color: #007bff; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View Service Booking</a>
+                            <br/><br/>
+                            Thank you,<br/>
+                            The Service Team
+                        </p>
+                    </div>
+                """
+            elif template_xml_id == 'email_template_new_booking_supervisor_reminder':
+                subject = f"New Service Booking: {record.name} needs assignment"
+                body = f"""
+                    <div style="margin: 0px; padding: 0px;">
+                        <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                            Hello {recipient_user.name},
+                            <br/><br/>
+                            A new service booking, <strong>{record.name}</strong>, has been created and requires your attention for technician assignment.
+                            <br/><br/>
+                            <strong>Customer:</strong> {record.customer_name.name} <br/>
+                            <strong>Vehicle:</strong> {record.vehicle_brand.name} {record.vehicle_model.name} ({record.plat_number}) <br/>
+                            <strong>Booking Date:</strong> {record.plan_service_date} <br/>
+                            <strong>Complaint:</strong> {record.complaint_issue or 'N/A'}
+                            <br/><br/>
+                            Please assign a technician to this booking as soon as possible.
+                            <br/><br/>
+                            <a href="/web#model=service.booking&amp;id={record.id}&amp;view_type=form" style="background-color: #007bff; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View Service Booking</a>
+                            <br/><br/>
+                            Thank you,<br/>
+                            The Service Team
+                        </p>
+                    </div>
+                """
+            elif template_xml_id == 'email_template_assigned_supervisor_overdue_reminder':
+                subject = f"REMINDER: Service Booking {record.name} Overdue to Start (Supervisor)"
+                body = f"""
+                    <div style="margin: 0px; padding: 0px;">
+                        <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                            Hello {recipient_user.name},
+                            <br/><br/>
+                            This is a reminder that Service Booking <strong>{record.name}</strong>, assigned to <strong>{record.assigned_technician_id.name}</strong> on <strong>{record.assigned_datetime.strftime('%Y-%m-%d')}</strong>, is overdue to start.
+                            <br/><br/>
+                            <strong>Customer:</strong> {record.customer_name.name} <br/>
+                            <strong>Vehicle:</strong> {record.vehicle_brand.name} {record.vehicle_model.name} ({record.plat_number}) <br/>
+                            <strong>Booking Date:</strong> {record.plan_service_date} <br/>
+                            <strong>Complaint:</strong> {record.complaint_issue or 'N/A'}
+                            <br/><br/>
+                            Please follow up with the assigned technician.
+                            <br/><br/>
+                            <a href="/web#model=service.booking&amp;id={record.id}&amp;view_type=form" style="background-color: #007bff; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View Service Booking</a>
+                            <br/><br/>
+                            Thank you,<br/>
+                            The Service Team
+                        </p>
+                    </div>
+                """
+            elif template_xml_id == 'email_template_in_progress_technician_overdue_reminder':
+                subject = f"REMINDER: Service Booking {record.name} Overdue to Complete"
+                body = f"""
+                    <div style="margin: 0px; padding: 0px;">
+                        <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                            Hello {recipient_user.name},
+                            <br/><br/>
+                            This is a reminder that Service Booking <strong>{record.name}</strong> has been in progress since <strong>{record.in_progress_datetime.strftime('%Y-%m-%d')}</strong> and is overdue to be completed.
+                            <br/><br/>
+                            <strong>Customer:</strong> {record.customer_name.name} <br/>
+                            <strong>Vehicle:</strong> {record.vehicle_brand.name} {record.vehicle_model.name} ({record.plat_number}) <br/>
+                            <strong>Booking Date:</strong> {record.plan_service_date} <br/>
+                            <strong>Complaint:</strong> {record.complaint_issue or 'N/A'}
+                            <br/><br/>
+                            Please complete this service booking.
+                            <br/><br/>
+                            <a href="/web#model=service.booking&amp;id={record.id}&amp;view_type=form" style="background-color: #007bff; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View Service Booking</a>
+                            <br/><br/>
+                            Thank you,<br/>
+                            The Service Team
+                        </p>
+                    </div>
+                """
+            elif template_xml_id == 'email_template_in_progress_supervisor_overdue_reminder':
+                subject = f"REMINDER: Service Booking {record.name} Overdue to Complete (Supervisor)"
+                body = f"""
+                    <div style="margin: 0px; padding: 0px;">
+                        <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                            Hello {recipient_user.name},
+                            <br/><br/>
+                            This is a reminder that Service Booking <strong>{record.name}</strong>, handled by <strong>{record.assigned_technician_id.name}</strong>, has been in progress since <strong>{record.in_progress_datetime.strftime('%Y-%m-%d')}</strong> and is overdue to be completed.
+                            <br/><br/>
+                            <strong>Customer:</strong> {record.customer_name.name} <br/>
+                            <strong>Vehicle:</strong> {record.vehicle_brand.name} {record.vehicle_model.name} ({record.plat_number}) <br/>
+                            <strong>Booking Date:</strong> {record.plan_service_date} <br/>
+                            <strong>Complaint:</strong> {record.complaint_issue or 'N/A'}
+                            <br/><br/>
+                            Please follow up with the assigned technician.
+                            <br/><br/>
+                            <a href="/web#model=service.booking&amp;id={record.id}&amp;view_type=form" style="background-color: #007bff; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View Service Booking</a>
+                            <br/><br/>
+                            Thank you,<br/>
+                            The Service Team
+                        </p>
+                    </div>
+                """
+            
+            mail_values = {
+                'email_from': email_from,
+                'author_id': self.env.user.partner_id.id,
+                'email_to': recipient_user.partner_id.email,
+                'subject': subject,
+                'body_html': body,
+                'auto_delete': True,
+                'state': 'outgoing',
+                'res_id': record.id,
+                'model': 'service.booking',
+            }
+            self.env['mail.mail'].sudo().create(mail_values).send()
+            _logger.info(f"Sent email reminder for booking {record.name} to {recipient_user.partner_id.email} using template {template_xml_id}.")
+
     media_document = fields.Many2many("ir.attachment", "service_booking_media_rel", "booking_id", "attachment_id", string="Attachments")
     internal_media_document = fields.Many2many("ir.attachment", "service_booking_internal_media_rel", "booking_id", "attachment_id", string="Internal Documents")
 
@@ -275,6 +428,12 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread):
         reminder_new_booking_supervisor = ICPSudo.get_param(
             "infinys_service_showroom.reminder_new_booking_supervisor", "False"
         ).lower() == "true"
+        enable_service_booking_email_reminders = ICPSudo.get_param(
+            "infinys_service_showroom.enable_service_booking_email_reminders", "False"
+        ).lower() == "true"
+        reminder_new_booking_supervisor_email = ICPSudo.get_param(
+            "infinys_service_showroom.reminder_new_booking_supervisor_email", "False"
+        ).lower() == "true"
 
         if enable_service_booking_reminders and reminder_new_booking_supervisor:
             supervisor_users = self.env['res.users'].search([('id', '=', res.supervisor_user_id.user_id.id)])
@@ -283,6 +442,12 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread):
                     supervisor_users,
                     _("New Service Booking: %s needs assignment") % res.name,
                     _("Please assign technician for Service Booking %s.") % res.name
+                )
+        if enable_service_booking_email_reminders and reminder_new_booking_supervisor_email:
+            if res.supervisor_user_id and res.supervisor_user_id.user_id:
+                res._send_reminder_email(
+                    'email_template_new_booking_supervisor_reminder',
+                    res.supervisor_user_id.user_id
                 )
         return res
 
@@ -318,15 +483,30 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread):
         reminder_in_progress_notification = ICPSudo.get_param(
             "infinys_service_showroom.reminder_in_progress_notification", "False"
         ).lower() == "true"
+        enable_service_booking_email_reminders = ICPSudo.get_param(
+            "infinys_service_showroom.enable_service_booking_email_reminders", "False"
+        ).lower() == "true"
+        reminder_assigned_technician_initial_email = ICPSudo.get_param(
+            "infinys_service_showroom.reminder_assigned_technician_initial_email", "False"
+        ).lower() == "true"
+        reminder_in_progress_notification_email = ICPSudo.get_param(
+            "infinys_service_showroom.reminder_in_progress_notification_email", "False"
+        ).lower() == "true"
 
         for record in self:
             if enable_service_booking_reminders and record.state == 'assigned' and old_state != 'assigned':
                 if reminder_assigned_technician_initial and record.assigned_technician_id:
                     record._send_activity_notification(
-                        record.assigned_technician_id.user_ids, # Assuming assigned_technician_id is a res.users
+                        record.assigned_technician_id.user_ids,
                         _("Service Booking %s Assigned") % record.name,
                         _("You have been assigned to service booking %s. Please start working on it.") % record.name
                     )
+                if enable_service_booking_email_reminders and reminder_assigned_technician_initial_email:
+                    if record.assigned_technician_id:
+                        record._send_reminder_email(
+                            'email_template_assigned_technician_overdue_reminder',
+                            record.assigned_technician_id
+                        )
             
             if enable_service_booking_reminders and record.state == 'in_progress' and old_state != 'in_progress':
                 if reminder_in_progress_notification:
@@ -343,6 +523,19 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread):
                                 record.assigned_technician_id.user_ids,
                                 _("Service Booking %s is In Progress") % record.name,
                                 _("Service Booking %s has been marked as in progress.") % record.name
+                            )
+                if enable_service_booking_email_reminders and reminder_in_progress_notification_email:
+                    if self.env.user == record.assigned_technician_id:
+                        if record.supervisor_user_id and record.supervisor_user_id.user_id:
+                            record._send_reminder_email(
+                                'email_template_in_progress_supervisor_overdue_reminder',
+                                record.supervisor_user_id.user_id
+                            )
+                    else:
+                        if record.assigned_technician_id:
+                            record._send_reminder_email(
+                                'email_template_in_progress_technician_overdue_reminder',
+                                record.assigned_technician_id
                             )
         return res
 
@@ -499,6 +692,16 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread):
         reminder_interval_days_in_progress = int(ICPSudo.get_param(
             "infinys_service_showroom.reminder_interval_days_in_progress", default="1"
         ))
+        reminder_interval_days_assigned_email = int(ICPSudo.get_param(
+            "infinys_service_showroom.reminder_interval_days_assigned_email", default="1"
+        ))
+        reminder_interval_days_in_progress_email = int(ICPSudo.get_param(
+            "infinys_service_showroom.reminder_interval_days_in_progress_email", default="1"
+        ))
+        
+        enable_service_booking_email_reminders = ICPSudo.get_param(
+            "infinys_service_showroom.enable_service_booking_email_reminders", "False"
+        ).lower() == "true"
         
         today = fields.Date.today()
 
@@ -526,22 +729,46 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread):
             ('state', '=', 'assigned'),
             ('assigned_datetime', '!=', False),
             ('in_progress_datetime', '=', False),
-            ('assigned_datetime', '<=', today - timedelta(days=reminder_interval_days_assigned)),
         ])
         for booking in overdue_assigned_bookings:
-            if booking.last_reminder_date_assigned != today:
+            activity_reminder_sent = False
+            email_reminder_sent = False
+
+            if enable_service_booking_reminders and \
+               booking.assigned_datetime.date() <= today - timedelta(days=reminder_interval_days_assigned) and \
+               booking.last_reminder_date_assigned != today:
                 if booking.assigned_technician_id:
                     booking._send_activity_notification(
                         booking.assigned_technician_id,
                         _("REMINDER: Service Booking %s Overdue to Start") % booking.name,
                         _("Service Booking %s was assigned on %s and has not been started yet.") % (booking.name, booking.assigned_datetime.strftime('%Y-%m-%d'))
                     )
+                    activity_reminder_sent = True
                 if booking.supervisor_user_id and booking.supervisor_user_id.user_id:
                     booking._send_activity_notification(
                         booking.supervisor_user_id.user_id,
                         _("REMINDER: Service Booking %s Overdue to Start (Supervisor)") % booking.name,
                         _("Service Booking %s assigned to %s on %s is overdue to start.") % (booking.name, booking.assigned_technician_id.name, booking.assigned_datetime.strftime('%Y-%m-%d'))
                     )
+                    activity_reminder_sent = True
+            
+            if enable_service_booking_email_reminders and \
+               booking.assigned_datetime.date() <= today - timedelta(days=reminder_interval_days_assigned_email) and \
+               booking.last_reminder_date_assigned != today:
+                if booking.assigned_technician_id:
+                    booking._send_reminder_email(
+                        'email_template_assigned_technician_overdue_reminder',
+                        booking.assigned_technician_id
+                    )
+                    email_reminder_sent = True
+                if booking.supervisor_user_id and booking.supervisor_user_id.user_id:
+                    booking._send_reminder_email(
+                        'email_template_assigned_supervisor_overdue_reminder',
+                        booking.supervisor_user_id.user_id
+                    )
+                    email_reminder_sent = True
+
+            if activity_reminder_sent or email_reminder_sent:
                 booking.last_reminder_date_assigned = today
 
 
@@ -549,22 +776,46 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread):
             ('state', '=', 'in_progress'),
             ('in_progress_datetime', '!=', False),
             ('completed_datetime', '=', False),
-            ('in_progress_datetime', '<=', today - timedelta(days=reminder_interval_days_in_progress)),
         ])
         for booking in overdue_in_progress_bookings:
-            if booking.last_reminder_date_in_progress != today:
+            activity_reminder_sent = False
+            email_reminder_sent = False
+
+            if enable_service_booking_reminders and \
+               booking.in_progress_datetime.date() <= today - timedelta(days=reminder_interval_days_in_progress) and \
+               booking.last_reminder_date_in_progress != today:
                 if booking.assigned_technician_id:
                     booking._send_activity_notification(
                         booking.assigned_technician_id,
                         _("REMINDER: Service Booking %s Overdue to Complete") % booking.name,
                         _("Service Booking %s has been in progress since %s and is overdue to be completed.") % (booking.name, booking.in_progress_datetime.strftime('%Y-%m-%d'))
                     )
+                    activity_reminder_sent = True
                 if booking.supervisor_user_id and booking.supervisor_user_id.user_id:
                     booking._send_activity_notification(
                         booking.supervisor_user_id.user_id,
                         _("REMINDER: Service Booking %s Overdue to Complete (Supervisor)") % booking.name,
                         _("Service Booking %s handled by %s has been in progress since %s and is overdue to be completed.") % (booking.name, booking.assigned_technician_id.name, booking.in_progress_datetime.strftime('%Y-%m-%d'))
                     )
+                    activity_reminder_sent = True
+            
+            if enable_service_booking_email_reminders and \
+               booking.in_progress_datetime.date() <= today - timedelta(days=reminder_interval_days_in_progress_email) and \
+               booking.last_reminder_date_in_progress != today:
+                if booking.assigned_technician_id:
+                    booking._send_reminder_email(
+                        'email_template_in_progress_technician_overdue_reminder',
+                        booking.assigned_technician_id
+                    )
+                    email_reminder_sent = True
+                if booking.supervisor_user_id and booking.supervisor_user_id.user_id:
+                    booking._send_reminder_email(
+                        'email_template_in_progress_supervisor_overdue_reminder',
+                        booking.supervisor_user_id.user_id
+                    )
+                    email_reminder_sent = True
+
+            if activity_reminder_sent or email_reminder_sent:
                 booking.last_reminder_date_in_progress = today
 
         return True
