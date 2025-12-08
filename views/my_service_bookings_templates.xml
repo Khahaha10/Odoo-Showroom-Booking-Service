@@ -211,11 +211,10 @@
                         </div>
                     </div>
                 </div>
-            </t>
+            </div>
         </t>
     </template>
 
-    <!-- Breadcrumb Navigation for Service Bookings -->
     <template id="portal_my_service_bookings_breadcrumbs" inherit_id="portal.portal_breadcrumbs" priority="40">
         <xpath expr="//ol[@class='o_portal_submenu breadcrumb mb-0 flex-grow-1 px-0']" position="inside">
             <li t-if="page_name == 'service_booking' or page_name == 'service_booking_detail'" class="breadcrumb-item">
