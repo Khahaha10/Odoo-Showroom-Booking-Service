@@ -13,10 +13,11 @@
     "category": "Sales/Vehicle",
     "version": "1.1",
     "license": "AGPL-3",
-    "depends": ["base", "website", "crm", "account", "sale_management", "stock", "mail"],
+    "depends": ["base", "website", "crm", "account", "sale_management", "stock", "mail", "portal"],
     "data": [
         "security/infinys_vehicle_service_groups.xml",
         "security/ir.model.access.csv",
+        "security/service_booking_security.xml",
         "data/service_booking_reminders_cron.xml",
         "data/service_booking_sequence.xml",
         "views/service_customer_vehicle_views.xml",
@@ -37,6 +38,7 @@
         "views/service_type_views.xml",
         "views/service_supervisor_user_views.xml",
         "views/service_showroom_dashboard_views.xml",
+        "views/my_service_bookings_templates.xml",
         "views/service_vehicle_menu_views.xml",
     ],
     "assets": {

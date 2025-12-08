@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="portal_my_home_service_booking" name="Portal My Home Service Booking"
+        inherit_id="portal.portal_my_home" priority="40">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <div class="o_portal_category row g-2 mt-3" id="portal_service_booking_category">
+                <div t-if="service_booking_count" class="o_portal_index_card col-md-6 order-2">
+                    <a href="/my/service-bookings" title="My Service Bookings" class="d-flex gap-2 gap-md-3 py-3 pe-2 px-md-3 h-100 rounded text-decoration-none bg-100">
+                        <div class="o_portal_icon d-block align-self-start">
+                            <img src="/web/static/img/folder.svg" loading="lazy" alt="Service Booking Icon"/>
+                        </div>
+                        <div>
+                            <div class="mt-0 mb-1 fs-5 fw-normal lh-1 d-flex gap-2">
+                                <span class="d-none" data-placeholder_count="service_booking_count">0</span>
+                                <span>My Service Bookings</span>
+                            </div>
+                            <div class="opacity-75">
+                                View your past and current service bookings.
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="my_service_bookings_list_template" name="My Service Bookings List">
+        <t t-call="portal.portal_layout">
+            <h3 class="mb-4">My Service Bookings</h3>
+
+            <div t-if="not service_bookings" class="alert alert-info text-center mt-3">
+                You have no service bookings yet.
+            </div>
+            <div t-else="" class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Booking Number</th>
+                            <th>Booking Date</th>
+                            <th>Vehicle</th>
+                            <th>Plate Number</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="service_bookings" t-as="booking">
+                            <tr>
+                                <td><a t-att-href="booking.get_portal_url()"><t t-esc="booking.name"/></a></td>
+                                <td><t t-esc="booking.plan_service_date" t-options='{"widget": "date"}'/></td>
+                                <td><t t-esc="booking.vehicle_brand.name"/> <t t-esc="booking.vehicle_model.name"/></td>
+                                <td><t t-esc="booking.plat_number"/></td>
+                                <td>
+                                    <span t-attf-class="badge bg-#{booking.state == 'completed' and 'success' or booking.state == 'in_progress' and 'info' or booking.state == 'assigned' and 'warning' or booking.state == 'cancelled' and 'danger' or 'primary'}">
+                                        <t t-esc="booking.state"/>
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <a t-att-href="booking.get_portal_url()" class="btn btn-sm btn-outline-primary">View</a>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+
+            <div t-if="pager" class="o_portal_pager text-center">
+                <t t-call="portal.pager"/>
+            </div>
+        </t>
+    </template>
+
+    <template id="my_service_bookings_detail_template" name="Service Booking Details">
+        <t t-call="portal.portal_layout">
+            <h3 class="mb-4">Service Booking: <span t-field="booking.name"/></h3>
+
+            <div class="o_portal_return_buy">
+                <div t-if="back_url" class="mt-4">
+                    <a t-att-href="back_url" class="btn btn-primary">
+                        <i class="fa fa-chevron-left"/> Back to My Service Bookings
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Booking Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Booking Number:</strong> <span t-field="booking.name"/></p>
+                            <p><strong>Status:</strong> <span t-attf-class="badge bg-#{booking.state == 'completed' and 'success' or booking.state == 'in_progress' and 'info' or booking.state == 'assigned' and 'warning' or booking.state == 'cancelled' and 'danger' or 'primary'}">
+                                <span t-field="booking.state"/></span>
+                            </p>
+                            <p><strong>Planned Service Date:</strong> <span t-field="booking.plan_service_date" t-options='{"widget": "date"}'/></p>
+                            <p><strong>Service Type:</strong> <span t-field="booking.service_type.name"/></p>
+                            <p><strong>Complaints:</strong> <span t-field="booking.complaint_issue"/></p>
+                        </div>
+                    </div>
+
+                    <div t-if="booking.spare_part_line_ids or booking.service_line_ids" class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Summary of Charges</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th class="text-end">Quantity</th>
+                                        <th class="text-end">Unit Price</th>
+                                        <th class="text-end">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="booking.spare_part_line_ids" t-as="part_line">
+                                        <tr>
+                                            <td><span t-field="part_line.product_id.name"/> (Part)</td>
+                                            <td class="text-end"><span t-field="part_line.qty"/></td>
+                                            <td class="text-end"><span t-field="part_line.unit_price" t-options="{'widget': 'monetary', 'display_currency': booking.currency_id}"/></td>
+                                            <td class="text-end"><span t-field="part_line.subtotal" t-options="{'widget': 'monetary', 'display_currency': booking.currency_id}"/></td>
+                                        </tr>
+                                    </t>
+                                    <t t-foreach="booking.service_line_ids" t-as="service_line">
+                                        <tr>
+                                            <td><span t-field="service_line.product_id.name"/> (Service)</td>
+                                            <td class="text-end"><span t-field="service_line.qty"/></td>
+                                            <td class="text-end"><span t-field="service_line.unit_price" t-options="{'widget': 'monetary', 'display_currency': booking.currency_id}"/></td>
+                                            <td class="text-end"><span t-field="service_line.subtotal" t-options="{'widget': 'monetary', 'display_currency': booking.currency_id}"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="3" class="text-end"><strong>Total Spareparts:</strong></td>
+                                        <td class="text-end"><strong><span t-field="booking.total_sparepart" t-options="{'widget': 'monetary', 'display_currency': booking.currency_id}"/></strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" class="text-end"><strong>Total Service Fee:</strong></td>
+                                        <td class="text-end"><strong><span t-field="booking.total_service_fee" t-options="{'widget': 'monetary', 'display_currency': booking.currency_id}"/></strong></td>
+                                    </tr>
+                                    <tr class="table-primary">
+                                        <td colspan="3" class="text-end"><strong>Total Amount:</strong></td>
+                                        <td class="text-end"><strong><span t-field="booking.total_amount" t-options="{'widget': 'monetary', 'display_currency': booking.currency_id}"/></strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                            <div class="text-end mt-3">
+                                <a t-if="booking.invoice_id" t-att-href="booking.invoice_id.get_portal_url()" class="btn btn-success">View Invoice</a>
+                            </div>
+                        </div>
+
+                        <div t-if="booking.media_document" class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">Customer Uploaded Media</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <t t-foreach="booking.media_document" t-as="attachment">
+                                        <div class="col-md-3 mb-3">
+                                            <div class="card">
+                                                <a t-att-href="attachment.url" target="_blank" download="download">
+                                                    <img t-if="attachment.mimetype and attachment.mimetype.startswith('image')" t-att-src="attachment.url" class="card-img-top img-fluid" style="height: 150px; object-fit: cover;" alt="Attachment"/>
+                                                    <div t-else="" class="card-body text-center" style="height: 150px; display: flex; align-items: center; justify-content: center;">
+                                                        <i class="fa fa-file-o fa-2x"/>
+                                                    </div>
+                                                </a>
+                                                <div class="card-footer text-center">
+                                                    <small class="text-muted"><span t-field="attachment.name"/></small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">Vehicle Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Brand:</strong> <span t-field="booking.vehicle_brand.name"/></p>
+                                <p><strong>Model:</strong> <span t-field="booking.vehicle_model.name"/></p>
+                                <p><strong>Plate Number:</strong> <span t-field="booking.plat_number"/></p>
+                                <p><strong>Year:</strong> <span t-field="booking.vehicle_year_manufacture"/></p>
+                                <p><strong>Kilometers:</strong> <span t-field="booking.kilometers"/></p>
+                            </div>
+                        </div>
+
+                        <div class="card mb-4" t-if="booking.inspection_checklist_line_ids">
+                            <div class="card-header">
+                                <h5 class="mb-0">Inspection Checklist</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <t t-foreach="booking.inspection_checklist_line_ids" t-as="checklist_line">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span t-field="checklist_line.inspection_type_id.name"/>
+                                            <span t-attf-class="badge bg-#{checklist_line.checklist_ok and 'success' or 'danger'}">
+                                                <t t-if="checklist_line.checklist_ok">OK</t>
+                                                <t t-else="">N/A</t>
+                                            </span>
+                                        </li>
+                                    </t>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- Breadcrumb Navigation for Service Bookings -->
+    <template id="portal_my_service_bookings_breadcrumbs" inherit_id="portal.portal_breadcrumbs" priority="40">
+        <xpath expr="//ol[@class='o_portal_submenu breadcrumb mb-0 flex-grow-1 px-0']" position="inside">
+            <li t-if="page_name == 'service_booking' or page_name == 'service_booking_detail'" class="breadcrumb-item">
+                <a t-att-href="default_url">My Service Bookings</a>
+            </li>
+            <li t-if="page_name == 'service_booking_detail'" class="breadcrumb-item active">
+                <span t-field="booking.name"/>
+            </li>
+        </xpath>
+    </template>
+</odoo>

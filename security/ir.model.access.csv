@@ -1,16 +1,28 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_service_vehicle_brand,service.vehicle.brand,model_service_vehicle_brand,base.group_user,1,1,1,1
+access_service_vehicle_brand_public,service.vehicle.brand.public,model_service_vehicle_brand,base.group_public,1,0,0,0
 access_service_vehicle_fuel_type,service.vehicle.fuel.type,model_service_vehicle_fuel_type,base.group_user,1,1,1,1
+access_service_vehicle_model_public,service.vehicle.model.public,model_service_vehicle_model,base.group_public,1,0,0,0
+access_service_vehicle_type_public,service.vehicle.type.public,model_service_vehicle_type,base.group_public,1,0,0,0
+access_service_type_public,service.type.public,model_service_type,base.group_public,1,0,0,0
 access_service_vehicle_type,service.vehicle.type,model_service_vehicle_type,base.group_user,1,1,1,1
 access_service_vehicle_model,service.vehicle.model,model_service_vehicle_model,base.group_user,1,1,1,1
 access_service_customer_vehicle,service.customer.vehicle,model_service_customer_vehicle,base.group_user,1,1,1,1
 access_service_booking,service.booking,model_service_booking,infinys_service_showroom.group_infinys_booking_service,1,1,1,1
+access_service_booking_portal,service.booking.portal,model_service_booking,base.group_portal,1,0,0,0
+access_service_booking_public,service.booking.public,model_service_booking,base.group_public,1,0,0,0
 access_showroom_car_vehicle_user,showroom.car.vehicle user,model_showroom_car_vehicle,base.group_user,1,1,1,1
 access_showroom_car_vehicle_image_user,showroom.car.vehicle.image user,model_showroom_car_vehicle_image,base.group_user,1,1,1,1
 access_service_type,service.type,model_service_type,base.group_user,1,1,1,1
 access_service_supervisor_user,service.supervisor.user,model_service_supervisor_user,base.group_user,1,1,1,1
 access_service_inspection_type,service.inspection.type,model_service_inspection_type,base.group_user,1,1,1,1
+access_service_inspection_type_public,service.inspection.type.public,model_service_inspection_type,base.group_public,1,0,0,0
 access_service_inspection_checklist_line,service.inspection.checklist.line,model_service_inspection_checklist_line,base.group_user,1,1,1,1
+access_service_inspection_checklist_line_public,service.inspection.checklist.line.public,model_service_inspection_checklist_line,base.group_public,1,0,0,0
+access_service_used_line_public,service.used.line.public,model_service_used_line,base.group_public,1,0,0,0
+access_service_parts_used_line_public,service.parts.used.line.public,model_service_parts_used_line,base.group_public,1,0,0,0
+access_ir_attachment_public,ir.attachment.public,base.model_ir_attachment,base.group_public,1,0,0,0
+access_product_product_public,product.product.public,product.model_product_product,base.group_public,1,0,0,0
 access_service_used_line,service.used.line,model_service_used_line,base.group_user,1,1,1,1
 access_service_parts_used_line,service.parts.used.line,model_service_parts_used_line,base.group_user,1,1,1,1
 access_service_inspection_image_line,service.inspection.image.line,model_service_inspection_image_line,base.group_user,1,1,1,1

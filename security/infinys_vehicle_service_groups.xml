@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="1">
+    <data>
         <record id="group_infinys_booking_service" model="res.groups">
             <field name="name">Infinys Booking Service</field>
             <field name="category_id" ref="base.module_category_hidden"/>
@@ -8,6 +8,28 @@
         <record id="group_infinys_showroom" model="res.groups">
             <field name="name">Infinys Showroom</field>
             <field name="category_id" ref="base.module_category_hidden"/>
+        </record>
+
+        <record id="service_booking_portal_rule" model="ir.rule">
+            <field name="name">Service Booking Portal User Read Access</field>
+            <field name="model_id" ref="model_service_booking"/>
+            <field name="domain_force">[('customer_name', '=', user.partner_id.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="service_booking_public_rule" model="ir.rule">
+            <field name="name">Service Booking Public User Read Access</field>
+            <field name="model_id" ref="model_service_booking"/>
+            <field name="domain_force">[('customer_name', '=', user.partner_id.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_public'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
         </record>
     </data>
 </odoo> 

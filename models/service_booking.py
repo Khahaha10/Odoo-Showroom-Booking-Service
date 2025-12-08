@@ -3,17 +3,18 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 from datetime import date, timedelta
 from odoo.addons.mail.models.mail_activity_mixin import MailActivityMixin
+from odoo.addons.portal.models.portal_mixin import PortalMixin
 from odoo.addons.mail.models.mail_thread import MailThread
 
 
 _logger = logging.getLogger(__name__)
 
 
-class ServiceBooking(models.Model, MailActivityMixin, MailThread):
+class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
     _name = "service.booking"
     _description = "Service Booking"
     _rec_name = "name"
-    ordering = "plan_service_date desc"
+    _order = "plan_service_date desc"
 
     name = fields.Char(
         string="Booking Number", help="Enter the booking number for the vehicle service"
@@ -140,8 +141,8 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread):
             if template_xml_id == 'email_template_assigned_technician_overdue_reminder':
                 subject = f"REMINDER: Service Booking {record.name} Overdue to Start"
                 body = f"""
-                    <div style="margin: 0px; padding: 0px;">
-                        <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                    <div style=\"margin: 0px; padding: 0px;">
+                        <p style=\"margin: 0px; padding: 0px; font-size: 13px;">
                             Hello {recipient_user.name},
                             <br/><br/>
                             This is a reminder that Service Booking <strong>{record.name}</strong> was assigned to you on <strong>{record.assigned_datetime.strftime('%Y-%m-%d')}</strong> and has not been started yet.
@@ -153,7 +154,7 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread):
                             <br/><br/>
                             Please start working on this service booking.
                             <br/><br/>
-                            <a href="/web#model=service.booking&amp;id={record.id}&amp;view_type=form" style="background-color: #007bff; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View Service Booking</a>
+                            <a href=\"/web#model=service.booking&amp;id={record.id}&amp;view_type=form\" style=\"background-color: #007bff; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;\">View Service Booking</a>
                             <br/><br/>
                             Thank you,<br/>
                             The Service Team
@@ -163,8 +164,8 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread):
             elif template_xml_id == 'email_template_new_booking_supervisor_reminder':
                 subject = f"New Service Booking: {record.name} needs assignment"
                 body = f"""
-                    <div style="margin: 0px; padding: 0px;">
-                        <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                    <div style=\"margin: 0px; padding: 0px;">
+                        <p style=\"margin: 0px; padding: 0px; font-size: 13px;">
                             Hello {recipient_user.name},
                             <br/><br/>
                             A new service booking, <strong>{record.name}</strong>, has been created and requires your attention for technician assignment.
@@ -176,7 +177,7 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread):
                             <br/><br/>
                             Please assign a technician to this booking as soon as possible.
                             <br/><br/>
-                            <a href="/web#model=service.booking&amp;id={record.id}&amp;view_type=form" style="background-color: #007bff; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View Service Booking</a>
+                            <a href=\"/web#model=service.booking&amp;id={record.id}&amp;view_type=form\" style=\"background-color: #007bff; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;\">View Service Booking</a>
                             <br/><br/>
                             Thank you,<br/>
                             The Service Team
@@ -186,8 +187,8 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread):
             elif template_xml_id == 'email_template_assigned_supervisor_overdue_reminder':
                 subject = f"REMINDER: Service Booking {record.name} Overdue to Start (Supervisor)"
                 body = f"""
-                    <div style="margin: 0px; padding: 0px;">
-                        <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                    <div style=\"margin: 0px; padding: 0px;">
+                        <p style=\"margin: 0px; padding: 0px; font-size: 13px;">
                             Hello {recipient_user.name},
                             <br/><br/>
                             This is a reminder that Service Booking <strong>{record.name}</strong>, assigned to <strong>{record.assigned_technician_id.name}</strong> on <strong>{record.assigned_datetime.strftime('%Y-%m-%d')}</strong>, is overdue to start.
@@ -199,7 +200,7 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread):
                             <br/><br/>
                             Please follow up with the assigned technician.
                             <br/><br/>
-                            <a href="/web#model=service.booking&amp;id={record.id}&amp;view_type=form" style="background-color: #007bff; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View Service Booking</a>
+                            <a href=\"/web#model=service.booking&amp;id={record.id}&amp;view_type=form\" style=\"background-color: #007bff; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;\">View Service Booking</a>
                             <br/><br/>
                             Thank you,<br/>
                             The Service Team
@@ -209,8 +210,8 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread):
             elif template_xml_id == 'email_template_in_progress_technician_overdue_reminder':
                 subject = f"REMINDER: Service Booking {record.name} Overdue to Complete"
                 body = f"""
-                    <div style="margin: 0px; padding: 0px;">
-                        <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                    <div style=\"margin: 0px; padding: 0px;">
+                        <p style=\"margin: 0px; padding: 0px; font-size: 13px;">
                             Hello {recipient_user.name},
                             <br/><br/>
                             This is a reminder that Service Booking <strong>{record.name}</strong> has been in progress since <strong>{record.in_progress_datetime.strftime('%Y-%m-%d')}</strong> and is overdue to be completed.
@@ -222,7 +223,7 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread):
                             <br/><br/>
                             Please complete this service booking.
                             <br/><br/>
-                            <a href="/web#model=service.booking&amp;id={record.id}&amp;view_type=form" style="background-color: #007bff; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View Service Booking</a>
+                            <a href=\"/web#model=service.booking&amp;id={record.id}&amp;view_type=form\" style=\"background-color: #007bff; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;\">View Service Booking</a>
                             <br/><br/>
                             Thank you,<br/>
                             The Service Team
@@ -232,8 +233,8 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread):
             elif template_xml_id == 'email_template_in_progress_supervisor_overdue_reminder':
                 subject = f"REMINDER: Service Booking {record.name} Overdue to Complete (Supervisor)"
                 body = f"""
-                    <div style="margin: 0px; padding: 0px;">
-                        <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                    <div style=\"margin: 0px; padding: 0px;">
+                        <p style=\"margin: 0px; padding: 0px; font-size: 13px;">
                             Hello {recipient_user.name},
                             <br/><br/>
                             This is a reminder that Service Booking <strong>{record.name}</strong>, handled by <strong>{record.assigned_technician_id.name}</strong>, has been in progress since <strong>{record.in_progress_datetime.strftime('%Y-%m-%d')}</strong> and is overdue to be completed.
@@ -245,7 +246,7 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread):
                             <br/><br/>
                             Please follow up with the assigned technician.
                             <br/><br/>
-                            <a href="/web#model=service.booking&amp;id={record.id}&amp;view_type=form" style="background-color: #007bff; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View Service Booking</a>
+                            <a href=\"/web#model=service.booking&amp;id={record.id}&amp;view_type=form\" style=\"background-color: #007bff; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;\">View Service Booking</a>
                             <br/><br/>
                             Thank you,<br/>
                             The Service Team
@@ -354,6 +355,12 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread):
 
     state_idx = fields.Integer(
         string="State Index", compute="_compute_state_idx", store=True, index=True
+    )
+    company_id = fields.Many2one('res.company', 'Company', required=True, index=True,
+        default=lambda self: self.env.company)
+    currency_id = fields.Many2one(
+        'res.currency', string='Currency', 
+        related='company_id.currency_id', readonly=True
     )
 
     inspection_checklist_line_ids = fields.One2many(
@@ -674,6 +681,11 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread):
                 case "cancelled":
                     idx = 5
             record.state_idx = idx
+
+    def get_portal_url(self, report_type=None, download=None, query_string=None, anchor=None):
+        """ Override for generating portal urls """
+        self.ensure_one()
+        return self.get_base_url() + '/my/service-booking/%s' % (self.id)
 
     @api.model
     def _check_and_send_daily_reminders(self):

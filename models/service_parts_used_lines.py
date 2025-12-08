@@ -18,11 +18,31 @@ class PartUsedLines(models.Model):
     product_id = fields.Many2one("product.product", string="Part", required=True)
     qty = fields.Float(string="Quantity", default=1.0)
     unit_price = fields.Float(
-        string="Unit Price", related="product_id.list_price", readonly=1
+        string="Unit Price", compute="_compute_product_info", store=False
     )
     on_hand_qty = fields.Float(
-        string="On Hand", related="product_id.qty_available", readonly=1
+        string="On Hand", compute="_compute_product_info", store=False
     )
+
+    @api.depends('product_id')
+    def _compute_product_info(self):
+        for rec in self:
+            if rec.product_id:
+                product_sudo = rec.product_id.sudo()
+                rec.unit_price = product_sudo.list_price
+                rec.on_hand_qty = product_sudo.qty_available
+            else:
+                rec.unit_price = 0.0
+                rec.on_hand_qty = 0.0
+
+    product_name_display = fields.Char(
+        string="Part Name", compute="_compute_product_name_display", store=False
+    )
+
+    @api.depends('product_id')
+    def _compute_product_name_display(self):
+        for rec in self:
+            rec.product_name_display = rec.product_id.sudo().display_name if rec.product_id else False
 
     subtotal = fields.Float(string="Subtotal", compute="_compute_subtotal", store=True)
 
