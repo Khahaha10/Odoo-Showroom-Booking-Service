@@ -83,19 +83,37 @@
             </div>
 
             <div class="row">
-                <div class="col-lg-8">
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5 class="mb-0">Booking Information</h5>
+                <div class="col-lg-12">
+                    <div class="row mb-4">
+                        <div class="col-12 col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Booking Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Booking Number:</strong> <span t-field="booking.name"/></p>
+                                    <p><strong>Status:</strong> <span t-attf-class="badge bg-#{booking.state == 'completed' and 'success' or booking.state == 'in_progress' and 'info' or booking.state == 'assigned' and 'warning' or booking.state == 'cancelled' and 'danger' or 'primary'}">
+                                        <span t-field="booking.state"/></span>
+                                    </p>
+                                    <p><strong>Planned Service Date:</strong> <span t-field="booking.plan_service_date" t-options='{"widget": "date"}'/></p>
+                                    <p><strong>Service Type:</strong> <span t-field="booking.service_type.name"/></p>
+                                    <p><strong>Complaints:</strong> <span t-field="booking.complaint_issue"/></p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <p><strong>Booking Number:</strong> <span t-field="booking.name"/></p>
-                            <p><strong>Status:</strong> <span t-attf-class="badge bg-#{booking.state == 'completed' and 'success' or booking.state == 'in_progress' and 'info' or booking.state == 'assigned' and 'warning' or booking.state == 'cancelled' and 'danger' or 'primary'}">
-                                <span t-field="booking.state"/></span>
-                            </p>
-                            <p><strong>Planned Service Date:</strong> <span t-field="booking.plan_service_date" t-options='{"widget": "date"}'/></p>
-                            <p><strong>Service Type:</strong> <span t-field="booking.service_type.name"/></p>
-                            <p><strong>Complaints:</strong> <span t-field="booking.complaint_issue"/></p>
+                        <div class="col-12 col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Vehicle Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Brand:</strong> <span t-field="booking.vehicle_brand.name"/></p>
+                                    <p><strong>Model:</strong> <span t-field="booking.vehicle_model.name"/></p>
+                                    <p><strong>Plate Number:</strong> <span t-field="booking.plat_number"/></p>
+                                    <p><strong>Year:</strong> <span t-field="booking.vehicle_year_manufacture"/></p>
+                                    <p><strong>Kilometers:</strong> <span t-field="booking.kilometers"/></p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -177,20 +195,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-4">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="mb-0">Vehicle Information</h5>
-                            </div>
-                            <div class="card-body">
-                                <p><strong>Brand:</strong> <span t-field="booking.vehicle_brand.name"/></p>
-                                <p><strong>Model:</strong> <span t-field="booking.vehicle_model.name"/></p>
-                                <p><strong>Plate Number:</strong> <span t-field="booking.plat_number"/></p>
-                                <p><strong>Year:</strong> <span t-field="booking.vehicle_year_manufacture"/></p>
-                                <p><strong>Kilometers:</strong> <span t-field="booking.kilometers"/></p>
-                            </div>
-                        </div>
-
+                    <div class="col-lg-12">
                         <div class="card mb-4" t-if="booking.inspection_checklist_line_ids">
                             <div class="card-header">
                                 <h5 class="mb-0">Inspection Checklist</h5>
