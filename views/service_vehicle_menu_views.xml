@@ -7,11 +7,11 @@
 
     <menuitem id="service_appointment_menu" name="Appointments" parent="menu_infinys_vehicle_service_root" action="service_appointment_action" sequence="7" groups="infinys_service_showroom.group_infinys_booking_service"/>
 
-    <menuitem id="menu_infinys_service_booking_root" name="Service Booking" parent="menu_infinys_vehicle_service_root" sequence="10" groups="infinys_service_showroom.group_infinys_booking_service"/>
+    <menuitem id="menu_infinys_service_booking_root" name="Job Card" parent="menu_infinys_vehicle_service_root" sequence="10" groups="infinys_service_showroom.group_infinys_booking_service"/>
 
-    <menuitem id="menu_infinys_service_booking" name="Service Booking Lists" parent="menu_infinys_service_booking_root" action="action_service_booking" sequence="10"/>
+    <menuitem id="menu_infinys_service_booking" name="Job Card Lists" parent="menu_infinys_service_booking_root" action="action_service_booking" sequence="10"/>
     
-    <menuitem id="menu_my_service_booking" name="My Service Bookings" parent="menu_infinys_service_booking_root" action="action_my_service_booking" sequence="20" groups="infinys_service_showroom.group_infinys_booking_service"/>
+    <menuitem id="menu_my_service_booking" name="My Job Cards" parent="menu_infinys_service_booking_root" action="action_my_service_booking" sequence="20" groups="infinys_service_showroom.group_infinys_booking_service"/>
 
     <menuitem id="menu_car_showroom_root" name="Car Showroom" parent="menu_infinys_vehicle_service_root" sequence="20" groups="infinys_service_showroom.group_infinys_showroom"/>
 
