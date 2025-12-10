@@ -40,13 +40,131 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
         "service.vehicle.model",
         string="Vehicle Model",
         required=True,
-        help="Choose vehicle brand",
+        help="Choose vehicle model",
         domain="[('vehicle_brand', '=', vehicle_brand)]"
     )
     vehicle_type = fields.Many2one(
         'service.vehicle.type',
         string='Vehicle Type',
         required=False
+    )
+    vehicle_year_manufacture = fields.Integer(string="Year of Manufacture")
+    kilometers = fields.Integer(string="Current Kilometers")
+
+    complaint_issue = fields.Text(string="Complaints")
+    plan_service_date = fields.Date(
+        string="Booking Date", required=True, default=fields.Date.context_today
+    )
+    service_date = fields.Date(
+        string="Service Date", required=True, default=fields.Date.context_today
+    )
+    service_type = fields.Many2one(
+        "service.type",
+        string="Service Type",
+        required=True,
+        help="Service type",
+    )
+    return_date = fields.Date(string="Return Date")
+    internal_notes = fields.Text(string="Notes")
+    cancel_reason = fields.Text(string="Cancel Reason")
+    error_msg = fields.Text(string="Error Message")
+
+    supervisor_user_id = fields.Many2one(
+        "service.supervisor.user", string="Supervisor", help="Select supervisor user"
+    )
+    assigned_technician_id = fields.Many2one(
+        "res.users", string="Assigned Technician", help="Select the technician assigned to this service"
+    )
+
+    assigned_datetime = fields.Datetime(string="Assigned Time", readonly=True)
+    in_progress_datetime = fields.Datetime(string="In Progress Time", readonly=True)
+    completed_datetime = fields.Datetime(string="Completed Time", readonly=True)
+
+    last_reminder_date_assigned = fields.Date(
+        string="Last Reminder Date (Assigned)",
+        help="Date when the last reminder was sent for 'Assigned' state."
+    )
+    last_reminder_date_in_progress = fields.Date(
+        string="Last Reminder Date (In Progress)",
+        help="Date when the last reminder was sent for 'In Progress' state."
+    )
+
+    appointment_id = fields.Many2one(
+        "service.appointment",
+        string="Originating Appointment",
+        readonly=True,
+        copy=False,
+        help="The service appointment from which this booking was created."
+    )
+
+    media_document = fields.Many2many("ir.attachment", "service_booking_media_rel", "booking_id", "attachment_id", string="Attachments")
+    internal_media_document = fields.Many2many("ir.attachment", "service_booking_internal_media_rel", "booking_id", "attachment_id", string="Internal Documents")
+
+    total_sparepart = fields.Float(
+        string="Total Sparepart",
+        compute="_compute_totals",
+        store=True,
+    )
+    total_service_fee = fields.Float(
+        string="Total Service Fee",
+        compute="_compute_totals",
+        store=True,
+    )
+    tax_id = fields.Many2one("account.tax", string="Tax")
+    total_amount = fields.Float(
+        string="Total Amount",
+        compute="_compute_totals",
+        store=True,
+    )
+    invoice_id = fields.Many2one("account.move", string="Invoice")
+    sale_order_id = fields.Many2one("sale.order", string="Sale Order", copy=False, readonly=True)
+    stock_picking_id = fields.Many2one("stock.picking", string="Delivery Order", copy=False, readonly=True)
+    
+    state = fields.Selection(
+        [
+            ("booking", "Booking"),
+            ("assigned", "Assigned"),
+            ("in_progress", "In Progress"),
+            ("completed", "Completed"),
+            ("cancelled", "Cancelled"),
+        ],
+        default="booking",
+        string="Status",
+        tracking=1,
+    )
+    state_idx = fields.Integer(
+        string="State Index", compute="_compute_state_idx", store=True, index=True
+    )
+    company_id = fields.Many2one('res.company', 'Company', required=True, index=True,
+        default=lambda self: self.env.company)
+    currency_id = fields.Many2one(
+        'res.currency', string='Currency', 
+        related='company_id.currency_id', readonly=True
+    )
+
+    inspection_checklist_line_ids = fields.One2many(
+        "service.inspection.checklist.line",
+        "service_booking_id",
+        string="Inspection Checklist",
+    )
+    spare_part_line_ids = fields.One2many(
+        "service.parts.used.line",
+        "service_booking_id",
+        string="Spare Parts Used",
+    )
+    service_line_ids = fields.One2many(
+        "service.used.line",
+        "service_booking_id",
+        string="Services Used",
+    )
+
+    sale_order_count = fields.Integer(compute='_compute_order_count', string='Sale Order Count')
+    delivery_order_count = fields.Integer(compute='_compute_order_count', string='Delivery Order Count')
+    invoice_count = fields.Integer(compute='_compute_order_count', string='Invoice Count')
+    is_checklist_readonly = fields.Boolean(
+        string="Is Checklist Readonly",
+        compute="_compute_is_checklist_readonly",
+        store=False,
     )
 
     @api.onchange('vehicle_brand')
@@ -58,57 +176,196 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
             self.vehicle_model = False
             return {'domain': {'vehicle_model': []}}
 
-    vehicle_year_manufacture = fields.Integer(string="Year of Manufacture")
-    kilometers = fields.Integer(string="Current Kilometers")
+    def _compute_order_count(self):
+        for rec in self:
+            rec.sale_order_count = 1 if rec.sale_order_id else 0
+            rec.delivery_order_count = 1 if rec.stock_picking_id else 0
+            rec.invoice_count = 1 if rec.invoice_id else 0
 
-    complaint_issue = fields.Text(string="Complaints")
+    @api.depends("spare_part_line_ids.subtotal", "service_line_ids.subtotal")
+    def _compute_totals(self):
+        for record in self:
+            record.total_sparepart = sum(record.spare_part_line_ids.mapped("subtotal"))
+            record.total_service_fee = sum(record.service_line_ids.mapped("subtotal")),
+            record.total_amount = record.total_sparepart + record.total_service_fee
 
-    plan_service_date = fields.Date(
-        string="Booking Date", required=True, default=fields.Date.context_today
-    )
+    @api.depends("state", "state_idx")
+    def _compute_state_idx(self):
+        self.state_idx = 1
+        for record in self:
+            idx = 1
+            match record.state:
+                case "booking":
+                    idx = 1
+                case "assigned":
+                    idx = 2
+                case "in_progress":
+                    idx = 3
+                case "completed":
+                    idx = 4
+                case "cancelled":
+                    idx = 5
+            record.state_idx = idx
 
-    service_date = fields.Date(
-        string="Service Date", required=True, default=fields.Date.context_today
-    )
-    service_type = fields.Many2one(
-        "service.type",
-        string="Service Type",
-        required=True,
-        help="Service type",
-    )
+    @api.depends("state")
+    def _compute_is_checklist_readonly(self):
+        for record in self:
+            record.is_checklist_readonly = record.state in ('completed', 'cancelled')
 
-    return_date = fields.Date(string="Return Date")
+    @api.constrains("plan_service_date")
+    def _plan_service_date(self):
+        for record in self:
+            if record.state != "booking":
+                return
+            if record.plan_service_date < date.today():
+                raise ValidationError(_("Service date cannot be in the past."))
 
-    internal_notes = fields.Text(string="Notes")
+    @api.model
+    def create(self, vals):
+        if "plat_number" in vals and vals["plat_number"]:
+            vals["plat_number"] = vals["plat_number"].upper()
+        if vals.get("name", "/") in ("/", False, None):
+            vals["name"] = (
+                self.env["ir.sequence"].next_by_code("infinys.vehicle.service") or "/"
+            )
+        res = super().create(vals)
 
-    supervisor_user_id = fields.Many2one(
-        "service.supervisor.user", string="Supervisor", help="Select supervisor user"
-    )
+        if res.customer_name and res.plat_number:
+            vehicle = self.env["service.customer.vehicle"].search(
+                [
+                    ("customer_id", "=", res.customer_name.id),
+                    ("vehicle_plate_no", "=", res.plat_number),
+                ]
+            )
+            if not vehicle:
+                self.env["service.customer.vehicle"].create(
+                    {
+                        "customer_id": res.customer_name.id,
+                        "vehicle_plate_no": res.plat_number,
+                        "vehicle_brand_id": res.vehicle_brand.id,
+                        "vehicle_model_id": res.vehicle_model.id,
+                        "vehicle_year": res.vehicle_year_manufacture,
+                    }
+                )
+        
+        res._populate_inspection_checklist()
+        
+        ICPSudo = self.env["ir.config_parameter"].sudo()
+        enable_service_booking_reminders = ICPSudo.get_param(
+            "infinys_service_showroom.enable_service_booking_reminders", "False"
+        ).lower() == "true"
+        reminder_new_booking_supervisor = ICPSudo.get_param(
+            "infinys_service_showroom.reminder_new_booking_supervisor", "False"
+        ).lower() == "true"
+        enable_service_booking_email_reminders = ICPSudo.get_param(
+            "infinys_service_showroom.enable_service_booking_email_reminders", "False"
+        ).lower() == "true"
+        reminder_new_booking_supervisor_email = ICPSudo.get_param(
+            "infinys_service_showroom.reminder_new_booking_supervisor_email", "False"
+        ).lower() == "true"
 
-    assigned_technician_id = fields.Many2one(
-        "res.users", string="Assigned Technician", help="Select the technician assigned to this service"
-    )
-    assigned_datetime = fields.Datetime(string="Assigned Time", readonly=True)
-    in_progress_datetime = fields.Datetime(string="In Progress Time", readonly=True)
-    completed_datetime = fields.Datetime(string="Completed Time", readonly=True)
-    cancel_reason = fields.Text(string="Cancel Reason")
+        if enable_service_booking_reminders and reminder_new_booking_supervisor:
+            supervisor_users = self.env['res.users'].search([('id', '=', res.supervisor_user_id.user_id.id)])
+            if supervisor_users:
+                res._send_activity_notification(
+                    supervisor_users,
+                    _("New Service Booking: %s needs assignment") % res.name,
+                    _("Please assign technician for Service Booking %s.") % res.name
+                )
+        if enable_service_booking_email_reminders and reminder_new_booking_supervisor_email:
+            if res.supervisor_user_id and res.supervisor_user_id.user_id:
+                res._send_reminder_email(
+                    'email_template_new_booking_supervisor_reminder',
+                    res.supervisor_user_id.user_id
+                )
+        return res
 
-    appointment_id = fields.Many2one(
-        "service.appointment",
-        string="Originating Appointment",
-        readonly=True,
-        copy=False,
-        help="The service appointment from which this booking was created."
-    )
+    def write(self, vals):
+        old_state = self.state
+        
+        if "plat_number" in vals and vals["plat_number"]:
+            vals["plat_number"] = vals["plat_number"].upper()
+        
+        res = super().write(vals)
+        
+        self._populate_inspection_checklist()
 
-    last_reminder_date_assigned = fields.Date(
-        string="Last Reminder Date (Assigned)",
-        help="Date when the last reminder was sent for 'Assigned' state."
-    )
-    last_reminder_date_in_progress = fields.Date(
-        string="Last Reminder Date (In Progress)",
-        help="Date when the last reminder was sent for 'In Progress' state."
-    )
+        ICPSudo = self.env["ir.config_parameter"].sudo()
+        enable_service_booking_reminders = ICPSudo.get_param(
+            "infinys_service_showroom.enable_service_booking_reminders", "False"
+        ).lower() == "true"
+        reminder_assigned_technician_initial = ICPSudo.get_param(
+            "infinys_service_showroom.reminder_assigned_technician_initial", "False"
+        ).lower() == "true"
+        reminder_in_progress_notification = ICPSudo.get_param(
+            "infinys_service_showroom.reminder_in_progress_notification", "False"
+        ).lower() == "true"
+        enable_service_booking_email_reminders = ICPSudo.get_param(
+            "infinys_service_showroom.enable_service_booking_email_reminders", "False"
+        ).lower() == "true"
+        reminder_assigned_technician_initial_email = ICPSudo.get_param(
+            "infinys_service_showroom.reminder_assigned_technician_initial_email", "False"
+        ).lower() == "true"
+        reminder_in_progress_notification_email = ICPSudo.get_param(
+            "infinys_service_showroom.reminder_in_progress_notification_email", "False"
+        ).lower() == "true"
+
+        for record in self:
+            if enable_service_booking_reminders and record.state == 'assigned' and old_state != 'assigned':
+                if reminder_assigned_technician_initial and record.assigned_technician_id:
+                    record._send_activity_notification(
+                        record.assigned_technician_id,
+                        _("Service Booking %s Assigned") % record.name,
+                        _("You have been assigned to service booking %s. Please start working on it.") % record.name
+                    )
+                if enable_service_booking_email_reminders and reminder_assigned_technician_initial_email:
+                    if record.assigned_technician_id:
+                        record._send_reminder_email(
+                            'email_template_assigned_technician_overdue_reminder',
+                            record.assigned_technician_id
+                        )
+            
+            if enable_service_booking_reminders and record.state == 'in_progress' and old_state != 'in_progress':
+                if reminder_in_progress_notification:
+                    if self.env.user == record.assigned_technician_id:
+                        if record.supervisor_user_id and record.supervisor_user_id.user_id:
+                            record._send_activity_notification(
+                                record.supervisor_user_id.user_id,
+                                _("Service Booking %s is In Progress") % record.name,
+                                _("Technician %s has started working on Service Booking %s.") % (self.env.user.name, record.name)
+                            )
+                    else:
+                        if record.assigned_technician_id:
+                            record._send_activity_notification(
+                                record.assigned_technician_id.user_ids,
+                                _("Service Booking %s is In Progress") % record.name,
+                                _("Service Booking %s has been marked as in progress.") % record.name
+                            )
+                if enable_service_booking_email_reminders and reminder_in_progress_notification_email:
+                    if self.env.user == record.assigned_technician_id: 
+                        if record.supervisor_user_id and record.supervisor_user_id.user_id:
+                            record._send_reminder_email(
+                                'email_template_in_progress_supervisor_overdue_reminder',
+                                record.supervisor_user_id.user_id
+                            )
+                    else: 
+                        if record.assigned_technician_id:
+                            record._send_reminder_email(
+                                'email_template_in_progress_technician_overdue_reminder',
+                                record.assigned_technician_id
+                            )
+        return res
+
+    def _populate_inspection_checklist(self):
+        for record in self:
+            if not record.inspection_checklist_line_ids:
+                inspection_types = self.env["service.inspection.type"].search([("active", "=", True)])
+                for insp_type in inspection_types:
+                    record.env["service.inspection.checklist.line"].create({
+                        "service_booking_id": record.id,
+                        "inspection_type_id": insp_type.id,
+                        "checklist_ok": False,
+                    })
 
     def _send_activity_notification(self, user_ids, summary, note):
         if not user_ids:
@@ -128,24 +385,11 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
             _logger.warning(f"No recipient or email address found for email reminder using template {template_xml_id}.")
             return
 
-        template = None
-        if template_xml_id not in [
-            'email_template_assigned_technician_overdue_reminder',
-            'email_template_new_booking_supervisor_reminder',
-            'email_template_assigned_supervisor_overdue_reminder',
-            'email_template_in_progress_technician_overdue_reminder',
-            'email_template_in_progress_supervisor_overdue_reminder'
-        ]:
-            template = self.env.ref(f'infinys_service_showroom.{template_xml_id}', raise_if_not_found=False)
-            if not template:
-                _logger.error(f"Email template {template_xml_id} not found and no hardcoded content available.")
-                return
+        body = ""
+        subject = ""
+        email_from = f"<{self.env.company.email or self.env.user.email}>"
 
         for record in self:
-            body = ""
-            subject = ""
-            email_from = f"<{self.env.company.email or self.env.user.email}>"
-
             if template_xml_id == 'email_template_assigned_technician_overdue_reminder':
                 subject = f"REMINDER: Service Booking {record.name} Overdue to Start"
                 body = f"""
@@ -276,40 +520,8 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
             self.env['mail.mail'].sudo().create(mail_values).send()
             _logger.info(f"Sent email reminder for booking {record.name} to {recipient_user.partner_id.email} using template {template_xml_id}.")
 
-    media_document = fields.Many2many("ir.attachment", "service_booking_media_rel", "booking_id", "attachment_id", string="Attachments")
-    internal_media_document = fields.Many2many("ir.attachment", "service_booking_internal_media_rel", "booking_id", "attachment_id", string="Internal Documents")
-
-    total_sparepart = fields.Float(
-        string="Total Sparepart",
-        compute="_compute_totals",
-        store=True,
-    )
-    total_service_fee = fields.Float(
-        string="Total Service Fee",
-        compute="_compute_totals",
-        store=True,
-    )
-    tax_id = fields.Many2one("account.tax", string="Tax")
-
-    total_amount = fields.Float(
-        string="Total Amount",
-        compute="_compute_totals",
-        store=True,
-    )
-
-    invoice_id = fields.Many2one("account.move", string="Invoice")
-    sale_order_id = fields.Many2one("sale.order", string="Sale Order", copy=False, readonly=True)
-    stock_picking_id = fields.Many2one("stock.picking", string="Delivery Order", copy=False, readonly=True)
-    sale_order_count = fields.Integer(compute='_compute_order_count', string='Sale Order Count')
-    delivery_order_count = fields.Integer(compute='_compute_order_count', string='Delivery Order Count')
-    invoice_count = fields.Integer(compute='_compute_order_count', string='Invoice Count')
-         
-    def _compute_order_count(self):
-        for rec in self:
-            rec.sale_order_count = 1 if rec.sale_order_id else 0
-            rec.delivery_order_count = 1 if rec.stock_picking_id else 0
-            rec.invoice_count = 1 if rec.invoice_id else 0
     def action_view_sale_order(self):
+        self.ensure_one()
         return {
             'name': _('Sale Order'),
             'type': 'ir.actions.act_window',
@@ -320,6 +532,7 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
         }
 
     def action_view_delivery_order(self):
+        self.ensure_one()
         return {
             'name': _('Delivery Order'),
             'type': 'ir.actions.act_window',
@@ -330,6 +543,7 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
         }
 
     def action_view_invoice(self):
+        self.ensure_one()
         return {
             'name': _('Invoice'),
             'type': 'ir.actions.act_window',
@@ -338,222 +552,6 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
             'res_id': self.invoice_id.id,
             'target': 'current',
         }
-
-    @api.depends("spare_part_line_ids.subtotal", "service_line_ids.subtotal")
-    def _compute_totals(self):
-        for record in self:
-            record.total_sparepart = sum(record.spare_part_line_ids.mapped("subtotal"))
-            record.total_service_fee = sum(record.service_line_ids.mapped("subtotal"))
-            record.total_amount = record.total_sparepart + record.total_service_fee
-
-    error_msg = fields.Text(string="Error Message")
-
-    state = fields.Selection(
-        [
-            ("booking", "Booking"),
-            ("assigned", "Assigned"),
-            ("in_progress", "In Progress"),
-            ("completed", "Completed"),
-            ("cancelled", "Cancelled"),
-        ],
-        default="booking",
-        string="Status",
-        tracking=1,
-    )
-
-    state_idx = fields.Integer(
-        string="State Index", compute="_compute_state_idx", store=True, index=True
-    )
-    company_id = fields.Many2one('res.company', 'Company', required=True, index=True,
-        default=lambda self: self.env.company)
-    currency_id = fields.Many2one(
-        'res.currency', string='Currency', 
-        related='company_id.currency_id', readonly=True
-    )
-
-    inspection_checklist_line_ids = fields.One2many(
-        "service.inspection.checklist.line",
-        "service_booking_id",
-        string="Inspection Checklist",
-    )
-
-    spare_part_line_ids = fields.One2many(
-        "service.parts.used.line",
-        "service_booking_id",
-        string="Spare Parts Used",
-    )
-
-    service_line_ids = fields.One2many(
-        "service.used.line",
-        "service_booking_id",
-        string="Services Used",
-    )
-
-    is_checklist_readonly = fields.Boolean(
-        string="Is Checklist Readonly",
-        compute="_compute_is_checklist_readonly",
-        store=False,
-    )
-
-    @api.depends("state")
-    def _compute_is_checklist_readonly(self):
-        for record in self:
-            record.is_checklist_readonly = record.state in ('completed', 'cancelled')
-
-    @api.constrains("plan_service_date")
-    def _plan_service_date(self):
-        for record in self:
-            if record.state != "booking":
-                return
-            if record.plan_service_date < date.today():
-                raise ValidationError(_("Service date cannot be in the past."))
-
-    @api.model
-    def create(self, vals):
-        if "plat_number" in vals and vals["plat_number"]:
-            vals["plat_number"] = vals["plat_number"].upper()
-        if vals.get("name", "/") in ("/", False, None):
-            vals["name"] = (
-                self.env["ir.sequence"].next_by_code("infinys.vehicle.service") or "/"
-            )
-        res = super().create(vals)
-        if res.customer_name and res.plat_number:
-            vehicle = self.env["service.customer.vehicle"].search(
-                [
-                    ("customer_id", "=", res.customer_name.id),
-                    ("vehicle_plate_no", "=", res.plat_number),
-                ]
-            )
-            if not vehicle:
-                self.env["service.customer.vehicle"].create(
-                    {
-                        "customer_id": res.customer_name.id,
-                        "vehicle_plate_no": res.plat_number,
-                        "vehicle_brand_id": res.vehicle_brand.id,
-                        "vehicle_model_id": res.vehicle_model.id,
-                        "vehicle_year": res.vehicle_year_manufacture,
-                    }
-                )
-        res._populate_inspection_checklist()
-
-        ICPSudo = self.env["ir.config_parameter"].sudo()
-        enable_service_booking_reminders = ICPSudo.get_param(
-            "infinys_service_showroom.enable_service_booking_reminders", "False"
-        ).lower() == "true"
-        reminder_new_booking_supervisor = ICPSudo.get_param(
-            "infinys_service_showroom.reminder_new_booking_supervisor", "False"
-        ).lower() == "true"
-        enable_service_booking_email_reminders = ICPSudo.get_param(
-            "infinys_service_showroom.enable_service_booking_email_reminders", "False"
-        ).lower() == "true"
-        reminder_new_booking_supervisor_email = ICPSudo.get_param(
-            "infinys_service_showroom.reminder_new_booking_supervisor_email", "False"
-        ).lower() == "true"
-
-        if enable_service_booking_reminders and reminder_new_booking_supervisor:
-            supervisor_users = self.env['res.users'].search([('id', '=', res.supervisor_user_id.user_id.id)])
-            if supervisor_users:
-                res._send_activity_notification(
-                    supervisor_users,
-                    _("New Service Booking: %s needs assignment") % res.name,
-                    _("Please assign technician for Service Booking %s.") % res.name
-                )
-        if enable_service_booking_email_reminders and reminder_new_booking_supervisor_email:
-            if res.supervisor_user_id and res.supervisor_user_id.user_id:
-                res._send_reminder_email(
-                    'email_template_new_booking_supervisor_reminder',
-                    res.supervisor_user_id.user_id
-                )
-        return res
-
-    def _populate_inspection_checklist(self):
-        for record in self:
-            if not record.inspection_checklist_line_ids:
-                inspection_types = self.env["service.inspection.type"].search([("active", "=", True)])
-                for insp_type in inspection_types:
-                    record.env["service.inspection.checklist.line"].create({
-                        "service_booking_id": record.id,
-                        "inspection_type_id": insp_type.id,
-                        "checklist_ok": False,
-                    })
-
-    def write(self, vals):
-        old_state = self.state
-        old_assigned_technician_id = self.assigned_technician_id
-        old_in_progress_datetime = self.in_progress_datetime
-
-        if "plat_number" in vals and vals["plat_number"]:
-            vals["plat_number"] = vals["plat_number"].upper()
-        
-        res = super().write(vals)
-        self._populate_inspection_checklist()
-
-        ICPSudo = self.env["ir.config_parameter"].sudo()
-        enable_service_booking_reminders = ICPSudo.get_param(
-            "infinys_service_showroom.enable_service_booking_reminders", "False"
-        ).lower() == "true"
-        reminder_assigned_technician_initial = ICPSudo.get_param(
-            "infinys_service_showroom.reminder_assigned_technician_initial", "False"
-        ).lower() == "true"
-        reminder_in_progress_notification = ICPSudo.get_param(
-            "infinys_service_showroom.reminder_in_progress_notification", "False"
-        ).lower() == "true"
-        enable_service_booking_email_reminders = ICPSudo.get_param(
-            "infinys_service_showroom.enable_service_booking_email_reminders", "False"
-        ).lower() == "true"
-        reminder_assigned_technician_initial_email = ICPSudo.get_param(
-            "infinys_service_showroom.reminder_assigned_technician_initial_email", "False"
-        ).lower() == "true"
-        reminder_in_progress_notification_email = ICPSudo.get_param(
-            "infinys_service_showroom.reminder_in_progress_notification_email", "False"
-        ).lower() == "true"
-
-        for record in self:
-            if enable_service_booking_reminders and record.state == 'assigned' and old_state != 'assigned':
-                if reminder_assigned_technician_initial and record.assigned_technician_id:
-                    record._send_activity_notification(
-                        record.assigned_technician_id.user_ids,
-                        _("Service Booking %s Assigned") % record.name,
-                        _("You have been assigned to service booking %s. Please start working on it.") % record.name
-                    )
-                if enable_service_booking_email_reminders and reminder_assigned_technician_initial_email:
-                    if record.assigned_technician_id:
-                        record._send_reminder_email(
-                            'email_template_assigned_technician_overdue_reminder',
-                            record.assigned_technician_id
-                        )
-            
-            if enable_service_booking_reminders and record.state == 'in_progress' and old_state != 'in_progress':
-                if reminder_in_progress_notification:
-                    if self.env.user == record.assigned_technician_id:
-                        if record.supervisor_user_id and record.supervisor_user_id.user_id:
-                            record._send_activity_notification(
-                                record.supervisor_user_id.user_id,
-                                _("Service Booking %s is In Progress") % record.name,
-                                _("Technician %s has started working on Service Booking %s.") % (self.env.user.name, record.name)
-                            )
-                    else:
-                        if record.assigned_technician_id:
-                            record._send_activity_notification(
-                                record.assigned_technician_id.user_ids,
-                                _("Service Booking %s is In Progress") % record.name,
-                                _("Service Booking %s has been marked as in progress.") % record.name
-                            )
-                if enable_service_booking_email_reminders and reminder_in_progress_notification_email:
-                    if self.env.user == record.assigned_technician_id:
-                        if record.supervisor_user_id and record.supervisor_user_id.user_id:
-                            record._send_reminder_email(
-                                'email_template_in_progress_supervisor_overdue_reminder',
-                                record.supervisor_user_id.user_id
-                            )
-                    else:
-                        if record.assigned_technician_id:
-                            record._send_reminder_email(
-                                'email_template_in_progress_technician_overdue_reminder',
-                                record.assigned_technician_id
-                            )
-        return res
-
 
     def action_assign(self):
         self.ensure_one()
@@ -672,26 +670,7 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
                 'context': {'default_booking_id': self.id},
             }
 
-    @api.depends("state", "state_idx")
-    def _compute_state_idx(self):
-        self.state_idx = 1
-        for record in self:
-            idx = 1 
-            match record.state:
-                case "booking":
-                    idx = 1
-                case "assigned":
-                    idx = 2
-                case "in_progress":
-                    idx = 3
-                case "completed":
-                    idx = 4
-                case "cancelled":
-                    idx = 5
-            record.state_idx = idx
-
     def get_portal_url(self, report_type=None, download=None, query_string=None, anchor=None):
-        """ Override for generating portal urls """
         self.ensure_one()
         return self.get_base_url() + '/my/service-booking/%s' % (self.id)
 
@@ -755,8 +734,8 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
             email_reminder_sent = False
 
             if enable_service_booking_reminders and \
-               booking.assigned_datetime.date() <= today - timedelta(days=reminder_interval_days_assigned) and \
-               booking.last_reminder_date_assigned != today:
+                booking.assigned_datetime.date() <= today - timedelta(days=reminder_interval_days_assigned) and \
+                booking.last_reminder_date_assigned != today:
                 if booking.assigned_technician_id:
                     booking._send_activity_notification(
                         booking.assigned_technician_id,
@@ -773,8 +752,8 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
                     activity_reminder_sent = True
             
             if enable_service_booking_email_reminders and \
-               booking.assigned_datetime.date() <= today - timedelta(days=reminder_interval_days_assigned_email) and \
-               booking.last_reminder_date_assigned != today:
+                booking.assigned_datetime.date() <= today - timedelta(days=reminder_interval_days_assigned_email) and \
+                booking.last_reminder_date_assigned != today:
                 if booking.assigned_technician_id:
                     booking._send_reminder_email(
                         'email_template_assigned_technician_overdue_reminder',
@@ -791,7 +770,6 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
             if activity_reminder_sent or email_reminder_sent:
                 booking.last_reminder_date_assigned = today
 
-
         overdue_in_progress_bookings = self.search([
             ('state', '=', 'in_progress'),
             ('in_progress_datetime', '!=', False),
@@ -802,8 +780,8 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
             email_reminder_sent = False
 
             if enable_service_booking_reminders and \
-               booking.in_progress_datetime.date() <= today - timedelta(days=reminder_interval_days_in_progress) and \
-               booking.last_reminder_date_in_progress != today:
+                booking.in_progress_datetime.date() <= today - timedelta(days=reminder_interval_days_in_progress) and \
+                booking.last_reminder_date_in_progress != today:
                 if booking.assigned_technician_id:
                     booking._send_activity_notification(
                         booking.assigned_technician_id,
@@ -820,8 +798,8 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
                     activity_reminder_sent = True
             
             if enable_service_booking_email_reminders and \
-               booking.in_progress_datetime.date() <= today - timedelta(days=reminder_interval_days_in_progress_email) and \
-               booking.last_reminder_date_in_progress != today:
+                booking.in_progress_datetime.date() <= today - timedelta(days=reminder_interval_days_in_progress_email) and \
+                booking.last_reminder_date_in_progress != today:
                 if booking.assigned_technician_id:
                     booking._send_reminder_email(
                         'email_template_in_progress_technician_overdue_reminder',
