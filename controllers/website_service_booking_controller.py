@@ -78,13 +78,13 @@ class WebsiteServiceBooking(http.Controller):
                             "datas": base64.b64encode(c_file.read()).decode(
                                 "utf-8"
                             ),
-                            "res_model": "service.booking",
+                            "res_model": "service.appointment",
                         },
                     )
                 )
 
-        booking = (
-            request.env["service.booking"]
+        appointment = (
+            request.env["service.appointment"]
             .sudo()
             .create(
                 {
@@ -105,5 +105,5 @@ class WebsiteServiceBooking(http.Controller):
         )
         return request.render(
             "infinys_service_showroom.service_booking_success_template",
-            {"booking": booking}
+            {"appointment": appointment}
         )

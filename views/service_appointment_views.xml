@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="service_appointment_view_list" model="ir.ui.view">
+            <field name="name">service.appointment.view.list</field>
+            <field name="model">service.appointment</field>
+            <field name="arch" type="xml">
+                <list string="Service Appointments">
+                    <field name="name"/>
+                    <field name="customer_name"/>
+                    <field name="plat_number"/>
+                    <field name="vehicle_brand"/>
+                    <field name="vehicle_model"/>
+                    <field name="plan_service_date"/>
+                    <field name="service_type"/>
+                    <field name="state" widget="badge" decoration-success="state == 'done'" decoration-info="state == 'draft'"/>
+                    <field name="job_order_id" optional="hide"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="service_appointment_view_form" model="ir.ui.view">
+            <field name="name">service.appointment.view.form</field>
+            <field name="model">service.appointment</field>
+            <field name="arch" type="xml">
+                <form string="Service Appointment">
+                    <header>
+                        <button name="action_create_job_order" type="object" string="Create Job Order" 
+                                invisible="state != 'draft'"
+                                class="oe_highlight"
+                                confirm="Are you sure you want to create a Job Order from this appointment?"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_job_order"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-wrench"
+                                invisible="job_order_count == 0">
+                                <field name="job_order_count" widget="statinfo" string="Job Order"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group string="Customer Information">
+                            <field name="customer_name"/>
+                            <field name="contact_number"/>
+                            <field name="contact_email"/>
+                        </group>
+                        <group>
+                            <group string="Appointment Details">
+                                <field name="plan_service_date"/>
+                                <field name="service_type"/>
+                                <field name="complaint_issue"/>
+                                <field name="media_document" widget="many2many_binary"/>
+                            </group>
+                            <group string="Vehicle Information">
+                                <field name="plat_number"/>
+                                <field name="vehicle_brand"/>
+                                <field name="vehicle_model"/>
+                                <field name="vehicle_type"/>
+                                <field name="vehicle_year_manufacture"/>
+                                <field name="kilometers"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="service_appointment_view_search" model="ir.ui.view">
+            <field name="name">service.appointment.view.search</field>
+            <field name="model">service.appointment</field>
+            <field name="arch" type="xml">
+                <search string="Service Appointments">
+                    <field name="name"/>
+                    <field name="customer_name"/>
+                    <field name="plat_number"/>
+                    <field name="state"/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_by_state" string="Status" context="{'group_by': 'state'}"/>
+                        <filter name="group_by_customer" string="Customer" context="{'group_by': 'customer_name'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="service_appointment_action" model="ir.actions.act_window">
+            <field name="name">Appointments</field>
+            <field name="res_model">service.appointment</field>
+            <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new service appointment
+                </p>
+                <p>
+                    This is where you manage incoming service requests from the website,
+                    which can then be converted into Job Orders (Service Bookings).
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -5,6 +5,8 @@
 
     <menuitem id="menu_service_showroom_dashboard" name="Overview" parent="menu_infinys_vehicle_service_root" action="action_service_showroom_dashboard" sequence="5"/>
 
+    <menuitem id="service_appointment_menu" name="Appointments" parent="menu_infinys_vehicle_service_root" action="service_appointment_action" sequence="7" groups="infinys_service_showroom.group_infinys_booking_service"/>
+
     <menuitem id="menu_infinys_service_booking_root" name="Service Booking" parent="menu_infinys_vehicle_service_root" sequence="10" groups="infinys_service_showroom.group_infinys_booking_service"/>
 
     <menuitem id="menu_infinys_service_booking" name="Service Booking Lists" parent="menu_infinys_service_booking_root" action="action_service_booking" sequence="10"/>

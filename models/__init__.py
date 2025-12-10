@@ -19,3 +19,4 @@ from . import service_vehicle_type
 from . import res_partner
 from . import service_booking_wizards
 from . import service_showroom_dashboard
+from . import service_appointment

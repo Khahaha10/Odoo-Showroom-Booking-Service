@@ -93,6 +93,14 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
     completed_datetime = fields.Datetime(string="Completed Time", readonly=True)
     cancel_reason = fields.Text(string="Cancel Reason")
 
+    appointment_id = fields.Many2one(
+        "service.appointment",
+        string="Originating Appointment",
+        readonly=True,
+        copy=False,
+        help="The service appointment from which this booking was created."
+    )
+
     last_reminder_date_assigned = fields.Date(
         string="Last Reminder Date (Assigned)",
         help="Date when the last reminder was sent for 'Assigned' state."
