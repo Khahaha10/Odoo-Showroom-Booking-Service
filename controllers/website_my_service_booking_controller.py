@@ -16,7 +16,7 @@ class CustomerPortal(CustomerPortal):
         return values
 
 
-class MyServiceBookings(http.Controller):
+class MyServiceBookings(CustomerPortal):
 
     _items_per_page = 10
 
@@ -99,6 +99,7 @@ class MyServiceBookings(http.Controller):
             "default_url": "/my/service-bookings",
             "searchbar_inputs": searchbar_inputs,
         }
+        return values
 
     @http.route(
         ["/my/service-booking/<int:booking_id>"],
@@ -109,7 +110,7 @@ class MyServiceBookings(http.Controller):
     def portal_my_service_booking_detail(self, booking_id, access_token=None, **kw):
         try:
             booking_sudo = self._document_check_access('service.booking', booking_id, access_token)
-        except http.exceptions.AccessError:
+        except odoo.exceptions.AccessError:
             return request.redirect("/my")
 
         values = self._get_service_booking_detail_values(booking_sudo, access_token, **kw)
