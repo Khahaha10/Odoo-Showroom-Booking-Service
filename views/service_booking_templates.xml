@@ -129,10 +129,10 @@
   <template id="service_booking_success_template" name="Service Booking Success">
     <t t-call="website.layout">
       <div id="wrap">
-        <div class="container">
+        <div class="container py-5">
           <h1>Thank You!</h1>
           <div class="alert alert-success" role="alert">
-            Your service booking has been submitted successfully. Your booking number is <t t-esc="booking.name"/>.
+            Your service booking has been submitted successfully. Your booking number is <t t-esc="appointment.name"/>.
           </div>
         </div>
       </div>
