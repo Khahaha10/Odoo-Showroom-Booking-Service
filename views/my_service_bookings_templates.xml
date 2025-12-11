@@ -46,17 +46,26 @@
                     <tbody>
                         <t t-foreach="service_bookings" t-as="booking">
                             <tr>
-                                <td><a t-att-href="booking.get_portal_url()"><t t-esc="booking.name"/></a></td>
+                                <td>
+                                    <t t-if="booking.record_type == 'appointment'">
+                                        <t t-esc="booking.name"/>
+                                    </t>
+                                    <t t-else="">
+                                        <a t-att-href="booking.get_portal_url()"><t t-esc="booking.name"/></a>
+                                    </t>
+                                </td>
                                 <td><t t-esc="booking.plan_service_date" t-options='{"widget": "date"}'/></td>
                                 <td><t t-esc="booking.vehicle_brand.name"/> <t t-esc="booking.vehicle_model.name"/></td>
                                 <td><t t-esc="booking.plat_number"/></td>
                                 <td>
-                                    <span t-attf-class="badge bg-#{booking.state == 'completed' and 'success' or booking.state == 'in_progress' and 'info' or booking.state == 'assigned' and 'warning' or booking.state == 'cancelled' and 'danger' or 'primary'}">
+                                    <span t-attf-class="badge bg-#{booking.state == 'completed' and 'success' or booking.state == 'in_progress' and 'info' or booking.state == 'assigned' and 'warning' or booking.state == 'cancelled' and 'danger' or booking.state == 'booking' and 'primary' or 'light'}">
                                         <t t-esc="booking.state"/>
                                     </span>
                                 </td>
                                 <td class="text-end">
-                                    <a t-att-href="booking.get_portal_url()" class="btn btn-sm btn-outline-primary">View</a>
+                                    <t t-if="booking.record_type != 'appointment'">
+                                        <a t-att-href="booking.get_portal_url()" class="btn btn-sm btn-outline-primary">View</a>
+                                    </t>
                                 </td>
                             </tr>
                         </t>

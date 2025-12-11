@@ -12,7 +12,10 @@ class CustomerPortal(CustomerPortal):
         service_booking_count = request.env["service.booking"].sudo().search_count([
             ("customer_name", "=", partner.id)
         ])
-        values["service_booking_count"] = service_booking_count
+        service_appointment_count = request.env["service.appointment"].sudo().search_count([
+            ("customer_name", "=", partner.id), ('state', '=', 'draft')
+        ])
+        values["service_booking_count"] = service_booking_count + service_appointment_count
         return values
 
 
@@ -76,24 +79,85 @@ class MyServiceBookings(CustomerPortal):
                 ("create_date", "<=", date_end),
             ]
 
-        service_booking_count = ServiceBooking.search_count(domain)
+        ServiceAppointment = request.env["service.appointment"]
+
+        booking_domain = list(domain)
+        service_bookings = ServiceBooking.search(booking_domain)
+
+        appointment_domain = list(domain) 
+        appointment_domain.append(('state', '=', 'draft'))
+        if search and search_in:
+            if search_in == 'content':
+                appointment_search_domain = OR([
+                    [('name', 'ilike', search)],
+                    [('plat_number', 'ilike', search)],
+                    [('complaint_issue', 'ilike', search)],
+                ])
+                appointment_domain += appointment_search_domain
+            elif search_in == 'booking_number': 
+                appointment_search_domain = [('name', 'ilike', search)]
+                appointment_domain += appointment_search_domain
+            elif search_in == 'plate_number':
+                appointment_search_domain = [('plat_number', 'ilike', search)]
+                appointment_domain += appointment_search_domain
+
+        service_appointments = ServiceAppointment.search(appointment_domain)
+
+        combined_records = []
+        for booking in service_bookings:
+            booking_data = type('MockBooking', (object,), {
+                'id': booking.id,
+                'name': booking.name,
+                'customer_name': booking.customer_name,
+                'contact_number': booking.contact_number,
+                'contact_email': booking.contact_email,
+                'plat_number': booking.plat_number,
+                'vehicle_brand': booking.vehicle_brand,
+                'vehicle_model': booking.vehicle_model,
+                'plan_service_date': booking.plan_service_date,
+                'service_type': booking.service_type,
+                'complaint_issue': booking.complaint_issue,
+                'state': booking.state,
+                'record_type': 'booking',
+                'get_portal_url': booking.get_portal_url,
+            })()
+            combined_records.append(booking_data)
+        for appointment in service_appointments:
+            mock_booking = type('MockBooking', (object,), {
+                'id': appointment.id,
+                'name': appointment.name,
+                'customer_name': appointment.customer_name,
+                'contact_number': appointment.contact_number,
+                'contact_email': appointment.contact_email,
+                'plat_number': appointment.plat_number,
+                'vehicle_brand': appointment.vehicle_brand,
+                'vehicle_model': appointment.vehicle_model,
+                'plan_service_date': appointment.plan_service_date,
+                'service_type': appointment.service_type,
+                'complaint_issue': appointment.complaint_issue,
+                'state': 'waiting', 
+                'record_type': 'appointment',
+                'get_portal_url': lambda: '#', 
+            })()
+            combined_records.append(mock_booking)
+        
+        combined_records.sort(key=lambda r: (r.plan_service_date or fields.Date.today(), r.name or ''))
+
+        total_records = len(combined_records)
         pager = portal_pager(
             url="/my/service-bookings",
-            total=service_booking_count,
+            total=total_records,
             page=page,
             step=self._items_per_page,
             url_args={'date_begin': date_begin, 'date_end': date_end, 'search_in': search_in, 'search': search},
         )
-
-        service_bookings = ServiceBooking.search(
-            domain, order=order, limit=self._items_per_page, offset=pager["offset"]
-        )
-
-        request.session['my_service_booking_history'] = service_bookings.ids[:100]
+        offset = pager['offset']
+        limit = self._items_per_page
+        paginated_records = combined_records[offset:offset + limit]
 
         values = {
             "date": date_begin,
-            "service_bookings": service_bookings,
+            "service_bookings": paginated_records,
             "page_name": "service_booking",
             "pager": pager,
             "default_url": "/my/service-bookings",
