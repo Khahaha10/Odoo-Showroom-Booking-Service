@@ -31,5 +31,11 @@
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
         </record>
+
+        <record id="group_infinys_service_supervisor" model="res.groups">
+            <field name="name">Service Supervisor</field>
+            <field name="category_id" ref="base.module_category_human_resources"/>
+            <field name="implied_ids" eval="[(4, ref('group_infinys_booking_service'))]"/>
+        </record>
     </data>
 </odoo> 

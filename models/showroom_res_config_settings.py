@@ -85,6 +85,24 @@ class ResConfigSettings(models.TransientModel):
         help="Number of days after 'In Progress' status without 'Completed' to send an email reminder."
     )
 
+    enable_new_appointment_supervisor_reminders = fields.Boolean(
+        string="Enable New Appointment Supervisor Reminders",
+        help="Globally enable or disable reminders for new service appointments that need job orders.",
+    )
+    reminder_new_appointment_supervisor_activity = fields.Boolean(
+        string="New Appointment Activity to Supervisor",
+        help="Send an activity reminder to the supervisor for new service appointments.",
+    )
+    reminder_new_appointment_supervisor_email = fields.Boolean(
+        string="New Appointment Email to Supervisor",
+        help="Send an email reminder to the supervisor for new service appointments.",
+    )
+    reminder_interval_days_new_appointment = fields.Integer(
+        string="Daily Reminder for New Appointments (Days)",
+        default=1,
+        help="Number of days after a new appointment without a job order to send a daily reminder.",
+    )
+
     def get_values(self):
         res = super(ResConfigSettings, self).get_values()
         ICPSudo = self.env["ir.config_parameter"].sudo()
@@ -142,6 +160,18 @@ class ResConfigSettings(models.TransientModel):
             )),
             reminder_interval_days_in_progress_email=int(ICPSudo.get_param(
                 "infinys_service_showroom.reminder_interval_days_in_progress_email", default="1"
+            )),
+            enable_new_appointment_supervisor_reminders=ICPSudo.get_param(
+                "infinys_service_showroom.enable_new_appointment_supervisor_reminders", default="False"
+            ).lower() == "true",
+            reminder_new_appointment_supervisor_activity=ICPSudo.get_param(
+                "infinys_service_showroom.reminder_new_appointment_supervisor_activity", default="False"
+            ).lower() == "true",
+            reminder_new_appointment_supervisor_email=ICPSudo.get_param(
+                "infinys_service_showroom.reminder_new_appointment_supervisor_email", default="False"
+            ).lower() == "true",
+            reminder_interval_days_new_appointment=int(ICPSudo.get_param(
+                "infinys_service_showroom.reminder_interval_days_new_appointment", default="1"
             )),
         )
         return res
@@ -210,6 +240,22 @@ class ResConfigSettings(models.TransientModel):
         ICPSudo.set_param(
             "infinys_service_showroom.reminder_interval_days_in_progress_email",
             str(self.reminder_interval_days_in_progress_email)
+        )
+        ICPSudo.set_param(
+            "infinys_service_showroom.enable_new_appointment_supervisor_reminders",
+            str(self.enable_new_appointment_supervisor_reminders)
+        )
+        ICPSudo.set_param(
+            "infinys_service_showroom.reminder_new_appointment_supervisor_activity",
+            str(self.reminder_new_appointment_supervisor_activity)
+        )
+        ICPSudo.set_param(
+            "infinys_service_showroom.reminder_new_appointment_supervisor_email",
+            str(self.reminder_new_appointment_supervisor_email)
+        )
+        ICPSudo.set_param(
+            "infinys_service_showroom.reminder_interval_days_new_appointment",
+            str(self.reminder_interval_days_new_appointment)
         )
         group_showroom = self.env.ref("infinys_service_showroom.group_infinys_showroom")
         group_booking_service = self.env.ref(
