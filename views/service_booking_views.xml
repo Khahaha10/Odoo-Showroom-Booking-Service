@@ -88,12 +88,14 @@
                             </h3>
                         </div>
                         <group>
-                            <group name="customer_information" string="Customer Information">
+                            <group name="service_information" string="Service Information">
                                 <field name="customer_name"/>
                                 <field name="contact_number"/>
                                 <field name="contact_email"/>
                                 <field name="plan_service_date" widget="datetime"/>
                                 <field name="service_type"/>
+                                <field name="supervisor_user_id" widget="many2one_avatar_user"/>
+                                <field name="assigned_technician_id" widget="many2one_avatar_user" invisible="state not in ['assigned', 'in_progress', 'completed']"/>
                                 <field name="complaint_issue" string="Complaints" widget="textarea"/>
                             </group>
                             <group name="vehicle_information" string="Vehicle Information">
@@ -108,8 +110,6 @@
                         <notebook>
                             <page string="Notes">
                                 <group>
-                                    <field name="supervisor_user_id" widget="many2one_avatar_user"/>
-                                    <field name="assigned_technician_id" widget="many2one_avatar_user" invisible="state not in ['assigned', 'in_progress', 'completed']"/>
                                     <field name="internal_notes" widget="textarea"/>
                                     <field name="cancel_reason" invisible="state != 'cancelled'"/>
                                 </group>
