@@ -9,7 +9,7 @@
                     <field name="vehicle_plate_no"/>
                     <field name="vehicle_brand_id"/>
                     <field name="vehicle_model_id"/>
-                    <field name="vehicle_year"/>
+                    <field name="vehicle_year" options="{'format': false}"/>
                 </list>
             </field>
         </record>

@@ -102,7 +102,7 @@
                                 <field name="plat_number"/>
                                 <field name="vehicle_brand"/>
                                 <field name="vehicle_model" domain="[('vehicle_brand', '=', vehicle_brand)]"/>
-                                <field name="vehicle_year_manufacture"/>
+                                <field name="vehicle_year_manufacture" options="{'format': false}"/>
                                 <field name="kilometers"/>
                                 <field name="media_document" widget="many2many_binary" string="Media Documents"/>
                             </group>

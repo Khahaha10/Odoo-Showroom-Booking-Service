@@ -63,7 +63,7 @@
                                 <field name="vehicle_brand"/>
                                 <field name="vehicle_model"/>
                                 <field name="vehicle_type"/>
-                                <field name="vehicle_year_manufacture"/>
+                                <field name="vehicle_year_manufacture" options="{'format': false}"/>
                                 <field name="kilometers"/>
                             </group>
                         </group>
