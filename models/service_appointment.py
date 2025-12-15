@@ -68,11 +68,14 @@ class ServiceAppointment(models.Model):
         [
             ("draft", "Draft"),
             ("done", "Done"),
+            ("cancelled", "Cancelled"),
         ],
         default="draft",
         string="Status",
         tracking=1,
     )
+
+    cancel_reason = fields.Text(string="Cancellation Reason")
 
     job_order_id = fields.Many2one(
         "service.booking",
@@ -312,3 +315,20 @@ class ServiceAppointment(models.Model):
                 appointment.last_reminder_date_new_appointment = today
 
         return True
+
+    @api.model
+    def _cancel_overdue_appointments(self):
+        today = fields.Date.today()
+        overdue_appointments = self.search([
+            ('state', '=', 'draft'),
+            ('plan_service_date', '<', today),
+            ('job_order_id', '=', False)
+        ])
+        for appointment in overdue_appointments:
+            appointment.write({
+                'state': 'cancelled',
+                'cancel_reason': _("Appointment automatically cancelled due to overdue booking date."),
+            })
+            _logger.info(f"Appointment {appointment.name} otomatis dibatalkan karena tanggal terlewat.")
+        return True
+

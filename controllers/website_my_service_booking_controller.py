@@ -85,7 +85,7 @@ class MyServiceBookings(CustomerPortal):
         service_bookings = ServiceBooking.search(booking_domain)
 
         appointment_domain = list(domain) 
-        appointment_domain.append(('state', '=', 'draft'))
+        appointment_domain.append(('state', 'in', ['draft', 'cancelled'])) 
         if search and search_in:
             if search_in == 'content':
                 appointment_search_domain = OR([
@@ -135,7 +135,7 @@ class MyServiceBookings(CustomerPortal):
                 'plan_service_date': appointment.plan_service_date,
                 'service_type': appointment.service_type,
                 'complaint_issue': appointment.complaint_issue,
-                'state': 'waiting', 
+                'state': appointment.state, # Gunakan status sebenarnya
                 'record_type': 'appointment',
                 'get_portal_url': lambda: '#', 
             })()

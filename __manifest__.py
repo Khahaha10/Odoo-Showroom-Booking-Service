@@ -21,6 +21,7 @@
         "data/service_booking_reminders_cron.xml",
         "data/service_booking_sequence.xml",
         "data/service_appointment_sequence.xml",
+        "data/service_appointment_cron.xml",
         "views/service_customer_vehicle_views.xml",
         "views/res_partner_views.xml",
         "views/showroom_res_config_settings_views.xml",
