@@ -15,6 +15,7 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
     _description = "Service Booking"
     _rec_name = "name"
     _order = "plan_service_date desc"
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(
         string="Booking Number", help="Enter the booking number for the vehicle service"
