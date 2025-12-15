@@ -135,7 +135,7 @@ class MyServiceBookings(CustomerPortal):
                 'plan_service_date': appointment.plan_service_date,
                 'service_type': appointment.service_type,
                 'complaint_issue': appointment.complaint_issue,
-                'state': appointment.state, # Gunakan status sebenarnya
+                'state': 'waiting' if appointment.state == 'draft' else appointment.state,
                 'record_type': 'appointment',
                 'get_portal_url': lambda: '#', 
             })()
