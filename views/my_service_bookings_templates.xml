@@ -210,13 +210,15 @@
                             <div class="card-body">
                                 <ul class="list-group list-group-flush">
                                     <t t-foreach="booking.inspection_checklist_line_ids" t-as="checklist_line">
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            <span t-field="checklist_line.inspection_type_id.name"/>
-                                            <span t-attf-class="badge bg-#{checklist_line.checklist_ok and 'success' or 'danger'}">
-                                                <t t-if="checklist_line.checklist_ok">OK</t>
-                                                <t t-else="">N/A</t>
-                                            </span>
-                                        </li>
+                                        <t t-if="checklist_line.checklist_ok">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span t-field="checklist_line.inspection_type_id.name"/>
+                                                <span t-attf-class="badge bg-#{checklist_line.checklist_ok and 'success' or 'danger'}">
+                                                    <t t-if="checklist_line.checklist_ok">OK</t>
+                                                    <t t-else="">N/A</t>
+                                                </span>
+                                            </li>
+                                        </t>
                                     </t>
                                 </ul>
                             </div>

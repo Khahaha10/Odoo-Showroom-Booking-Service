@@ -187,7 +187,7 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
     def _compute_totals(self):
         for record in self:
             record.total_sparepart = sum(record.spare_part_line_ids.mapped("subtotal"))
-            record.total_service_fee = sum(record.service_line_ids.mapped("subtotal")),
+            record.total_service_fee = sum(record.service_line_ids.mapped("subtotal"))
             record.total_amount = record.total_sparepart + record.total_service_fee
 
     @api.depends("state", "state_idx")
