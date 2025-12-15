@@ -13,7 +13,7 @@
                     <field name="vehicle_model"/>
                     <field name="plan_service_date"/>
                     <field name="service_type"/>
-                    <field name="state" widget="badge" decoration-success="state == 'done'" decoration-info="state == 'draft'"/>
+                    <field name="state" widget="badge" decoration-success="state == 'done'" decoration-info="state == 'draft'" decoration-danger="state == 'cancelled'"/>
                     <field name="job_order_id" optional="hide"/>
                 </list>
             </field>
@@ -29,7 +29,7 @@
                                 invisible="state != 'draft'"
                                 class="oe_highlight"
                                 confirm="Are you sure you want to create a Job Order from this appointment?"/>
-                        <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,done,cancelled"/>
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
@@ -81,6 +81,9 @@
                     <field name="customer_name"/>
                     <field name="plat_number"/>
                     <field name="state"/>
+                    <filter string="Draft" name="filter_draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="Done" name="filter_done" domain="[('state', '=', 'done')]"/>
+                    <filter string="Cancelled" name="filter_cancelled" domain="[('state', '=', 'cancelled')]"/>
                     <group expand="0" string="Group By">
                         <filter name="group_by_state" string="Status" context="{'group_by': 'state'}"/>
                         <filter name="group_by_customer" string="Customer" context="{'group_by': 'customer_name'}"/>

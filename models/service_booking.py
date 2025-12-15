@@ -123,13 +123,13 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
     
     state = fields.Selection(
         [
-            ("booking", "Booking"),
+            ("booked", "Booked"),
             ("assigned", "Assigned"),
             ("in_progress", "In Progress"),
             ("completed", "Completed"),
             ("cancelled", "Cancelled"),
         ],
-        default="booking",
+        default="booked",
         string="Status",
         tracking=1,
     )
@@ -196,7 +196,7 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
         for record in self:
             idx = 1
             match record.state:
-                case "booking":
+                case "booked":
                     idx = 1
                 case "assigned":
                     idx = 2
@@ -216,7 +216,7 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
     @api.constrains("plan_service_date")
     def _plan_service_date(self):
         for record in self:
-            if record.state != "booking":
+            if record.state != "booked":
                 return
             if record.plan_service_date < date.today():
                 raise ValidationError(_("Service date cannot be in the past."))
@@ -706,7 +706,7 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
         today = fields.Date.today()
 
         bookings_to_assign = self.search([
-            ('state', '=', 'booking'),
+            ('state', '=', 'booked'),
             ('assigned_technician_id', '=', False),
         ])
         for booking in bookings_to_assign:

@@ -56,7 +56,7 @@
                                 <td><t t-esc="booking.vehicle_brand.name"/> <t t-esc="booking.vehicle_model.name"/></td>
                                 <td><t t-esc="booking.plat_number"/></td>
                                 <td>
-                                    <span t-attf-class="badge bg-#{booking.state == 'completed' and 'success' or booking.state == 'in_progress' and 'info' or booking.state == 'assigned' and 'warning' or booking.state == 'cancelled' and 'danger' or booking.state == 'booking' and 'primary' or 'light'}">
+                                    <span t-attf-class="badge bg-#{booking.state == 'completed' and 'success' or booking.state == 'in_progress' and 'info' or booking.state == 'assigned' and 'warning' or booking.state == 'cancelled' and 'danger' or booking.state == 'booked' and 'primary' or 'light'}">
                                         <t t-esc="booking.state"/>
                                     </span>
                                 </td>
