@@ -66,43 +66,37 @@ class WebsiteServiceBooking(http.Controller):
                 }
             )
 
-        attachments = []
-        if 'media_document' in request.params:
-            for c_file in request.httprequest.files.getlist('media_document'):
-                attachments.append(
-                    (
-                        0,
-                        0,
-                        {
-                            "name": c_file.filename,
-                            "datas": base64.b64encode(c_file.read()).decode(
-                                "utf-8"
-                            ),
-                            "res_model": "service.appointment",
-                        },
-                    )
-                )
+        appointment_vals = {
+            "customer_name": partner.id,
+            "contact_number": post.get("contact_number"),
+            "contact_email": post.get("contact_email"),
+            "plat_number": post.get("plat_number"),
+            "vehicle_brand": int(post.get("vehicle_brand")),
+            "vehicle_model": int(post.get("vehicle_model")),
+            "vehicle_year_manufacture": int(post.get("vehicle_year_manufacture")) if post.get("vehicle_year_manufacture") else False,
+            "kilometers": int(post.get("kilometers")) if post.get("kilometers") else False,
+            "plan_service_date": post.get("plan_service_date"),
+            "service_type": int(post.get("service_type")),
+            "complaint_issue": post.get("complaint_issue"),
+        }
 
-        appointment = (
-            request.env["service.appointment"]
-            .sudo()
-            .create(
-                {
-                    "customer_name": partner.id,
-                    "contact_number": post.get("contact_number"),
-                    "contact_email": post.get("contact_email"),
-                    "plat_number": post.get("plat_number"),
-                    "vehicle_brand": int(post.get("vehicle_brand")),
-                    "vehicle_model": int(post.get("vehicle_model")),
-                    "vehicle_year_manufacture": int(post.get("vehicle_year_manufacture")) if post.get("vehicle_year_manufacture") else False,
-                    "kilometers": int(post.get("kilometers")) if post.get("kilometers") else False,
-                    "plan_service_date": post.get("plan_service_date"),
-                    "service_type": int(post.get("service_type")),
-                    "complaint_issue": post.get("complaint_issue"),
-                    "media_document": attachments,
+        appointment = request.env["service.appointment"].sudo().create(appointment_vals)
+
+        if 'media_document' in request.params:
+            attachment_ids = []
+            for c_file in request.httprequest.files.getlist('media_document'):
+                attachment_vals = {
+                    "name": c_file.filename,
+                    "datas": base64.b64encode(c_file.read()).decode("utf-8"),
+                    "res_model": "service.appointment",
+                    "res_id": appointment.id,
                 }
-            )
-        )
+                new_attachment = request.env["ir.attachment"].sudo().create(attachment_vals)
+                attachment_ids.append(new_attachment.id)
+
+            if attachment_ids:
+                appointment.sudo().write({'media_document': [(6, 0, attachment_ids)]})
+
         return request.render(
             "infinys_service_showroom.service_booking_success_template",
             {"appointment": appointment}
