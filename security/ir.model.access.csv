@@ -32,6 +32,7 @@ access_service_parts_used_line,service.parts.used.line,model_service_parts_used_
 access_service_inspection_image_line,service.inspection.image.line,model_service_inspection_image_line,base.group_user,1,1,1,1
 access_service_booking_assign_technician_wizard,service.booking.assign.technician.wizard,model_service_booking_assign_technician_wizard,base.group_user,1,1,1,1
 access_service_booking_cancel_wizard,service.booking.cancel.wizard,model_service_booking_cancel_wizard,base.group_user,1,1,1,1
-access_service_showroom_dashboard,service.showroom.dashboard,model_service_showroom_dashboard,base.group_user,1,1,1,1
 access_service_appointment,service.appointment,model_service_appointment,base.group_user,1,1,1,1
 access_service_appointment_portal,service.appointment.portal,model_service_appointment,base.group_portal,1,0,0,0,
+access_service_booking_report,service.booking.report,model_service_booking,base.group_user,1,0,0,0
+access_crm_lead_report,crm.lead.report,model_crm_lead,base.group_user,1,0,0,0

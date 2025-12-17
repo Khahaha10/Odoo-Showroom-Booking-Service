@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_service_booking_report_by_status_graph" model="ir.ui.view">
+            <field name="name">service.booking.report.by.status.graph</field>
+            <field name="model">service.booking</field>
+            <field name="arch" type="xml">
+                <graph string="Service Booking by Status" type="pie">
+                    <field name="state"/>
+                </graph>
+            </field>
+        </record>
+
+        <record id="view_service_booking_report_by_status_list" model="ir.ui.view">
+            <field name="name">service.booking.report.by.status.list</field>
+            <field name="model">service.booking</field>
+            <field name="arch" type="xml">
+                <list string="Service Bookings">
+                    <field name="name"/>
+                    <field name="customer_name"/>
+                    <field name="state"/>
+                    <field name="create_date"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_crm_lead_report_graph" model="ir.ui.view">
+            <field name="name">crm.lead.report.graph</field>
+            <field name="model">crm.lead</field>
+            <field name="arch" type="xml">
+                <graph string="Showroom Leads by Month" type="bar">
+                    <field name="create_date" interval="month"/>
+                    <field name="create_date" interval="day" invisible="1"/>
+                    <field name="create_date" interval="year" invisible="1"/>
+                </graph>
+            </field>
+        </record>
+
+        <record id="view_crm_lead_report_list" model="ir.ui.view">
+            <field name="name">crm.lead.report.list</field>
+            <field name="model">crm.lead</field>
+            <field name="arch" type="xml">
+                <list string="Showroom Leads">
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="create_date"/>
+                    <field name="stage_id"/>
+                </list>
+            </field>
+        </record>
+        <record id="action_service_booking_report_by_status" model="ir.actions.act_window">
+            <field name="name">Service Booking by Status</field>
+            <field name="res_model">service.booking</field>
+            <field name="view_mode">graph,list</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Generate reports for Service Bookings based on their status.
+                </p>
+            </field>
+        </record>
+
+        <record id="action_showroom_report_leads" model="ir.actions.act_window">
+            <field name="name">Showroom Leads</field>
+            <field name="res_model">crm.lead</field>
+            <field name="view_mode">graph,list</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Generate reports for Showroom Leads.
+                </p>
+            </field>
+        </record>
+
+
+    </data>
+</odoo>

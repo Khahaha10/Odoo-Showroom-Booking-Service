@@ -40,7 +40,7 @@
         "views/service_product_template_views.xml",
         "views/service_type_views.xml",
         "views/service_supervisor_user_views.xml",
-        "views/service_showroom_dashboard_views.xml",
+        "views/service_showroom_reporting_views.xml",
         "views/my_service_bookings_templates.xml",
         "views/service_vehicle_menu_views.xml",
     ],
