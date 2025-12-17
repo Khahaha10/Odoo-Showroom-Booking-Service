@@ -172,12 +172,12 @@
             <field name="arch" type="xml">
                 <list default_order="state_idx asc">
                     <field name="name"/>
+                    <field name="customer_name"/>
                     <field name="contact_number"/>
                     <field name="contact_email"/>
                     <field name="plan_service_date" widget="datetime"/>
                     <field name="service_type"/>
                     <field name="plat_number"/>
-                    <field name="vehicle_brand"/>
                     <field name="vehicle_model"/>
                     <field name="state" widget="badge" decoration-success="state == 'completed'" decoration-info="state == 'in_progress'" decoration-warning="state == 'assigned'" decoration-danger="state == 'cancelled'"/>
                 </list>
@@ -203,6 +203,7 @@
             <field name="name">Job Card</field>
             <field name="res_model">service.booking</field>
             <field name="view_mode">list,kanban,form</field>
+            <field name="view_ids" eval="[(5, 0, 0), (0, 0, {'view_mode': 'list', 'view_id': ref('service_booking_view_list')}), (0, 0, {'view_mode': 'kanban', 'view_id': ref('service_booking_view_kanban')}), (0, 0, {'view_mode': 'form', 'view_id': ref('service_booking_view_form')})]"/>
             <field name="search_view_id" ref="service_booking_view_search"/>
             <field name="context">{}</field>
             <field name="help" type="html">
@@ -216,6 +217,7 @@
             <field name="name">Job Card</field>
             <field name="res_model">service.booking</field>
             <field name="view_mode">list,kanban,form</field>
+            <field name="view_ids" eval="[(5, 0, 0), (0, 0, {'view_mode': 'list', 'view_id': ref('service_booking_view_list')}), (0, 0, {'view_mode': 'kanban', 'view_id': ref('service_booking_view_kanban')}), (0, 0, {'view_mode': 'form', 'view_id': ref('service_booking_view_form')})]"/>
             <field name="search_view_id" ref="service_booking_view_search"/>
             <field name="domain">[('assigned_technician_id', '=', uid)]</field>
             <field name="context">{}</field>
