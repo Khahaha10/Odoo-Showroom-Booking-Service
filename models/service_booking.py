@@ -673,6 +673,8 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
 
     def get_portal_url(self, report_type=None, download=None, query_string=None, anchor=None):
         self.ensure_one()
+        if self.env.context.get('from_technician_portal'):
+            return self.get_base_url() + '/my/technician-jobcard/%s' % (self.id)
         return self.get_base_url() + '/my/service-booking/%s' % (self.id)
 
     @api.model
