@@ -94,7 +94,9 @@ class TechnicianJobCards(CustomerPortal):
                 ("create_date", "<=", date_end),
             ]
 
-        service_bookings = ServiceBooking.with_context(from_technician_portal=True).search(domain, order=order)
+        service_bookings = ServiceBooking.with_context(
+            from_technician_portal=True
+        ).search(domain, order=order)
 
         total_records = len(service_bookings)
         pager = portal_pager(
@@ -134,7 +136,12 @@ class TechnicianJobCards(CustomerPortal):
             return request.redirect("/my")
 
         try:
-            job_card_sudo = request.env["service.booking"].sudo().with_context(from_technician_portal=True).browse(booking_id)
+            job_card_sudo = (
+                request.env["service.booking"]
+                .sudo()
+                .with_context(from_technician_portal=True)
+                .browse(booking_id)
+            )
             if (
                 not job_card_sudo.exists()
                 or job_card_sudo.assigned_technician_id.id != request.env.user.id
@@ -154,6 +161,7 @@ class TechnicianJobCards(CustomerPortal):
         values = {
             "job_card": job_card_sudo,
             "page_name": "my_job_card_detail",
+            "default_url": "/my/technician-jobcards",
         }
         history = request.session.get("my_technician_job_card_history", [])
         values.update(get_records_pager(history, job_card_sudo))
