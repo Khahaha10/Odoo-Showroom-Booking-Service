@@ -10,6 +10,10 @@ class ResConfigSettings(models.TransientModel):
     module_infinys_booking_service = fields.Boolean(
         string="Manage Service Bookings",
     )
+    show_advanced_settings = fields.Boolean(
+        string="Show Advanced Settings",
+        help="Enable to display advanced configuration options."
+    )
 
     automate_delivery_order_done = fields.Boolean(
         string="Automate Delivery Order to Done",
@@ -119,6 +123,9 @@ class ResConfigSettings(models.TransientModel):
             automate_invoice_creation=ICPSudo.get_param(
                 "infinys_service_showroom.automate_invoice_creation", default="False"
             ).lower() == "true",
+            show_advanced_settings=ICPSudo.get_param(
+                "infinys_service_showroom.show_advanced_settings", default="False"
+            ).lower() == "true",
             whatsapp_phone_number=ICPSudo.get_param(
                 "infinys_service_showroom.whatsapp_phone_number", default="628xxxxxxxxxx"
             ),
@@ -186,6 +193,10 @@ class ResConfigSettings(models.TransientModel):
         ICPSudo.set_param(
             "infinys_service_showroom.automate_invoice_creation",
             str(self.automate_invoice_creation)
+        )
+        ICPSudo.set_param(
+            "infinys_service_showroom.show_advanced_settings",
+            str(self.show_advanced_settings)
         )
         ICPSudo.set_param(
             "infinys_service_showroom.whatsapp_phone_number", self.whatsapp_phone_number
