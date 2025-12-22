@@ -98,7 +98,7 @@
                             <a
                                 t-attf-href="/web#id=#{job_card.id}&amp;model=service.booking&amp;view_type=form"
                                 class="btn btn-primary ms-2" target="_blank">
-                                <i class="fa fa-pencil me-1" /> Edit </a>
+                                <i class="fa fa-pencil me-1" /> Open </a>
                             <a
                                 t-attf-href="/report/pdf/infinys_service_showroom.report_service_booking_simple/#{job_card.id}"
                                 class="btn btn-warning ms-2" target="_blank">
