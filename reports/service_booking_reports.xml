@@ -6,584 +6,457 @@
             <t t-call="web.html_container">
                 <t t-foreach="docs" t-as="o">
                     <t t-call="web.external_layout">
-                        <div class="page" style="font-size:12px; color:#1f2937;">
 
-                            <div
-                                style="margin:0 0 14px 0; padding:0 0 10px 0; border-bottom:2px solid #e5e7eb;">
-                                <table style="width:100%; border-collapse:collapse;">
-                                    <tr>
-                                        <td style="vertical-align:top;">
-                                            <div
-                                                style="font-size:20px; font-weight:700; line-height:1.2; margin:0;">
-                                                Service Booking
-                                            </div>
-                                            <div
-                                                style="font-size:12px; color:#6b7280; margin-top:2px;">
-                                                Document No: <span style="font-weight:400;"
-                                                    t-field="o.name" />
-                                            </div>
-                                        </td>
-                                        <td style="width:45%; vertical-align:top;">
-                                            <table
-                                                style="width:100%; border-collapse:collapse; font-size:11px;">
-                                                <tr>
-                                                    <td
-                                                        style="padding:1px 0; font-weight:700; color:#374151;">Booking
-                                                        Date</td>
-                                                    <td
-                                                        style="padding:1px 0; text-align:right; white-space:nowrap;">
-                                                        <span t-field="o.plan_service_date" />
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-
-                            <table style="width:100%; border-collapse:separate; border-spacing:0;">
-                                <tr>
-                                    <td style="width:50%; vertical-align:top; padding-right:8px;">
-                                        <div style="border:1px solid #e5e7eb; border-radius:8px;">
-                                            <div
-                                                style="background:#f3f4f6; padding:7px 10px; font-weight:700; border-bottom:1px solid #e5e7eb;">
-                                                Customer Info
-                                            </div>
-                                            <div style="padding:10px;">
-                                                <table style="width:100%; border-collapse:collapse;">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td
-                                                                style="width:42%; padding:2px 0; color:#374151; font-weight:700;">
-                                                                Customer</td>
-                                                            <td style="padding:2px 0;">
-                                                                <span t-field="o.customer_name" />
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td
-                                                                style="padding:2px 0; color:#374151; font-weight:700;">Contact
-                                                                Number</td>
-                                                            <td style="padding:2px 0;">
-                                                                <span t-field="o.contact_number" />
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td
-                                                                style="padding:2px 0; color:#374151; font-weight:700;">Contact
-                                                                Email</td>
-                                                            <td style="padding:2px 0;">
-                                                                <span t-field="o.contact_email" />
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td
-                                                                style="padding:2px 0; color:#374151; font-weight:700;">Service
-                                                                Type</td>
-                                                            <td style="padding:2px 0;">
-                                                                <span t-field="o.service_type.name" />
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td
-                                                                style="padding:2px 0; color:#374151; font-weight:700;">
-                                                                Supervisor</td>
-                                                            <td style="padding:2px 0;">
-                                                                <span
-                                                                    t-field="o.supervisor_user_id.name" />
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td
-                                                                style="padding:2px 0; color:#374151; font-weight:700;">
-                                                                Technician</td>
-                                                            <td style="padding:2px 0;">
-                                                                <span
-                                                                    t-field="o.assigned_technician_id.name" />
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </td>
-
-                                    <td style="width:50%; vertical-align:top; padding-left:8px;">
-                                        <div style="border:1px solid #e5e7eb; border-radius:8px;">
-                                            <div
-                                                style="background:#f3f4f6; padding:7px 10px; font-weight:700; border-bottom:1px solid #e5e7eb;">
-                                                Vehicle Info
-                                            </div>
-                                            <div style="padding:10px;">
-                                                <table style="width:100%; border-collapse:collapse;">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td
-                                                                style="width:42%; padding:2px 0; color:#374151; font-weight:700;">Plat
-                                                                Number</td>
-                                                            <td style="padding:2px 0;">
-                                                                <span t-field="o.plat_number" />
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td
-                                                                style="padding:2px 0; color:#374151; font-weight:700;">Vehicle
-                                                                Brand</td>
-                                                            <td style="padding:2px 0;">
-                                                                <span t-field="o.vehicle_brand.name" />
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td
-                                                                style="padding:2px 0; color:#374151; font-weight:700;">Vehicle
-                                                                Model</td>
-                                                            <td style="padding:2px 0;">
-                                                                <span t-field="o.vehicle_model.name" />
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td
-                                                                style="padding:2px 0; color:#374151; font-weight:700;">Year
-                                                                Manufacture</td>
-                                                            <td style="padding:2px 0;">
-                                                                <span
-                                                                    t-field="o.vehicle_year_manufacture" />
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td
-                                                                style="padding:2px 0; color:#374151; font-weight:700;">
-                                                                Kilometers</td>
-                                                            <td style="padding:2px 0;">
-                                                                <span t-field="o.kilometers" />
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-
-                            <div
-                                style="margin-top:12px; border:1px solid #e5e7eb; border-radius:8px;">
-                                <div
-                                    style="background:#f3f4f6; padding:7px 10px; font-weight:700; border-bottom:1px solid #e5e7eb;">
-                                    Complaints / Issues
+                        <t t-set="address">
+                            <div>
+                                <div class="fw-bold">
+                                    <span t-field="o.customer_name" />
                                 </div>
-                                <div style="padding:10px;">
-                                    <div
-                                        style="border:1px solid #e5e7eb; border-radius:8px; padding:10px; min-height:42px; white-space:pre-wrap; word-wrap:break-word;">
-                                        <t t-if="o.complaint_issue">
-                                            <span t-field="o.complaint_issue" />
-                                        </t>
-                                        <t t-else="">-</t>
-                                    </div>
+                                <div t-if="o.contact_number">
+                                    <span t-field="o.contact_number" />
+                                </div>
+                                <div t-if="o.contact_email">
+                                    <span t-field="o.contact_email" />
                                 </div>
                             </div>
+                        </t>
+
+                        <div class="page">
+                            <div class="oe_structure" />
+
+                            <div class="mt-4">
+                                <t t-set="layout_document_title"> Service Booking # <span
+                                        t-field="o.name" />
+                                </t>
+                            </div>
+
+                            <div class="row mt32 mb32 g-3">
+                                <div class="col-6">
+                                    <table class="table table-sm table-borderless mb-0 align-middle">
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="2" class="pb-2">
+                                                    <div class="border-bottom pb-1 me-3">
+                                                        <h4 class="mb-0">Customer Info</h4>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            <tr t-if="o.customer_name">
+                                                <td class="text-muted" style="width: 45%;">Customer</td>
+                                                <td class="fw-semibold">
+                                                    <span t-field="o.customer_name" />
+                                                </td>
+                                            </tr>
+                                            <tr t-if="o.contact_number">
+                                                <td class="text-muted">Contact Number</td>
+                                                <td>
+                                                    <span t-field="o.contact_number" />
+                                                </td>
+                                            </tr>
+                                            <tr t-if="o.contact_email">
+                                                <td class="text-muted">Contact Email</td>
+                                                <td>
+                                                    <span t-field="o.contact_email" />
+                                                </td>
+                                            </tr>
+                                            <tr t-if="o.service_type">
+                                                <td class="text-muted">Service Type</td>
+                                                <td>
+                                                    <span t-field="o.service_type.name" />
+                                                </td>
+                                            </tr>
+                                            <tr t-if="o.supervisor_user_id">
+                                                <td class="text-muted">Supervisor</td>
+                                                <td>
+                                                    <span t-field="o.supervisor_user_id.name" />
+                                                </td>
+                                            </tr>
+                                            <tr t-if="o.assigned_technician_id">
+                                                <td class="text-muted">Technician</td>
+                                                <td>
+                                                    <span t-field="o.assigned_technician_id.name" />
+                                                </td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="col-6">
+                                    <table class="table table-sm table-borderless mb-0 align-middle">
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="2" class="pb-2">
+                                                    <div class="border-bottom pb-1 me-3">
+                                                        <h4 class="mb-0">Vehicle Info</h4>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            <tr t-if="o.plat_number">
+                                                <td class="text-muted" style="width: 45%;">Plate
+                                                    Number</td>
+                                                <td class="fw-semibold">
+                                                    <span t-field="o.plat_number" />
+                                                </td>
+                                            </tr>
+                                            <tr t-if="o.vehicle_brand">
+                                                <td class="text-muted">Vehicle Brand</td>
+                                                <td>
+                                                    <span t-field="o.vehicle_brand.name" />
+                                                </td>
+                                            </tr>
+                                            <tr t-if="o.vehicle_model">
+                                                <td class="text-muted">Vehicle Model</td>
+                                                <td>
+                                                    <span t-field="o.vehicle_model.name" />
+                                                </td>
+                                            </tr>
+                                            <tr t-if="o.vehicle_year_manufacture">
+                                                <td class="text-muted">Year Manufacture</td>
+                                                <td>
+                                                    <span t-field="o.vehicle_year_manufacture" />
+                                                </td>
+                                            </tr>
+                                            <tr t-if="o.kilometers">
+                                                <td class="text-muted">Kilometers</td>
+                                                <td>
+                                                    <span t-field="o.kilometers" />
+                                                </td>
+                                            </tr>
+                                            <tr t-if="o.state">
+                                                <td class="text-muted">Status</td>
+                                                <td>
+                                                    <span t-field="o.state" />
+                                                </td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+
+                            <t t-if="o.complaint_issue">
+                                <strong class="d-block mt-4">Complaints / Issues</strong>
+                                <p t-field="o.complaint_issue" class="mb-0"
+                                    style="white-space: pre-wrap;" />
+                            </t>
+
+                            <div class="oe_structure" />
                         </div>
+
                     </t>
                 </t>
             </t>
         </template>
 
-
         <template id="report_service_booking_full_template">
             <t t-call="web.html_container">
                 <t t-foreach="docs" t-as="o">
                     <t t-call="web.external_layout">
-                        <div class="page" style="font-size:12px; color:#1f2937;">
 
-                            <div
-                                style="margin:0 0 14px 0; padding:0 0 10px 0; border-bottom:2px solid #e5e7eb;">
-                                <table style="width:100%; border-collapse:collapse;">
-                                    <tr>
-                                        <td style="vertical-align:top;">
-                                            <div
-                                                style="font-size:20px; font-weight:700; line-height:1.2; margin:0;">
-                                                Service Booking
-                                            </div>
-                                            <div
-                                                style="font-size:12px; color:#6b7280; margin-top:2px;">
-                                                Document No: <span style="font-weight:400;"
-                                                    t-field="o.name" />
-                                            </div>
-                                        </td>
-                                        <td style="width:45%; vertical-align:top;">
-                                            <table
-                                                style="width:100%; border-collapse:collapse; font-size:11px;">
+                        <t t-set="currency" t-value="o.currency_id or o.company_id.currency_id" />
+
+                        <t t-set="address">
+                            <div>
+                                <div class="fw-bold">
+                                    <span t-field="o.customer_name" />
+                                </div>
+                                <div t-if="o.contact_number">
+                                    <span t-field="o.contact_number" />
+                                </div>
+                                <div t-if="o.contact_email">
+                                    <span t-field="o.contact_email" />
+                                </div>
+                            </div>
+                        </t>
+
+                        <div class="page">
+                            <div class="oe_structure" />
+
+                            <div class="mt-4">
+                                <t t-set="layout_document_title"> Service Booking # <span
+                                        t-field="o.name" />
+                                </t>
+                            </div>
+
+                            <div class="row mt32 mb32 g-3">
+
+                                <div class="col-6">
+                                    <table class="table table-sm table-borderless mb-0 align-middle">
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="2" class="pb-2">
+                                                    <div class="border-bottom pb-1 me-3">
+                                                        <h4 class="mb-0">Customer Info</h4>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            <tr t-if="o.customer_name">
+                                                <td class="text-muted" style="width: 45%;">Customer</td>
+                                                <td class="fw-semibold">
+                                                    <span t-field="o.customer_name" />
+                                                </td>
+                                            </tr>
+                                            <tr t-if="o.contact_number">
+                                                <td class="text-muted">Contact Number</td>
+                                                <td>
+                                                    <span t-field="o.contact_number" />
+                                                </td>
+                                            </tr>
+                                            <tr t-if="o.contact_email">
+                                                <td class="text-muted">Contact Email</td>
+                                                <td>
+                                                    <span t-field="o.contact_email" />
+                                                </td>
+                                            </tr>
+                                            <tr t-if="o.service_type">
+                                                <td class="text-muted">Service Type</td>
+                                                <td>
+                                                    <span t-field="o.service_type.name" />
+                                                </td>
+                                            </tr>
+                                            <tr t-if="o.supervisor_user_id">
+                                                <td class="text-muted">Supervisor</td>
+                                                <td>
+                                                    <span t-field="o.supervisor_user_id.name" />
+                                                </td>
+                                            </tr>
+                                            <tr t-if="o.assigned_technician_id">
+                                                <td class="text-muted">Technician</td>
+                                                <td>
+                                                    <span t-field="o.assigned_technician_id.name" />
+                                                </td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="col-6">
+                                    <table class="table table-sm table-borderless mb-0 align-middle">
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="2" class="pb-2">
+                                                    <div class="border-bottom pb-1 me-3">
+                                                        <h4 class="mb-0">Vehicle Info</h4>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            <tr t-if="o.plat_number">
+                                                <td class="text-muted" style="width: 45%;">Plate
+                                                    Number</td>
+                                                <td class="fw-semibold">
+                                                    <span t-field="o.plat_number" />
+                                                </td>
+                                            </tr>
+                                            <tr t-if="o.vehicle_brand">
+                                                <td class="text-muted">Vehicle Brand</td>
+                                                <td>
+                                                    <span t-field="o.vehicle_brand.name" />
+                                                </td>
+                                            </tr>
+                                            <tr t-if="o.vehicle_model">
+                                                <td class="text-muted">Vehicle Model</td>
+                                                <td>
+                                                    <span t-field="o.vehicle_model.name" />
+                                                </td>
+                                            </tr>
+                                            <tr t-if="o.vehicle_year_manufacture">
+                                                <td class="text-muted">Year Manufacture</td>
+                                                <td>
+                                                    <span t-field="o.vehicle_year_manufacture" />
+                                                </td>
+                                            </tr>
+                                            <tr t-if="o.kilometers">
+                                                <td class="text-muted">Kilometers</td>
+                                                <td>
+                                                    <span t-field="o.kilometers" />
+                                                </td>
+                                            </tr>
+                                            <tr t-if="o.state">
+                                                <td class="text-muted">Status</td>
+                                                <td>
+                                                    <span t-field="o.state" />
+                                                </td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+
+                            <t t-if="o.complaint_issue">
+                                <strong class="d-block mt-4">Complaints / Issues</strong>
+                                <p t-field="o.complaint_issue" class="mb-0"
+                                    style="white-space: pre-wrap;" />
+                            </t>
+
+                            <t t-if="o.spare_part_line_ids or o.service_line_ids">
+                                <table
+                                    class="o_has_total_table table o_main_table table-borderless mt-4">
+                                    <thead style="display: table-row-group">
+                                        <tr>
+                                            <th class="text-start">
+                                                <strong>Description</strong>
+                                            </th>
+                                            <th class="text-end">
+                                                <strong>Qty</strong>
+                                            </th>
+                                            <th class="text-end">
+                                                <strong>Unit Price</strong>
+                                            </th>
+                                            <th class="text-end">
+                                                <strong>Amount</strong>
+                                            </th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                        <t t-if="o.spare_part_line_ids">
+                                            <tr class="fw-bolder o_line_section">
+                                                <td colspan="99" id="section">Spare Parts</td>
+                                            </tr>
+
+                                            <t t-foreach="o.spare_part_line_ids" t-as="line">
                                                 <tr>
-                                                    <td
-                                                        style="padding:1px 0; font-weight:700; color:#374151;">Booking
-                                                        Date</td>
-                                                    <td
-                                                        style="padding:1px 0; text-align:right; white-space:nowrap;">
-                                                        <span t-field="o.plan_service_date" />
+                                                    <td class="text-start">
+                                                        <span t-field="line.product_id.name" />
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <span t-field="line.qty" />
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <span t-field="line.unit_price"
+                                                            t-options="{'widget': 'monetary', 'display_currency': currency}" />
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <span t-field="line.subtotal"
+                                                            t-options="{'widget': 'monetary', 'display_currency': currency}" />
                                                     </td>
                                                 </tr>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
+                                            </t>
 
-                            <table style="width:100%; border-collapse:separate; border-spacing:0;">
-                                <tr>
-                                    <td style="width:50%; vertical-align:top; padding-right:8px;">
-                                        <div style="border:1px solid #e5e7eb; border-radius:8px;">
-                                            <div
-                                                style="background:#f3f4f6; padding:7px 10px; font-weight:700; border-bottom:1px solid #e5e7eb;">
-                                                Customer Info
-                                            </div>
-                                            <div style="padding:10px;">
-                                                <table style="width:100%; border-collapse:collapse;">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td
-                                                                style="width:42%; padding:2px 0; color:#374151; font-weight:700;">
-                                                                Customer</td>
-                                                            <td style="padding:2px 0;">
-                                                                <span t-field="o.customer_name" />
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td
-                                                                style="padding:2px 0; color:#374151; font-weight:700;">Contact
-                                                                Number</td>
-                                                            <td style="padding:2px 0;">
-                                                                <span t-field="o.contact_number" />
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td
-                                                                style="padding:2px 0; color:#374151; font-weight:700;">Contact
-                                                                Email</td>
-                                                            <td style="padding:2px 0;">
-                                                                <span t-field="o.contact_email" />
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td
-                                                                style="padding:2px 0; color:#374151; font-weight:700;">Service
-                                                                Type</td>
-                                                            <td style="padding:2px 0;">
-                                                                <span t-field="o.service_type.name" />
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td
-                                                                style="padding:2px 0; color:#374151; font-weight:700;">
-                                                                Supervisor</td>
-                                                            <td style="padding:2px 0;">
-                                                                <span
-                                                                    t-field="o.supervisor_user_id.name" />
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td
-                                                                style="padding:2px 0; color:#374151; font-weight:700;">
-                                                                Technician</td>
-                                                            <td style="padding:2px 0;">
-                                                                <span
-                                                                    t-field="o.assigned_technician_id.name" />
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </td>
-
-                                    <td style="width:50%; vertical-align:top; padding-left:8px;">
-                                        <div style="border:1px solid #e5e7eb; border-radius:8px;">
-                                            <div
-                                                style="background:#f3f4f6; padding:7px 10px; font-weight:700; border-bottom:1px solid #e5e7eb;">
-                                                Vehicle Info
-                                            </div>
-                                            <div style="padding:10px;">
-                                                <table style="width:100%; border-collapse:collapse;">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td
-                                                                style="width:42%; padding:2px 0; color:#374151; font-weight:700;">Plat
-                                                                Number</td>
-                                                            <td style="padding:2px 0;">
-                                                                <span t-field="o.plat_number" />
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td
-                                                                style="padding:2px 0; color:#374151; font-weight:700;">Vehicle
-                                                                Brand</td>
-                                                            <td style="padding:2px 0;">
-                                                                <span t-field="o.vehicle_brand.name" />
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td
-                                                                style="padding:2px 0; color:#374151; font-weight:700;">Vehicle
-                                                                Model</td>
-                                                            <td style="padding:2px 0;">
-                                                                <span t-field="o.vehicle_model.name" />
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td
-                                                                style="padding:2px 0; color:#374151; font-weight:700;">Year
-                                                                Manufacture</td>
-                                                            <td style="padding:2px 0;">
-                                                                <span
-                                                                    t-field="o.vehicle_year_manufacture" />
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td
-                                                                style="padding:2px 0; color:#374151; font-weight:700;">
-                                                                Kilometers</td>
-                                                            <td style="padding:2px 0;">
-                                                                <span t-field="o.kilometers" />
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-
-                            <div
-                                style="margin-top:12px; border:1px solid #e5e7eb; border-radius:8px;">
-                                <div
-                                    style="background:#f3f4f6; padding:7px 10px; font-weight:700; border-bottom:1px solid #e5e7eb;">
-                                    Complaints / Issues
-                                </div>
-                                <div style="padding:10px;">
-                                    <div
-                                        style="border:1px solid #e5e7eb; border-radius:8px; padding:10px; min-height:42px; white-space:pre-wrap; word-wrap:break-word;">
-                                        <t t-if="o.complaint_issue">
-                                            <span t-field="o.complaint_issue" />
+                                            <tr class="is-subtotal text-end">
+                                                <td colspan="99" id="subtotal">
+                                                    <strong class="me-3">Subtotal</strong>
+                                                    <span t-field="o.total_sparepart"
+                                                        t-options="{'widget': 'monetary', 'display_currency': currency}" />
+                                                </td>
+                                            </tr>
                                         </t>
-                                        <t t-else="">-</t>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <t t-if="o.spare_part_line_ids">
-                                <div
-                                    style="margin-top:12px; border:1px solid #e5e7eb; border-radius:8px;">
-                                    <div
-                                        style="background:#f3f4f6; padding:7px 10px; font-weight:700; border-bottom:1px solid #e5e7eb;">
-                                        Spare Parts Used
-                                    </div>
-                                    <div style="padding:10px;">
-                                        <table
-                                            style="width:100%; border-collapse:collapse; page-break-inside:auto;">
-                                            <thead>
-                                                <tr style="page-break-inside:avoid;">
-                                                    <th
-                                                        style="background:#f3f4f6; border:1px solid #e5e7eb; padding:7px 8px; font-weight:700; text-align:left;">
-                                                        Product</th>
-                                                    <th
-                                                        style="background:#f3f4f6; border:1px solid #e5e7eb; padding:7px 8px; font-weight:700; text-align:right; white-space:nowrap;">
-                                                        Quantity</th>
-                                                    <th
-                                                        style="background:#f3f4f6; border:1px solid #e5e7eb; padding:7px 8px; font-weight:700; text-align:right; white-space:nowrap;">Unit
-                                                        Price</th>
-                                                    <th
-                                                        style="background:#f3f4f6; border:1px solid #e5e7eb; padding:7px 8px; font-weight:700; text-align:right; white-space:nowrap;">
-                                                        Subtotal</th>
+                                        <t t-if="o.service_line_ids">
+                                            <tr class="fw-bolder o_line_section">
+                                                <td colspan="99" id="section">Services</td>
+                                            </tr>
+
+                                            <t t-foreach="o.service_line_ids" t-as="line">
+                                                <tr>
+                                                    <td class="text-start">
+                                                        <span t-field="line.product_id.name" />
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <span t-field="line.qty" />
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <span t-field="line.unit_price"
+                                                            t-options="{'widget': 'monetary', 'display_currency': currency}" />
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <span t-field="line.subtotal"
+                                                            t-options="{'widget': 'monetary', 'display_currency': currency}" />
+                                                    </td>
                                                 </tr>
-                                            </thead>
-                                            <tbody>
-                                                <t t-foreach="o.spare_part_line_ids" t-as="line">
-                                                    <tr style="page-break-inside:avoid;">
-                                                        <td
-                                                            style="border:1px solid #e5e7eb; padding:7px 8px;">
-                                                            <span t-field="line.product_id.name" />
-                                                        </td>
-                                                        <td
-                                                            style="border:1px solid #e5e7eb; padding:7px 8px; text-align:right; white-space:nowrap;">
-                                                            <span t-field="line.qty" />
-                                                        </td>
-                                                        <td
-                                                            style="border:1px solid #e5e7eb; padding:7px 8px; text-align:right; white-space:nowrap;">
-                                                            <span t-field="line.unit_price"
-                                                                t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
-                                                        </td>
-                                                        <td
-                                                            style="border:1px solid #e5e7eb; padding:7px 8px; text-align:right; white-space:nowrap;">
-                                                            <span t-field="line.subtotal"
-                                                                t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
-                                                        </td>
-                                                    </tr>
-                                                </t>
-                                            </tbody>
-                                        </table>
+                                            </t>
 
-                                        <div style="margin-top:10px; text-align:right;">
-                                            <div
-                                                style="display:inline-block; border:1px solid #d1d5db; border-radius:8px; padding:10px; background:#fbfbfb; width:320px; text-align:left;">
-                                                <table style="width:100%; border-collapse:collapse;">
-                                                    <tr>
-                                                        <td style="padding:2px 0; font-weight:700;">Total
-                                                            Spare Parts</td>
-                                                        <td
-                                                            style="padding:2px 0; text-align:right; white-space:nowrap;">
-                                                            <span t-field="o.total_sparepart"
-                                                                t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                        </div>
+                                            <tr class="is-subtotal text-end">
+                                                <td colspan="99" id="subtotal">
+                                                    <strong class="me-3">Subtotal</strong>
+                                                    <span t-field="o.total_service_fee"
+                                                        t-options="{'widget': 'monetary', 'display_currency': currency}" />
+                                                </td>
+                                            </tr>
+                                        </t>
 
-                                    </div>
-                                </div>
+                                    </tbody>
+                                </table>
                             </t>
 
-                            <t t-if="o.service_line_ids">
-                                <div
-                                    style="margin-top:12px; border:1px solid #e5e7eb; border-radius:8px;">
-                                    <div
-                                        style="background:#f3f4f6; padding:7px 10px; font-weight:700; border-bottom:1px solid #e5e7eb;">
-                                        Services Performed
-                                    </div>
-                                    <div style="padding:10px;">
-                                        <table
-                                            style="width:100%; border-collapse:collapse; page-break-inside:auto;">
-                                            <thead>
-                                                <tr style="page-break-inside:avoid;">
-                                                    <th
-                                                        style="background:#f3f4f6; border:1px solid #e5e7eb; padding:7px 8px; font-weight:700; text-align:left;">
-                                                        Service</th>
-                                                    <th
-                                                        style="background:#f3f4f6; border:1px solid #e5e7eb; padding:7px 8px; font-weight:700; text-align:right; white-space:nowrap;">
-                                                        Quantity</th>
-                                                    <th
-                                                        style="background:#f3f4f6; border:1px solid #e5e7eb; padding:7px 8px; font-weight:700; text-align:right; white-space:nowrap;">Unit
-                                                        Price</th>
-                                                    <th
-                                                        style="background:#f3f4f6; border:1px solid #e5e7eb; padding:7px 8px; font-weight:700; text-align:right; white-space:nowrap;">
-                                                        Subtotal</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <t t-foreach="o.service_line_ids" t-as="line">
-                                                    <tr style="page-break-inside:avoid;">
-                                                        <td
-                                                            style="border:1px solid #e5e7eb; padding:7px 8px;">
-                                                            <span t-field="line.product_id.name" />
-                                                        </td>
-                                                        <td
-                                                            style="border:1px solid #e5e7eb; padding:7px 8px; text-align:right; white-space:nowrap;">
-                                                            <span t-field="line.qty" />
-                                                        </td>
-                                                        <td
-                                                            style="border:1px solid #e5e7eb; padding:7px 8px; text-align:right; white-space:nowrap;">
-                                                            <span t-field="line.unit_price"
-                                                                t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
-                                                        </td>
-                                                        <td
-                                                            style="border:1px solid #e5e7eb; padding:7px 8px; text-align:right; white-space:nowrap;">
-                                                            <span t-field="line.subtotal"
-                                                                t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
-                                                        </td>
-                                                    </tr>
-                                                </t>
-                                            </tbody>
-                                        </table>
-
-                                        <div style="margin-top:10px; text-align:right;">
-                                            <div
-                                                style="display:inline-block; border:1px solid #d1d5db; border-radius:8px; padding:10px; background:#fbfbfb; width:320px; text-align:left;">
-                                                <table style="width:100%; border-collapse:collapse;">
-                                                    <tr>
-                                                        <td style="padding:2px 0; font-weight:700;">Total
-                                                            Service Fee</td>
-                                                        <td
-                                                            style="padding:2px 0; text-align:right; white-space:nowrap;">
-                                                            <span t-field="o.total_service_fee"
-                                                                t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </t>
-
-                            <t t-if="o.inspection_checklist_line_ids">
-                                <div
-                                    style="margin-top:12px; border:1px solid #e5e7eb; border-radius:8px;">
-                                    <div
-                                        style="background:#f3f4f6; padding:7px 10px; font-weight:700; border-bottom:1px solid #e5e7eb;">
-                                        Inspection Checklist
-                                    </div>
-                                    <div style="padding:10px;">
-                                        <table
-                                            style="width:100%; border-collapse:collapse; page-break-inside:auto;">
-                                            <thead>
-                                                <tr style="page-break-inside:avoid;">
-                                                    <th
-                                                        style="background:#f3f4f6; border:1px solid #e5e7eb; padding:7px 8px; font-weight:700; text-align:left;">Inspection
-                                                        Type</th>
-                                                    <th
-                                                        style="background:#f3f4f6; border:1px solid #e5e7eb; padding:7px 8px; font-weight:700; text-align:center; width:20%;">
-                                                        Status</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <t t-foreach="o.inspection_checklist_line_ids"
-                                                    t-as="line">
-                                                    <tr style="page-break-inside:avoid;">
-                                                        <td
-                                                            style="border:1px solid #e5e7eb; padding:7px 8px;">
-                                                            <span
-                                                                t-field="line.inspection_type_id.name" />
-                                                        </td>
-                                                        <td
-                                                            style="border:1px solid #e5e7eb; padding:7px 8px; text-align:center;">
-                                                            <t t-if="line.checklist_ok">
-                                                                <span
-                                                                    style="display:inline-block; padding:2px 10px; border:1px solid #d1d5db; border-radius:999px; font-size:10px; font-weight:700; line-height:1.4;">
-                                                                    OK</span>
-                                                            </t>
-                                                            <t t-else="">
-                                                                <span
-                                                                    style="display:inline-block; padding:2px 10px; border:1px solid #d1d5db; border-radius:999px; font-size:10px; font-weight:700; line-height:1.4;">NOT
-                                                                    OK</span>
-                                                            </t>
-                                                        </td>
-                                                    </tr>
-                                                </t>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </t>
-
-                            <div style="margin-top:12px; text-align:right;">
-                                <div
-                                    style="display:inline-block; border:1px solid #d1d5db; border-radius:8px; padding:10px; background:#fbfbfb; width:320px; text-align:left;">
-                                    <table style="width:100%; border-collapse:collapse;">
-                                        <tr>
-                                            <td
-                                                style="padding:2px 0; font-weight:800; border-top:1px solid #d1d5db; padding-top:6px;">Total
-                                                Amount</td>
-                                            <td
-                                                style="padding:2px 0; text-align:right; white-space:nowrap; font-weight:800; border-top:1px solid #d1d5db; padding-top:6px;">
-                                                <span t-field="o.total_amount"
-                                                    t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
-                                            </td>
-                                        </tr>
+                            <div id="total" class="row justify-content-end mt-n3">
+                                <div class="col-4">
+                                    <table class="o_total_table table table-borderless">
+                                        <tbody>
+                                            <tr>
+                                                <td class="text-end">
+                                                    <strong>Total Spare Parts</strong>
+                                                </td>
+                                                <td class="text-end">
+                                                    <span t-field="o.total_sparepart"
+                                                        t-options="{'widget': 'monetary', 'display_currency': currency}" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-end">
+                                                    <strong>Total Services</strong>
+                                                </td>
+                                                <td class="text-end">
+                                                    <span t-field="o.total_service_fee"
+                                                        t-options="{'widget': 'monetary', 'display_currency': currency}" />
+                                                </td>
+                                            </tr>
+                                            <tr class="o_total">
+                                                <td class="text-end">
+                                                    <strong>Total</strong>
+                                                </td>
+                                                <td class="text-end">
+                                                    <span t-field="o.total_amount"
+                                                        t-options="{'widget': 'monetary', 'display_currency': currency}" />
+                                                </td>
+                                            </tr>
+                                        </tbody>
                                     </table>
                                 </div>
                             </div>
+
+                            <t t-if="o.inspection_checklist_line_ids">
+                                <strong class="d-block mt-4">Inspection Checklist</strong>
+                                <table class="table table-sm o_main_table table-borderless">
+                                    <thead style="display: table-row-group">
+                                        <tr>
+                                            <th class="text-start">
+                                                <strong>Inspection Type</strong>
+                                            </th>
+                                            <th class="text-end">
+                                                <strong>Status</strong>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="o.inspection_checklist_line_ids" t-as="line">
+                                            <tr>
+                                                <td class="text-start">
+                                                    <span t-field="line.inspection_type_id.name" />
+                                                </td>
+                                                <td class="text-end">
+                                                    <t t-if="line.checklist_ok">OK</t>
+                                                    <t t-else="">NOT OK</t>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </t>
+
+                            <div class="oe_structure" />
                         </div>
+
                     </t>
                 </t>
             </t>
