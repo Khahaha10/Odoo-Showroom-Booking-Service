@@ -165,14 +165,16 @@
                                 <field name="internal_media_document" widget="many2many_binary"
                                     readonly="is_checklist_readonly" />
                             </page>
-                            <page string="Insepection Checklist">
-                                <field name="inspection_checklist_line_ids"
-                                    readonly="is_checklist_readonly">
-                                    <list editable="bottom">
-                                        <field name="inspection_type_id" />
-                                        <field name="checklist_ok" />
-                                    </list>
-                                </field>
+                            <page string="Inspection Checklist">
+                                <group>
+                                    <field name="inspection_checklist_line_ids"
+                                        readonly="is_checklist_readonly">
+                                        <list editable="bottom">
+                                            <field name="inspection_type_id" />
+                                            <field name="checklist_ok" />
+                                        </list>
+                                    </field>
+                                </group>
                             </page>
                             <page string="Totals">
                                 <group>
@@ -267,9 +269,9 @@
             <field name="name">Print Job Card</field>
             <field name="model">service.booking</field>
             <field name="report_type">qweb-pdf</field>
-            <field name="report_name">infinys_service_showroom.report_service_booking_simple_template</field>
-            <field name="report_file">infinys_service_showroom.report_service_booking_simple</field>
-            <field name="print_report_name">'Service Booking - %s' % (object.name)</field>
+            <field name="report_name">infinys_service_showroom.report_job_card_template</field>
+            <field name="report_file">infinys_service_showroom.report_job_card</field>
+            <field name="print_report_name">'Job Card - %s' % (object.name)</field>
             <field name="binding_model_id" ref="model_service_booking" />
             <field name="binding_type">report</field>
         </record>
@@ -281,7 +283,7 @@
             <field name="report_type">qweb-pdf</field>
             <field name="report_name">infinys_service_showroom.report_service_booking_full_template</field>
             <field name="report_file">infinys_service_showroom.report_service_booking_full</field>
-            <field name="print_report_name">'Service Booking Full - %s' % (object.name)</field>
+            <field name="print_report_name">'Service Booking - %s' % (object.name)</field>
             <field name="binding_model_id" ref="model_service_booking" />
             <field name="binding_type">report</field>
         </record>
