@@ -18,9 +18,9 @@
             <field name="arch" type="xml">
                 <form>
                     <sheet>
-                        <group>
-                            <field name="name"/>
-                            <field name="images" string="Brand Image" optional="show" widget="image"/>
+                        <group string="Vehicle Brand" name="vehicle_brand_group">
+                            <field name="name" />
+                            <field name="images" string="Brand Image" optional="show" widget="image" />
                         </group>
                     </sheet>
                 </form>
@@ -32,9 +32,9 @@
             <field name="model">service.vehicle.brand</field>
             <field name="arch" type="xml">
                 <list>
-                    <field name="id"/>
-                    <field name="name"/>
-                    <field name="images" string="Brand Image" optional="show" widget="image" width="100" height="100"/>
+                    <field name="name" />
+                    <field name="images" string="Brand Image" optional="show" widget="image"
+                        width="100" height="100" />
                 </list>
             </field>
         </record>

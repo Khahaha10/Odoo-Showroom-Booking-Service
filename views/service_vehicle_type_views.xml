@@ -29,7 +29,7 @@
             <field name="name">service.vehicle.type.view.list</field>
             <field name="model">service.vehicle.type</field>
             <field name="arch" type="xml">
-                <list>
+                <list editable="bottom">
                     <field name="name"/>
                 </list>
             </field>

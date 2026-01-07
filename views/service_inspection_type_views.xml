@@ -18,10 +18,10 @@
             <field name="arch" type="xml">
                 <form>
                     <sheet>
-                        <group>
-                            <field name="name"/>
-                            <field name="description"/>
-                            <field name="active"/>
+                        <group string="Inspection Type" name="inspection_type_group">
+                            <field name="name" />
+                            <field name="description" />
+                            <field name="active" />
                         </group>
                     </sheet>
                 </form>
@@ -33,9 +33,9 @@
             <field name="model">service.inspection.type</field>
             <field name="arch" type="xml">
                 <list>
-                    <field name="name"/>
-                    <field name="description"/>
-                    <field name="active"/>
+                    <field name="name" />
+                    <field name="description" />
+                    <field name="active" />
                 </list>
             </field>
         </record>

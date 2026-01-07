@@ -30,7 +30,7 @@
             <field name="name">service.vehicle.fuel.type.view.list</field>
             <field name="model">service.vehicle.fuel.type</field>
             <field name="arch" type="xml">
-                <list>
+                <list editable="bottom">
                     <field name="name"/>
                 </list>
             </field>

@@ -19,12 +19,16 @@
                 <form>
                     <sheet>
                         <group>
-                            <field name="user_id"/>
-                            <field name="user_title" readonly="1"/>
-                            <field name="user_email" readonly="1"/>
-                            <field name="user_phone" readonly="1"/>
-                            <field name="user_mobile" readonly="1"/>
-                            <field name="active"/>
+                            <group string="Supervisor User" name="user_group">
+                                <field name="user_id" domain="[('share', '=', False)]" />
+                                <field name="active" />
+                            </group>
+                            <group string="User Info" name="user_info_group">
+                                <field name="user_title" readonly="1" />
+                                <field name="user_email" readonly="1" />
+                                <field name="user_phone" readonly="1" />
+                                <field name="user_mobile" readonly="1" />
+                            </group>
                         </group>
                     </sheet>
                 </form>
@@ -36,12 +40,12 @@
             <field name="model">service.supervisor.user</field>
             <field name="arch" type="xml">
                 <list>
-                    <field name="user_id"/>
-                    <field name="user_title" readonly="1"/>
-                    <field name="user_email" readonly="1"/>
-                    <field name="user_phone" readonly="1"/>
-                    <field name="user_mobile" readonly="1"/>
-                    <field name="active"/>
+                    <field name="user_id" domain="[('share', '=', False)]" />
+                    <field name="user_title" readonly="1" />
+                    <field name="user_email" readonly="1" />
+                    <field name="user_phone" readonly="1" />
+                    <field name="user_mobile" readonly="1" />
+                    <field name="active" />
                 </list>
             </field>
         </record>
