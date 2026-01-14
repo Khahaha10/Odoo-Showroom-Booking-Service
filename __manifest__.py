@@ -60,6 +60,8 @@
         "web.assets_frontend": [
             "infinys_service_showroom/static/src/css/car_showroom.css",
             "infinys_service_showroom/static/src/css/service_dashboard.css",
+            'infinys_service_showroom/static/src/scss/service_booking.scss',
+            'infinys_service_showroom/static/src/js/service_booking_wizard.js',
         ],
     },
     "images": ["static/description/banner.png"],

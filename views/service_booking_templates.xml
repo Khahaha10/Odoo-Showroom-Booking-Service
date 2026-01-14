@@ -4,137 +4,268 @@
   <record id="website_menu_service_booking" model="website.menu">
     <field name="name">Service Booking</field>
     <field name="url">/service-booking/new</field>
-    <field name="website_id" ref="website.default_website"/>
-    <field name="parent_id" ref="website.main_menu"/>
+    <field name="website_id" ref="website.default_website" />
+    <field name="parent_id" ref="website.main_menu" />
     <field name="sequence">20</field>
   </record>
 
   <template id="service_booking_form_template" name="Service Booking Form">
     <t t-call="website.layout">
-      <div id="wrap" class="oe_structure">
-        <section class="container py-5">
-          <h1 class="text-center mb-4">Service Booking</h1>
-          <form action="/service_booking/submit" method="post" class="row g-3" enctype="multipart/form-data">
-            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+      <div id="wrap" class="oe_structure" style="background-color: #f8f9fa;">
+        <section class="container py-4 py-md-5">
 
-            <div class="col-lg-6">
-                <div class="row g-3">
-                    <h3 class="mt-5">Customer Information</h3>
-                    <div class="col-12">
-                      <label for="customer_name" class="form-label">Customer Name</label>
-                      <input type="text" class="form-control" name="customer_name" required="1" t-att-value="customer_name" t-att-readonly="'readonly' if customer_name else None"/>
+          <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10 col-12">
+
+              <div class="text-center mb-4 mb-md-5">
+                <h1 class="fw-bold text-primary">Service Booking</h1>
+                <p class="text-muted mb-2">Schedule your vehicle maintenance in 3 easy steps.</p>
+
+                <div class="position-relative mt-4 mx-2 mx-md-4">
+                  <div class="progress-bg-line">
+                    <div class="progress-fill-line" id="progressBar" style="width: 0%;"></div>
+                  </div>
+                  <div class="d-flex justify-content-between position-relative">
+                    <div class="text-center step-indicator-wrapper">
+                      <div class="step-indicator active" id="ind_1">1</div>
+                      <div class="step-label active" id="label_1">Contact</div>
                     </div>
-                    <div class="col-12">
-                      <label for="contact_number" class="form-label">Contact Number</label>
-                      <input type="text" class="form-control" name="contact_number" required="1" t-att-value="customer_phone"/>
+                    <div class="text-center step-indicator-wrapper">
+                      <div class="step-indicator" id="ind_2">2</div>
+                      <div class="step-label" id="label_2">Vehicle</div>
                     </div>
-                    <div class="col-12">
-                      <label for="contact_email" class="form-label">Email</label>
-                      <input type="email" class="form-control" name="contact_email" t-att-value="customer_email"/>
+                    <div class="text-center step-indicator-wrapper">
+                      <div class="step-indicator" id="ind_3">3</div>
+                      <div class="step-label" id="label_3">Service</div>
                     </div>
-                    <div class="col-12">
-                      <label for="plan_service_date" class="form-label">Planned Service Date</label>
-                      <input type="datetime-local" class="form-control" name="plan_service_date" required="1"/>
-                    </div>
-                    <div class="col-12">
-                      <label for="service_type" class="form-label">Service Type</label>
-                      <select class="form-select" name="service_type" required="1">
-                        <t t-foreach="service_types" t-as="st">
-                          <option t-att-value="st.id"><t t-esc="st.name"/></option>
-                        </t>
-                      </select>
-                    </div>
-                    <div class="col-12">
-                      <label for="media_document" class="form-label">Media Documents</label>
-                      <input type="file" class="form-control" name="media_document" multiple="multiple"/>
-                    </div>
+                  </div>
                 </div>
-            </div>
+              </div>
 
-            <div class="col-lg-6">
-                <div class="row g-3">
-                    <h3 class="mt-5">Vehicle Information</h3>
-                    <div t-if="customer_vehicles" class="col-12">
-                        <label for="customer_vehicle_select" class="form-label">My Vehicles</label>
+              <div class="card shadow border-0 rounded-3 mt-2">
+                <div class="card-body p-4 p-md-5">
+                  <form action="/service_booking/submit" method="post" id="bookingForm"
+                    enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+
+                    <div class="step-content" id="step1">
+                      <h4 class="mb-4 text-dark fw-bold">Contact Information</h4>
+                      <div class="row g-3">
+                        <div class="col-12">
+                          <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                          <input type="text" class="form-control" name="customer_name"
+                            required="required" t-att-value="customer_name"
+                            t-att-readonly="'readonly' if customer_name else None" />
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">WhatsApp/Phone Number <span class="text-danger">
+                            *</span></label>
+                          <input type="text" class="form-control" name="contact_number"
+                            required="required" t-att-value="customer_phone" />
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Email Address</label>
+                          <input type="email" class="form-control" name="contact_email"
+                            t-att-value="customer_email" />
+                        </div>
+                      </div>
+
+                      <div class="mt-4 text-end">
+                        <button type="button" class="btn btn-primary px-4 btn-nav-action next-step">Next:
+                          Vehicle Info <i class="fa fa-arrow-right ms-2"></i></button>
+                      </div>
+                    </div>
+
+                    <div class="step-content d-none" id="step2">
+                      <h4 class="mb-4 text-dark fw-bold">Vehicle Information</h4>
+
+                      <div t-if="customer_vehicles" class="mb-4 p-3 bg-light rounded border">
+                        <label for="customer_vehicle_select" class="form-label fw-bold text-primary">Select
+                          from My Garage</label>
                         <select id="customer_vehicle_select" class="form-select">
-                            <option value="">Select a vehicle...</option>
-                            <t t-foreach="customer_vehicles" t-as="vehicle">
-                                <option t-att-value="vehicle.id" 
-                                        t-att-data-vehicle="{'plate': vehicle.vehicle_plate_no, 'brand_id': vehicle.vehicle_brand_id.id, 'model_id': vehicle.vehicle_model_id.id, 'year': vehicle.vehicle_year}">
-                                    <t t-esc="vehicle.vehicle_plate_no"/> - <t t-esc="vehicle.vehicle_model_id.name"/>
-                                </option>
-                            </t>
+                          <option value="">-- Choose Registered Vehicle --</option>
+                          <t t-foreach="customer_vehicles" t-as="vehicle">
+                            <option t-att-value="vehicle.id"
+                              t-att-data-vehicle="{'plate': vehicle.vehicle_plate_no, 'brand_id': vehicle.vehicle_brand_id.id, 'model_id': vehicle.vehicle_model_id.id, 'year': vehicle.vehicle_year}">
+                              <t t-esc="vehicle.vehicle_plate_no" /> - <t
+                                t-esc="vehicle.vehicle_model_id.name" />
+                            </option>
+                          </t>
                         </select>
+                      </div>
+
+                      <div class="row g-3">
+                        <div class="col-md-6">
+                          <label class="form-label">License Plate <span class="text-danger">*</span></label>
+                          <input type="text" class="form-control" id="plat_number"
+                            name="plat_number" required="required" placeholder="e.g. B 1234 XYZ" />
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Year of Manufacture</label>
+                          <input type="number" class="form-control" id="vehicle_year_manufacture"
+                            name="vehicle_year_manufacture" placeholder="e.g. 2022" />
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Brand <span class="text-danger">*</span></label>
+                          <select class="form-select" id="vehicle_brand" name="vehicle_brand"
+                            required="required">
+                            <option value="">Select Brand...</option>
+                            <t t-foreach="brands" t-as="brand">
+                              <option t-att-value="brand.id">
+                                <t t-esc="brand.name" />
+                              </option>
+                            </t>
+                          </select>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Model <span class="text-danger">*</span></label>
+                          <select class="form-select" id="vehicle_model" name="vehicle_model"
+                            required="required">
+                            <option value="">Select Model...</option>
+                            <t t-foreach="models" t-as="model">
+                              <option t-att-value="model.id">
+                                <t t-esc="model.name" />
+                              </option>
+                            </t>
+                          </select>
+                        </div>
+                        <div class="col-12">
+                          <label class="form-label">Current Odometer</label>
+                          <div class="input-group">
+                            <input type="number" class="form-control" name="kilometers"
+                              placeholder="e.g. 50000" />
+                            <span class="input-group-text text-muted">KM</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="mt-4 d-flex justify-content-between btn-nav-wrapper">
+                        <button type="button"
+                          class="btn btn-outline-secondary px-4 btn-nav-action prev-step"><i
+                            class="fa fa-arrow-left ms-2"></i> Back</button>
+                        <button type="button" class="btn btn-primary px-4 btn-nav-action next-step">Next:
+                          Service Details <i class="fa fa-arrow-right ms-2"></i></button>
+                      </div>
                     </div>
-                    <div class="col-12">
-                      <label for="plat_number" class="form-label">Plat Number</label>
-                      <input type="text" class="form-control" id="plat_number" name="plat_number" required="1"/>
+
+                    <div class="step-content d-none" id="step3">
+                      <h4 class="mb-4 text-dark fw-bold">Service Details</h4>
+                      <div class="row g-3">
+                        <div class="col-md-6">
+                          <label class="form-label">Service Type <span class="text-danger">*</span></label>
+                          <select class="form-select" name="service_type" required="required">
+                            <option value="">Select Service Type...</option>
+                            <t t-foreach="service_types" t-as="st">
+                              <option t-att-value="st.id">
+                                <t t-esc="st.name" />
+                              </option>
+                            </t>
+                          </select>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Preferred Date <span class="text-danger">*</span></label>
+                          <input type="datetime-local" class="form-control" name="plan_service_date"
+                            required="required" />
+                        </div>
+                        <div class="col-12">
+                          <label class="form-label">Complaints / Notes</label>
+                          <textarea class="form-control" name="complaint_issue" rows="4"
+                            placeholder="Describe any issues or specific requests..."></textarea>
+                        </div>
+                        <div class="col-12">
+                          <label class="form-label">Upload Photos/Documents (Optional)</label>
+                          <input type="file" class="form-control" name="media_document"
+                            multiple="multiple" />
+                          <small class="text-muted">Upload photos of damage or registration
+                            documents.</small>
+                        </div>
+                      </div>
+
+                      <div class="mt-4 d-flex justify-content-between btn-nav-wrapper">
+                        <button type="button"
+                          class="btn btn-outline-secondary px-4 btn-nav-action prev-step"><i
+                            class="fa fa-arrow-left ms-2"></i> Back</button>
+                        <button type="submit" class="btn btn-primary px-5 btn-nav-action">Submit
+                          Booking <i class="fa fa-check ms-2"></i></button>
+                      </div>
                     </div>
-                    <div class="col-12">
-                      <label for="vehicle_brand" class="form-label">Vehicle Brand</label>
-                      <select class="form-select" id="vehicle_brand" name="vehicle_brand" required="1">
-                         <t t-foreach="brands" t-as="brand">
-                            <option t-att-value="brand.id"><t t-esc="brand.name"/></option>
-                         </t>
-                      </select>
-                    </div>
-                    <div class="col-12">
-                      <label for="vehicle_model" class="form-label">Vehicle Model</label>
-                      <select class="form-select" id="vehicle_model" name="vehicle_model" required="1">
-                        <t t-foreach="models" t-as="model">
-                            <option t-att-value="model.id"><t t-esc="model.name"/></option>
-                        </t>
-                      </select>
-                    </div>
-                    <div class="col-12">
-                      <label for="vehicle_year_manufacture" class="form-label">Year of Manufacture</label>
-                      <input type="number" class="form-control" id="vehicle_year_manufacture" name="vehicle_year_manufacture"/>
-                    </div>
-                    <div class="col-12">
-                      <label for="kilometers" class="form-label">Kilometers</label>
-                      <input type="number" class="form-control" name="kilometers"/>
-                    </div>
+
+                  </form>
                 </div>
+              </div>
             </div>
-            <div class="col-12 mt-3">
-              <label for="complaint_issue" class="form-label">Complaints</label>
-              <textarea class="form-control" name="complaint_issue" rows="3"></textarea>
-            </div>
-            <div class="col-12 text-center mt-4">
-                <button type="submit" class="btn btn-primary btn-lg">Submit Booking</button>
-            </div>
-          </form>
+          </div>
         </section>
       </div>
-      <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const vehicleSelect = document.getElementById('customer_vehicle_select');
-            if (vehicleSelect) {
-                vehicleSelect.addEventListener('change', function() {
-                    const selectedOption = this.options[this.selectedIndex];
-                    if (selectedOption.value) {
-                        const vehicleData = JSON.parse(selectedOption.getAttribute('data-vehicle').replace(/'/g, '"'));
-                        document.getElementById('plat_number').value = vehicleData.plate;
-                        document.getElementById('vehicle_brand').value = vehicleData.brand_id;
-                        document.getElementById('vehicle_model').value = vehicleData.model_id;
-                        document.getElementById('vehicle_year_manufacture').value = vehicleData.year;
-                    }
-                });
-            }
-        });
-      </script>
     </t>
   </template>
 
   <template id="service_booking_success_template" name="Service Booking Success">
     <t t-call="website.layout">
-      <div id="wrap">
-        <div class="container py-5">
-          <h1>Thank You!</h1>
-          <div class="alert alert-success" role="alert">
-            Your service booking has been submitted successfully. Your booking number is <t t-esc="appointment.name"/>.
+      <div id="wrap" class="oe_structure" style="background-color: #f8f9fa; min-height: 80vh;">
+        <section class="container py-5 h-100">
+          <div class="row justify-content-center align-items-center h-100">
+            <div class="col-lg-6 col-md-8">
+
+              <div class="card shadow border-0 rounded-3 text-center overflow-hidden">
+                <div class="bg-success p-2"></div>
+
+                <div class="card-body p-5">
+
+                  <h2 class="fw-bold text-dark mb-2">Booking Confirmed!</h2>
+                  <p class="text-muted mb-4">Thank you, we have received your service request.</p>
+
+                  <div class="px-5 py-3 mb-4">
+                    <small class="d-block text-uppercase fw-bold text-primary tracking-wide mb-1"
+                      style="font-size: 0.75rem; letter-spacing: 1px;">Your Booking Number</small>
+                    <span class="h2 fw-bolder text-primary mb-0">
+                      <t t-esc="appointment.name" />
+                    </span>
+                  </div>
+
+                  <div class="bg-light rounded p-4 text-start mb-4">
+                    <h6 class="text-uppercase text-muted mb-3"
+                      style="font-size: 0.75rem; font-weight: 700;">Booking Summary</h6>
+                    <div class="row g-3">
+                      <div class="col-6">
+                        <small class="text-muted d-block">Scheduled Date</small>
+                        <span class="fw-bold text-dark">
+                          <span t-field="appointment.plan_service_date"
+                            t-options='{"widget": "date", "format": "d MMM yyyy"}' />
+                        </span>
+                      </div>
+                      <div class="col-6">
+                        <small class="text-muted d-block">Service Type</small>
+                        <span class="fw-bold text-dark">
+                          <t t-esc="appointment.service_type.name" />
+                        </span>
+                      </div>
+                      <div class="col-12 border-top pt-2 mt-2">
+                        <small class="text-muted d-block">Vehicle</small>
+                        <div class="fw-bold text-dark">
+                          <t t-esc="appointment.vehicle_brand.name" />
+                                                    <t
+                            t-esc="appointment.vehicle_model.name" /> - <t
+                            t-esc="appointment.plat_number" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mb-4 text-muted small">
+                    <i class="fa fa-info-circle me-1"></i> Our Service Advisor will contact you
+                    shortly via WhatsApp/Phone for final confirmation. </div>
+
+                  <div class="d-grid gap-2 d-sm-flex justify-content-sm-center btn-nav-wrapper">
+                    <a href="/" class="btn btn-primary px-4 btn-nav-action">Back to Home</a>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
           </div>
-        </div>
+        </section>
       </div>
     </t>
   </template>
