@@ -1,0 +1,184 @@
+.showroom-wrap {
+    min-height: 80vh;
+}
+
+.hover-primary:hover {
+    color: #0d6efd !important;
+    transition: color 0.2s ease;
+}
+
+.tracking-wide {
+    letter-spacing: 0.05em;
+}
+
+.overflow-visible {
+    overflow: visible !important;
+}
+
+.car-card {
+    transition: all 0.3s ease;
+    border: none;
+    overflow: hidden;
+    background-color: #fff;
+    
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+    }
+    
+    .card-img-top {
+        height: 220px;
+        object-fit: cover;
+    }
+}
+
+.spec-badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.65em;
+    background-color: #f8f9fa;
+    color: #6c757d;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.bg-gradient-dark {
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+}
+
+.text-shadow {
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.car-gallery-section {
+    background-color: #fff;
+    height: 100%;
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+
+    @media (max-width: 991.98px) {
+        border-radius: 0.5rem 0.5rem 0 0;
+    }
+}
+
+.car-carousel-img {
+    object-fit: cover;
+    width: 100%;
+}
+
+.car-thumbs-container {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+}
+
+.car-thumb-box {
+    width: 80px;
+    height: 60px;
+    cursor: pointer;
+    flex-shrink: 0;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    opacity: 0.7;
+
+    &:hover, &.active {
+        opacity: 1;
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+    }
+
+    img { width: 100%; height: 100%; object-fit: cover; }
+}
+
+.car-description-area {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.car-info-col {
+    background-color: #f8f9fa; 
+    border-left: 1px solid #e9ecef; 
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+
+    @media (max-width: 991.98px) {
+        border-left: none;
+        border-top: 1px solid #e9ecef;
+        border-radius: 0 0 0.5rem 0.5rem;
+    }
+}
+
+.car-sticky-content {
+    
+    @media (min-width: 992px) {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 100px;
+        z-index: 10;
+        
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        &::-webkit-scrollbar { display: none; }
+    }
+}
+
+.visit-step-indicator-wrapper {
+    position: relative;
+    z-index: 2;
+    flex: 0 0 auto;
+}
+
+.visit-step-indicator { 
+    width: 2.5rem; height: 2.5rem;
+    border-radius: 50%;
+    border: 2px solid #dee2e6;
+    background-color: #fff;
+    color: #6c757d;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    z-index: 2;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto;
+    
+    &.active { 
+        background-color: #0d6efd; color: white; border-color: #0d6efd; 
+        box-shadow: 0 0 10px rgba(13, 110, 253, 0.3); 
+    }
+}
+
+.visit-step-label {
+    margin-top: 0.5rem; font-size: 0.85rem; font-weight: 600; color: #6c757d;
+    transition: color 0.3s ease;
+    &.active { color: #0d6efd; }
+}
+
+.progress-bg-line {
+    position: absolute; top: 1.25rem; left: 1.25rem; right: 1.25rem;
+    width: auto; height: 3px; background-color: #e9ecef;
+    z-index: 1; transform: translateY(-50%);
+}
+
+.progress-fill-line {
+    height: 100%; background-color: #0d6efd; transition: width 0.4s ease;
+}
+
+.visit-step-content { animation: fadeIn 0.4s ease-out; }
+.animate-pop { animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes popIn { 0% { opacity: 0; transform: scale(0.5); } 100% { opacity: 1; transform: scale(1); } }
+
+@media (max-width: 576px) {
+    .visit-step-label { font-size: 0.7rem; }
+    .visit-step-indicator { width: 2rem; height: 2rem; font-size: 0.9rem; }
+    .progress-bg-line { top: 1rem; left: 1rem; right: 1rem; }
+    .btn-nav-action { width: 100%; margin-bottom: 0.5rem; }
+    .btn-nav-wrapper { flex-direction: column-reverse; gap: 0.5rem; }
+}

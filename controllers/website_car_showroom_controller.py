@@ -6,7 +6,7 @@ class WebsiteCarShowroom(http.Controller):
 
     @http.route(["/cars"], type="http", auth="public", website=True)
     def cars_list(self, **kwargs):
-        Car = request.env["showroom.car.vehicle"].sudo()
+        Car = request.env["showroom.car.vehicle"].sudo()    
         domain = [("website_published", "=", True), ("active", "=", True)]
 
         brand_id = kwargs.get("brand_id")
@@ -21,8 +21,22 @@ class WebsiteCarShowroom(http.Controller):
         if max_price:
             domain.append(("price", "<=", float(max_price)))
 
-        cars = Car.search(domain, order="name")
+        search_term = kwargs.get("search")
+        if search_term:
+            domain.append(("name", "ilike", search_term))
 
+        order_param = kwargs.get("order", "name asc")
+        valid_orders = {
+            'name asc': 'name',
+            'name desc': 'name desc',
+            'price asc': 'price',
+            'price desc': 'price desc',
+            'year desc': 'year desc',
+            'id desc': 'Newest Arrivals'
+        }
+        order = valid_orders.get(order_param, 'name') if order_param in valid_orders else 'name'
+
+        cars = Car.search(domain, order=order)
         brands = request.env["service.vehicle.brand"].sudo().search([])
 
         render_values = {
@@ -31,6 +45,8 @@ class WebsiteCarShowroom(http.Controller):
             "selected_brand_id": int(brand_id) if brand_id else None,
             "min_price": min_price,
             "max_price": max_price,
+            "search_term": search_term,
+            "current_order": order_param,
         }
 
         return request.render(
@@ -161,6 +177,8 @@ class WebsiteCarShowroom(http.Controller):
         else:
             lead_vals["name"] = "Showroom visit"
 
-        request.env["crm.lead"].sudo().create(lead_vals)
+        lead = request.env["crm.lead"].sudo().create(lead_vals)
 
-        return request.render("infinys_service_showroom.car_visit_thanks", {})
+        return request.render("infinys_service_showroom.car_visit_thanks", {
+            "lead": lead
+        })

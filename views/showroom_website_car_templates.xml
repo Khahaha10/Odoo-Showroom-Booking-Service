@@ -4,198 +4,393 @@
   <record id="website_menu_car_showroom" model="website.menu">
     <field name="name">Showroom</field>
     <field name="url">/cars</field>
-    <field name="website_id" ref="website.default_website"/>
-    <field name="parent_id" ref="website.main_menu"/>
+    <field name="website_id" ref="website.default_website" />
+    <field name="parent_id" ref="website.main_menu" />
     <field name="sequence">30</field>
   </record>
 
   <template id="car_showroom_list" name="Car Showroom List">
     <t t-call="website.layout">
       <div id="wrap" class="oe_structure">
-        <section class="container py-5">
-          <h1 class="text-center mb-4">Car Showroom</h1>
-          <p class="text-center text-muted mb-5">
-            Browse our available cars and open the details page to see full specifications and pricing.
-          </p>
 
-          <div class="row mb-4">
-            <div class="col-12">
-              <form action="/cars" method="get" class="row g-3 align-items-end">
-                <div class="col-md-4">
-                  <label for="brand_id" class="form-label">Brand</label>
-                  <select name="brand_id" id="brand_id" class="form-select">
-                    <option value="">All Brands</option>
-                    <t t-foreach="brands" t-as="brand">
-                      <option t-att-value="brand.id" t-att-selected="brand.id == selected_brand_id">
-                        <t t-esc="brand.name"/>
-                      </option>
-                    </t>
-                  </select>
-                </div>
-                <div class="col-md-3">
-                  <label for="min_price" class="form-label">Min Price</label>
-                  <input type="number" name="min_price" id="min_price" class="form-control" t-att-value="min_price"/>
-                </div>
-                <div class="col-md-3">
-                  <label for="max_price" class="form-label">Max Price</label>
-                  <input type="number" name="max_price" id="max_price" class="form-control" t-att-value="max_price"/>
-                </div>
-                <div class="col-md-2 d-grid">
-                  <button type="submit" class="btn btn-primary">Apply Filters</button>
-                </div>
-              </form>
-            </div>
-          </div>
+        <section class="bg-white border-bottom shadow-sm pt-3 pb-3">
+          <div class="container">
 
-          <div class="row">
-            <t t-if="not cars">
-              <div class="col-12 text-center">
-                <p>No vehicles are currently available.</p>
+            <div class="row g-2 align-items-center">
+
+              <div class="col-12 col-lg">
+                <form method="get"
+                  class="o_searchbar_form s_searchbar_input o_wsale_products_searchbar_form w-100"
+                  action="/cars">
+                  <div role="search" class="input-group">
+                    <input type="search" name="search"
+                      class="search-query form-control oe_search_box border-0 bg-light text-dark"
+                      placeholder="Search cars..." t-att-value="search_term" />
+                    <button type="submit" aria-label="Search" title="Search"
+                      class="btn oe_search_button btn-light border-0">
+                      <i class="fa fa-search text-muted"></i>
+                    </button>
+                  </div>
+                  <input type="hidden" name="brand_id" t-att-value="selected_brand_id" />
+                  <input type="hidden" name="min_price" t-att-value="min_price" />
+                  <input type="hidden" name="max_price" t-att-value="max_price" />
+                  <input type="hidden" name="order" t-att-value="current_order" />
+                </form>
               </div>
-            </t>
 
-            <t t-foreach="cars" t-as="car">
-              <div class="col-12 col-md-4 mb-4 d-flex">
-                <div class="card w-100 h-100 shadow-sm">
-                  <t t-if="car.main_image">
-                    <div class="aspect-ratio-16by9">
-                      <img t-att-src="'/web/image/showroom.car.vehicle/%s/main_image' % car.id" t-att-alt="car.name" class="card-img-top img-fluid"/>
-                    </div>
-                  </t>
-                  <div class="card-body d-flex flex-column">
-                    <h5 class="card-title mb-1" t-esc="car.name"/>
-                    <p class="text-muted mb-2">
-                      <t t-if="car.brand_id">
-                        <span t-esc="car.brand_id.name" class="me-1"/>
-                      </t>
-                      <t t-if="car.model_id">
-                                                •                        <span t-esc="car.model_id.name" class="mx-1"/>
-                      </t>
-                      <t t-if="car.year">
-                                                •                        <span t-esc="car.year" class="mx-1"/>
-                      </t>
-                    </p>
-
-                    <p class="fw-bold h5 mb-3">
-                      <span t-esc="car.currency_id.symbol"/>
-                      <t t-if="car.price">
-                        <span t-esc="'{:,.0f}'.format(car.price or 0)"/>
-                      </t>
-                    </p>
-
-                    <a t-att-href="'/cars/%s' % car.id" class="btn btn-primary mt-auto">
-                      View details
-                    </a>
+              <div class="col-6 col-lg-auto">
+                <div class="dropdown">
+                  <button
+                    class="btn btn-light w-100 dropdown-toggle d-flex align-items-center justify-content-center gap-2"
+                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fa fa-sliders text-muted"></i>
+                    <span>Filters</span>
+                    <t t-if="selected_brand_id or min_price or max_price">
+                      <span class="badge rounded-pill bg-primary" style="font-size: 0.5rem;">●</span>
+                    </t>
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-end p-3 shadow border-0"
+                    style="min-width: 300px;">
+                    <form action="/cars" method="get">
+                      <input type="hidden" name="search" t-att-value="search_term" />
+                      <input type="hidden" name="order" t-att-value="current_order" />
+                      <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Brand</label>
+                        <select name="brand_id" class="form-select bg-light border-0">
+                          <option value="">All Brands</option>
+                          <t t-foreach="brands" t-as="brand">
+                            <option t-att-value="brand.id"
+                              t-att-selected="brand.id == selected_brand_id">
+                              <t t-esc="brand.name" />
+                            </option>
+                          </t>
+                        </select>
+                      </div>
+                      <div class="row g-2 mb-3">
+                        <div class="col-6">
+                          <label class="form-label small fw-bold text-muted">Min Price</label>
+                          <input type="number" name="min_price"
+                            class="form-control bg-light border-0" placeholder="0"
+                            t-att-value="min_price" />
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label small fw-bold text-muted">Max Price</label>
+                          <input type="number" name="max_price"
+                            class="form-control bg-light border-0"
+                            placeholder="Max"
+                            t-att-value="max_price" />
+                        </div>
+                      </div>
+                      <button type="submit" class="btn btn-primary w-100 btn-sm">Apply Filters</button>
+                    </form>
                   </div>
                 </div>
               </div>
-            </t>
+
+              <div class="col-6 col-lg-auto">
+                <div class="dropdown">
+                  <a role="button" href="#" data-bs-toggle="dropdown"
+                    class="dropdown-toggle btn btn-light w-100 d-flex align-items-center justify-content-center text-muted">
+                    <small class="d-none d-lg-inline me-1">Sort:</small>
+                    <span class="text-truncate fw-bold text-dark">
+                      <t t-if="current_order == 'price asc'">Price: Low to High</t>
+                      <t t-elif="current_order == 'price desc'">Price: High to Low</t>
+                      <t t-elif="current_order == 'year desc'">Newest Year</t>
+                      <t t-elif="current_order == 'id desc'">Newest Arrivals</t>
+                      <t t-else="">Name (A-Z)</t>
+                    </span>
+                  </a>
+                  <div class="dropdown-menu dropdown-menu-end shadow border-0">
+                    <form action="/cars" method="get" class="d-none" id="sort_form_name_asc">
+                      <input type="hidden" name="search" t-att-value="search_term" />
+                      <input type="hidden" name="brand_id" t-att-value="selected_brand_id" />
+                      <input type="hidden" name="min_price" t-att-value="min_price" />
+                      <input type="hidden" name="max_price" t-att-value="max_price" />
+                      <input type="hidden" name="order" value="name asc" />
+                    </form>
+                    <a class="dropdown-item" href="#"
+                      onclick="document.getElementById('sort_form_name_asc').submit();">Name (A-Z)</a>
+
+                    <form action="/cars" method="get" class="d-none" id="sort_form_price_asc">
+                      <input type="hidden" name="search" t-att-value="search_term" />
+                      <input type="hidden" name="brand_id" t-att-value="selected_brand_id" />
+                      <input type="hidden" name="min_price" t-att-value="min_price" />
+                      <input type="hidden" name="max_price" t-att-value="max_price" />
+                      <input type="hidden" name="order" value="price asc" />
+                    </form>
+                    <a class="dropdown-item" href="#"
+                      onclick="document.getElementById('sort_form_price_asc').submit();">Price - Low
+                      to High</a>
+
+                    <form action="/cars" method="get" class="d-none" id="sort_form_price_desc">
+                      <input type="hidden" name="search" t-att-value="search_term" />
+                      <input type="hidden" name="brand_id" t-att-value="selected_brand_id" />
+                      <input type="hidden" name="min_price" t-att-value="min_price" />
+                      <input type="hidden" name="max_price" t-att-value="max_price" />
+                      <input type="hidden" name="order" value="price desc" />
+                    </form>
+                    <a class="dropdown-item" href="#"
+                      onclick="document.getElementById('sort_form_price_desc').submit();">Price -
+                      High
+                      to Low</a>
+
+                    <form action="/cars" method="get" class="d-none" id="sort_form_year_desc">
+                      <input type="hidden" name="search" t-att-value="search_term" />
+                      <input type="hidden" name="brand_id" t-att-value="selected_brand_id" />
+                      <input type="hidden" name="min_price" t-att-value="min_price" />
+                      <input type="hidden" name="max_price" t-att-value="max_price" />
+                      <input type="hidden" name="order" value="year desc" />
+                    </form>
+                    <a class="dropdown-item" href="#"
+                      onclick="document.getElementById('sort_form_year_desc').submit();">Newest Year</a>
+                  </div>
+                </div>
+              </div>
+
+            </div>
           </div>
         </section>
+
+        <section class="bg-light pt-3 pb-5" style="min-height: 80vh;">
+          <div class="container">
+            <div class="row g-4">
+
+              <t t-if="not cars">
+                <div class="col-12 text-center py-5">
+                  <div class="text-muted">
+                    <i class="fa fa-car fa-4x mb-3 opacity-25"></i>
+                    <h3>No vehicles found</h3>
+                    <p>Try adjusting your search criteria.</p>
+                    <a href="/cars" class="btn btn-outline-primary mt-2">Clear All Filters</a>
+                  </div>
+                </div>
+              </t>
+
+              <t t-foreach="cars" t-as="car">
+                <div class="col-12 col-md-6 col-lg-4 d-flex">
+
+                  <div
+                    class="card car-card w-100 shadow-sm rounded-3 position-relative bg-white border-0">
+                    <a t-att-href="'/cars/%s' % car.id" class="stretched-link"></a>
+
+                    <div class="position-relative">
+                      <t t-if="car.main_image">
+                        <img t-att-src="'/web/image/showroom.car.vehicle/%s/main_image' % car.id"
+                          class="card-img-top" t-att-alt="car.name" />
+                      </t>
+                      <t t-else="">
+                        <div
+                          class="card-img-top bg-light d-flex align-items-center justify-content-center">
+                          <i class="fa fa-image fa-2x text-muted"></i>
+                        </div>
+                      </t>
+                      <div class="position-absolute bottom-0 start-0 w-100 bg-gradient-dark p-3">
+                        <h5 class="text-white mb-0 text-shadow">
+                          <t t-esc="car.name" />
+                        </h5>
+                      </div>
+                    </div>
+
+                    <div class="card-body d-flex flex-column pt-3">
+                      <div class="d-flex gap-2 mb-3 flex-wrap">
+                        <span class="spec-badge bg-light text-muted border-0" t-if="car.year">
+                          <i class="fa fa-calendar-o"></i>
+                          <t t-esc="car.year" />
+                        </span>
+                        <span class="spec-badge bg-light text-muted border-0"
+                          t-if="car.transmission">
+                          <i class="fa fa-cogs"></i>
+                          <t t-esc="dict(mt='Manual', at='Auto').get(car.transmission)" />
+                        </span>
+                        <span class="spec-badge bg-light text-muted border-0" t-if="car.odometer">
+                          <i class="fa fa-tachometer"></i>
+                          <span t-esc="'{:.0f}k'.format(car.odometer/1000)" />
+                        </span>
+                      </div>
+
+                      <div class="mt-auto border-top pt-3">
+                        <small class="text-muted d-block text-uppercase" style="font-size: 0.75rem;">
+                          Price</small>
+                        <h3 class="fw-bold text-primary mb-0">
+                          <span t-esc="car.currency_id.symbol" />
+                          <span t-esc="'{:,.0f}'.format(car.price or 0)" />
+                        </h3>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </t>
+            </div>
+          </div>
+        </section>
+
       </div>
     </t>
   </template>
 
   <template id="car_showroom_detail" name="Car Showroom Detail">
     <t t-call="website.layout">
-      <div id="wrap" class="oe_structure">
-        <section class="container py-5">
-          <a href="/cars" class="btn btn-link mb-3">
-← Back to car list
-          </a>
+      <div id="wrap" class="oe_structure bg-light showroom-wrap">
+        <section class="container py-3">
 
-          <div class="row">
-            <div class="col-12 col-lg-6 mb-4">
-              <div t-att-id="'carGallery-%s' % car.id" class="carousel slide" data-bs-ride="false">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <a href="/cars" class="text-decoration-none text-muted fw-bold hover-primary">
+              <i class="fa fa-arrow-left me-2"></i> Back to Showroom </a>
+            <nav aria-label="breadcrumb" class="d-none d-md-block">
+              <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                  <a href="/cars" class="text-decoration-none">Showroom</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                  <t t-esc="car.name" />
+                </li>
+              </ol>
+            </nav>
+          </div>
 
-                <div class="carousel-inner">
-                  <t t-if="car.main_image">
-                    <div class="carousel-item active">
-                      <div class="car-gallery-item">
-                        <img t-att-src="'/web/image/showroom.car.vehicle/%s/main_image' % car.id" t-att-alt="car.name" class="d-block w-100 img-fluid rounded"/>
-                      </div>
+          <div class="card shadow-lg border-0 rounded-3 overflow-visible">
+
+            <div class="row g-0">
+
+              <div class="col-lg-7">
+                <div class="car-gallery-section p-4 p-lg-5">
+
+                  <div t-att-id="'carGallery-%s' % car.id" class="carousel slide mb-3"
+                    data-bs-ride="false">
+                    <div class="carousel-inner rounded shadow-sm border">
+                      <t t-if="car.main_image">
+                        <div class="carousel-item active">
+                          <div class="ratio ratio-16x9">
+                            <img
+                              t-att-src="'/web/image/showroom.car.vehicle/%s/main_image' % car.id"
+                              class="d-block w-100 car-carousel-img" />
+                          </div>
+                        </div>
+                      </t>
+                      <t t-foreach="car.image_ids" t-as="img">
+                        <div class="carousel-item">
+                          <div class="ratio ratio-16x9">
+                            <img
+                              t-att-src="'/web/image/showroom.car.vehicle.image/%s/image' % img.id"
+                              class="d-block w-100 car-carousel-img" />
+                          </div>
+                        </div>
+                      </t>
                     </div>
-                  </t>
+                    <t t-if="len(car.image_ids) > 0">
+                      <button class="carousel-control-prev" type="button"
+                        t-att-data-bs-target="'#carGallery-%s' % car.id" data-bs-slide="prev">
+                        <span
+                          class="carousel-control-prev-icon bg-dark rounded-circle bg-opacity-50 p-3"
+                          aria-hidden="true"></span>
+                      </button>
+                      <button class="carousel-control-next" type="button"
+                        t-att-data-bs-target="'#carGallery-%s' % car.id" data-bs-slide="next">
+                        <span
+                          class="carousel-control-next-icon bg-dark rounded-circle bg-opacity-50 p-3"
+                          aria-hidden="true"></span>
+                      </button>
+                    </t>
+                  </div>
 
-                  <t t-foreach="car.image_ids" t-as="img">
-                    <div class="carousel-item">
-                      <div class="car-gallery-item">
-                        <img t-att-src="'/web/image/showroom.car.vehicle.image/%s/image' % img.id" t-att-alt="img.name or car.name" class="d-block w-100 img-fluid rounded"/>
+                  <div class="d-flex gap-2 overflow-auto pb-2 car-thumbs-container mb-4">
+                    <t t-set="thumb_index" t-value="0" />
+                    <t t-if="car.main_image">
+                      <div class="car-thumb-box active"
+                        t-att-data-bs-target="'#carGallery-%s' % car.id" data-bs-slide-to="0">
+                        <img t-att-src="'/web/image/showroom.car.vehicle/%s/main_image' % car.id" />
                       </div>
-                    </div>
-                  </t>
+                    </t>
+                    <t t-foreach="car.image_ids" t-as="img">
+                      <t t-set="thumb_index" t-value="thumb_index + 1" />
+                      <div class="car-thumb-box" t-att-data-bs-target="'#carGallery-%s' % car.id"
+                        t-att-data-bs-slide-to="thumb_index">
+                        <img t-att-src="'/web/image/showroom.car.vehicle.image/%s/image' % img.id" />
+                      </div>
+                    </t>
+                  </div>
+
+                  <div class="car-description-area">
+                    <h4 class="fw-bold text-dark mb-3">Vehicle Description</h4>
+                    <div class="text-muted lh-lg" t-raw="car.description" />
+                  </div>
                 </div>
-
-                <button class="carousel-control-prev" type="button" t-att-data-bs-target="'#carGallery-%s' % car.id" data-bs-slide="prev">
-                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                  <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" t-att-data-bs-target="'#carGallery-%s' % car.id" data-bs-slide="next">
-                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                  <span class="visually-hidden">Next</span>
-                </button>
               </div>
 
-              <div class="d-flex flex-wrap gap-2 mt-3">
-                <t t-set="thumb_index" t-value="0"/>
+              <div class="col-lg-5 car-info-col">
+                <div class="p-4 p-lg-5 h-100">
 
-                <t t-if="car.main_image">
-                  <div class="car-thumb-wrapper">
-                    <img t-att-src="'/web/image/showroom.car.vehicle/%s/main_image' % car.id" t-att-alt="car.name" class="img-fluid" t-att-data-bs-target="'#carGallery-%s' % car.id" data-bs-slide-to="0"/>
+                  <div class="car-sticky-content">
+                    <div class="mb-3">
+                      <h6 class="text-muted text-uppercase fw-bold mb-2 tracking-wide small">
+                        <t t-esc="car.brand_id.name" /> / <t t-esc="car.model_id.name" />
+                      </h6>
+                      <h2 class="fw-bold text-dark mb-0">
+                        <t t-esc="car.name" />
+                      </h2>
+                    </div>
+
+                    <div class="mb-4">
+                      <h2 class="text-primary fw-bold mb-1">
+                        <span t-esc="car.currency_id.symbol" />
+                        <span t-esc="'{:,.0f}'.format(car.price or 0)" />
+                      </h2>
+                      <span
+                        class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill px-2">
+                        Available Stock
+                      </span>
+                    </div>
+
+                    <hr class="text-muted opacity-25" />
+
+                    <div class="row g-2 mb-4 text-center">
+                      <div class="col-4">
+                        <div class="bg-white p-2 rounded border h-100">
+                          <div class="small text-muted text-uppercase" style="font-size: 0.65rem;">
+                            Year</div>
+                          <div class="fw-bold text-dark">
+                            <t t-esc="car.year" />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-4">
+                        <div class="bg-white p-2 rounded border h-100">
+                          <div class="small text-muted text-uppercase" style="font-size: 0.65rem;">
+                            Km</div>
+                          <div class="fw-bold text-dark">
+                            <t t-esc="'{:.0f}k'.format(car.odometer/1000)" />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-4">
+                        <div class="bg-white p-2 rounded border h-100">
+                          <div class="small text-muted text-uppercase" style="font-size: 0.65rem;">
+                            Trans</div>
+                          <div class="fw-bold text-dark">
+                            <t t-esc="dict(mt='Manual', at='Auto').get(car.transmission)" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                      <h6 class="fw-bold mb-2 mt-2">Interested?</h6>
+                      <a t-att-href="'/visit-schedule?vehicle_id=%s' % car.id"
+                        class="btn btn-primary fw-bold py-2 shadow-sm">
+                        + Schedule Visit
+                      </a>
+                      <t t-if="whatsapp_phone_number">
+                        <a
+                          t-attf-href="https://api.whatsapp.com/send/?phone={{whatsapp_phone_number}}&amp;text={{whatsapp_prefill_message.replace('{car_name}', car.name)}}&amp;type=phone_number&amp;app_absent=0"
+                          target="_blank" class="btn btn-outline-success fw-bold py-2 shadow-sm">
+                          <i class="fa fa-whatsapp me-2" /> Chat via WhatsApp </a>
+                      </t>
+                    </div>
                   </div>
-                </t>
 
-                <t t-foreach="car.image_ids" t-as="img">
-                  <t t-set="thumb_index" t-value="thumb_index + 1"/>
-                  <div class="car-thumb-wrapper">
-                    <img t-att-src="'/web/image/showroom.car.vehicle.image/%s/image' % img.id" t-att-alt="img.name or car.name" class="img-fluid" t-att-data-bs-target="'#carGallery-%s' % car.id" t-att-data-bs-slide-to="thumb_index"/>
-                  </div>
-                </t>
+                </div>
               </div>
-            </div>
-
-            <div class="col-12 col-lg-6">
-              <h1 class="mb-2" t-esc="car.name"/>
-              <p class="text-muted mb-2">
-                <t t-if="car.brand_id">
-                  <span t-esc="car.brand_id.name" class="me-2"/>
-                </t>
-                <t t-if="car.model_id">
-                                    •                  <span t-esc="car.model_id.name" class="mx-2"/>
-                </t>
-                <t t-if="car.year">
-                                    •                  <span t-esc="car.year" class="mx-2"/>
-                </t>
-                <t t-if="car.transmission">
-                                    •                  <span t-esc="dict(mt='Manual', at='Automatic').get(car.transmission)" class="mx-2"/>
-                </t>
-                <t t-if="car.odometer">
-                                    •                  <span t-esc="'{:,.0f} km'.format(car.odometer or 0)" class="mx-2"/>
-                </t>
-              </p>
-
-              <p class="h3 fw-bold mb-4">
-                <span t-esc="car.currency_id.symbol"/>
-                <t t-if="car.price">
-                  <span t-esc="'{:,.0f}'.format(car.price or 0)"/>
-                </t>
-              </p>
-
-              <div class="mb-4">
-                <t t-if="car.description">
-                  <div t-raw="car.description"/>
-                </t>
-              </div>
-
-              <a t-att-href="'/visit-schedule?vehicle_id=%s' % car.id" class="btn btn-primary btn-md">
-                Schedule a visit
-              </a>
-              <t t-if="whatsapp_phone_number">
-                  <a t-attf-href="https://api.whatsapp.com/send/?phone={{whatsapp_phone_number}}&amp;text={{whatsapp_prefill_message.replace('{car_name}', car.name)}}&amp;type=phone_number&amp;app_absent=0"
-                     target="_blank" class="btn btn-success btn-md ms-2">
-                      <i class="fa fa-whatsapp me-2"/> Chat via WhatsApp
-                  </a>
-              </t>
 
             </div>
           </div>
@@ -206,78 +401,130 @@
 
   <template id="car_visit_form" name="Car Visit Form">
     <t t-call="website.layout">
-      <div id="wrap" class="oe_structure">
-        <section class="container">
-          <a href="/" class="btn btn-link mb-3">
-← Back to home
-          </a>
+      <div id="wrap" class="oe_structure" style="background-color: #f8f9fa;">
+        <section class="container py-4 py-md-5">
+          <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
 
-          <h1 class="mb-3">Schedule a showroom visit</h1>
+              <div class="text-center mb-4 mb-md-5">
+                <h1 class="fw-bold text-primary">Schedule a Visit</h1>
+                <p class="text-muted">Book a time to inspect <strong
+                    t-esc="vehicle.name if vehicle else 'our vehicle'" />.</p>
+                <div class="position-relative mt-4 mx-2 mx-md-4">
+                  <div class="progress-bg-line">
+                    <div class="progress-fill-line" id="visitProgressBar" style="width: 0%;"></div>
+                  </div>
+                  <div class="d-flex justify-content-between position-relative">
+                    <div class="text-center visit-step-indicator-wrapper">
+                      <div class="visit-step-indicator active" id="v-ind_1">1</div>
+                      <div class="visit-step-label active" id="v-label_1">Contact</div>
+                    </div>
+                    <div class="text-center visit-step-indicator-wrapper">
+                      <div class="visit-step-indicator" id="v-ind_2">2</div>
+                      <div class="visit-step-label" id="v-label_2">Time</div>
+                    </div>
+                    <div class="text-center visit-step-indicator-wrapper">
+                      <div class="visit-step-indicator" id="v-ind_3">3</div>
+                      <div class="visit-step-label" id="v-label_3">Notes</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-          <t t-if="vehicle">
-            <div class="alert alert-info mb-4">
-              Booking a visit for:
-              <strong t-esc="vehicle.name"/>
+              <div class="card shadow border-0 rounded-3">
+                <div class="card-body p-4 p-md-5">
+                  <form action="/visit-schedule/submit" method="post" id="carVisitForm">
+                    <t t-if="vehicle">
+                      <input type="hidden" name="vehicle_id" t-att-value="vehicle.id" />
+                      <div class="alert alert-light border d-flex align-items-center mb-4">
+                        <i class="fa fa-car fa-2x text-primary me-3"></i>
+                        <div>
+                          <div class="small text-muted">Vehicle of Interest</div>
+                          <div class="fw-bold">
+                            <t t-esc="vehicle.name" />
+                          </div>
+                        </div>
+                      </div>
+                    </t>
+
+                    <div class="visit-step-content" id="v-step1">
+                      <h4 class="mb-4 text-dark fw-bold">Contact Information</h4>
+                      <div class="row g-3">
+                        <div class="col-12">
+                          <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                          <input type="text" name="name" class="form-control" required="required"
+                            placeholder="e.g. John Doe" />
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                          <input type="text" name="phone" class="form-control" required="required" />
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Email</label>
+                          <input type="email" name="email" class="form-control" />
+                        </div>
+                      </div>
+                      <div class="mt-4 text-end">
+                        <button type="button"
+                          class="btn btn-primary px-4 btn-nav-action visit-next-step">Next: Schedule <i
+                            class="fa fa-arrow-right ms-2"></i></button>
+                      </div>
+                    </div>
+
+                    <div class="visit-step-content d-none" id="v-step2">
+                      <h4 class="mb-4 text-dark fw-bold">Select Schedule</h4>
+                      <div class="row g-3">
+                        <div class="col-md-6">
+                          <label class="form-label">Visit Date <span class="text-danger">*</span></label>
+                          <input type="date" name="visit_date" class="form-control"
+                            required="required" />
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Approximate Time <span class="text-danger">*</span></label>
+                          <input type="time" name="visit_time" class="form-control"
+                            required="required" />
+                        </div>
+                        <div class="col-12">
+                          <label class="form-label">Purpose <span class="text-danger">*</span></label>
+                          <select name="visit_purpose" class="form-select" required="required">
+                            <option value="">Select purpose...</option>
+                            <t t-foreach="visit_purpose_selection" t-as="p">
+                              <option t-att-value="p[0]">
+                                <t t-esc="p[1]" />
+                              </option>
+                            </t>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="mt-4 d-flex justify-content-between btn-nav-wrapper">
+                        <button type="button"
+                          class="btn btn-outline-secondary px-4 btn-nav-action visit-prev-step"><i
+                            class="fa fa-arrow-left ms-2"></i> Back</button>
+                        <button type="button"
+                          class="btn btn-primary px-4 btn-nav-action visit-next-step">Next:
+                          Confirmation <i class="fa fa-arrow-right ms-2"></i></button>
+                      </div>
+                    </div>
+
+                    <div class="visit-step-content d-none" id="v-step3">
+                      <h4 class="mb-4 text-dark fw-bold">Additional Notes</h4>
+                      <div class="mb-3">
+                        <textarea name="description" rows="4" class="form-control"
+                          placeholder="Any specific questions or requests?"></textarea>
+                      </div>
+                      <div class="mt-4 d-flex justify-content-between btn-nav-wrapper">
+                        <button type="button"
+                          class="btn btn-outline-secondary px-4 btn-nav-action visit-prev-step"><i
+                            class="fa fa-arrow-left ms-2"></i> Back</button>
+                        <button type="submit" class="btn btn-primary px-5 btn-nav-action">Confirm
+                          Booking <i class="fa fa-check ms-2"></i></button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
             </div>
-          </t>
-
-          <form action="/visit-schedule/submit" method="post" class="row g-3">
-            <t t-if="vehicle">
-              <input type="hidden" name="vehicle_id" t-att-value="vehicle.id"/>
-            </t>
-
-            <div class="col-12 col-md-6">
-              <label for="name" class="form-label">Full name</label>
-              <input type="text" name="name" id="name" class="form-control" required="required"/>
-            </div>
-
-            <div class="col-12 col-md-6">
-              <label for="phone" class="form-label">Phone number</label>
-              <input type="text" name="phone" id="phone" class="form-control" required="required"/>
-            </div>
-
-            <div class="col-12 col-md-6">
-              <label for="email" class="form-label">Email</label>
-              <input type="email" name="email" id="email" class="form-control"/>
-            </div>
-
-            <div class="col-12 col-md-3">
-              <label for="visit_date" class="form-label">Visit date</label>
-              <input type="date" name="visit_date" id="visit_date" class="form-control" required="required"/>
-            </div>
-
-            <div class="col-12 col-md-3">
-              <label for="visit_time" class="form-label">Visit time</label>
-              <input type="time" name="visit_time" id="visit_time" class="form-control" required="required"/>
-            </div>
-
-            <div class="col-12 col-md-6">
-              <label for="visit_purpose" class="form-label">What's purpose?</label>
-              <select name="visit_purpose" id="visit_purpose" class="form-select">
-                <option value="">Select purpose...</option>
-                <t t-foreach="visit_purpose_selection" t-as="p">
-                  <option t-att-value="p[0]">
-                    <t t-esc="p[1]"/>
-                  </option>
-                </t>
-              </select>
-            </div>
-
-            <div class="col-12">
-              <label for="description" class="form-label">Additional notes</label>
-              <textarea name="description" id="description" rows="4" class="form-control">
-                <t t-if="vehicle">
-Visit request for: <t t-esc="vehicle.name"/>
-                </t>
-              </textarea>
-            </div>
-
-            <div class="col-12">
-              <button type="submit" class="btn btn-primary btn-lg">
-                Submit request
-              </button>
-            </div>
-          </form>
+          </div>
         </section>
       </div>
     </t>
@@ -285,13 +532,75 @@ Visit request for: <t t-esc="vehicle.name"/>
 
   <template id="car_visit_thanks" name="Car Visit Thank You">
     <t t-call="website.layout">
-      <div id="wrap" class="oe_structure">
-        <section class="container py-5 text-center">
-          <h1 class="mb-3">Thank you!</h1>
-          <p class="mb-4">
-            Your visit request has been received. Our team will contact you to confirm the schedule.
-          </p>
-          <a href="/" class="btn btn-primary">Back to homepage</a>
+      <div id="wrap" class="oe_structure" style="background-color: #f8f9fa; min-height: 80vh;">
+        <section class="container py-5 h-100">
+          <div class="row justify-content-center align-items-center h-100">
+            <div class="col-lg-6 col-md-8">
+
+              <div class="card shadow border-0 rounded-3 text-center overflow-hidden">
+                <div class="bg-primary p-2"></div>
+
+                <div class="card-body p-5">
+
+                  <h2 class="fw-bold text-dark mb-2">Request Received!</h2>
+                  <p class="text-muted mb-4">Your showroom visit request has been successfully
+                    submitted.</p>
+
+                  <div class="px-5 py-3 mb-4">
+                    <small class="d-block text-uppercase fw-bold text-primary tracking-wide mb-1"
+                      style="font-size: 0.75rem; letter-spacing: 1px;">Request Reference</small>
+                    <span class="h2 fw-bolder text-primary mb-0">#REQ-<t t-esc="lead.id" /></span>
+                  </div>
+
+                  <div class="bg-light rounded p-4 text-start mb-4">
+                    <h6 class="text-uppercase text-muted mb-3"
+                      style="font-size: 0.75rem; font-weight: 700;">Visit Summary</h6>
+                    <div class="row g-3">
+                      <div class="col-6">
+                        <small class="text-muted d-block">Visit Date</small>
+                        <span class="fw-bold text-dark">
+                          <span t-field="lead.visit_date"
+                            t-options='{"widget": "date", "format": "d MMM yyyy"}' />
+                        </span>
+                      </div>
+                      <div class="col-6">
+                        <small class="text-muted d-block">Time</small>
+                        <span class="fw-bold text-dark">
+                          <t t-esc="lead.visit_time" />
+                        </span>
+                      </div>
+
+                      <div class="col-6">
+                        <small class="text-muted d-block">Purpose</small>
+                        <span class="fw-bold text-dark">
+                          <span t-field="lead.visit_purpose" />
+                        </span>
+                      </div>
+
+                      <t t-if="lead.vehicle_id">
+                        <div class="col-6">
+                          <small class="text-muted d-block">Vehicle Interest</small>
+                          <span class="fw-bold text-dark">
+                            <t t-esc="lead.vehicle_id.name" />
+                          </span>
+                        </div>
+                      </t>
+                    </div>
+                  </div>
+
+                  <div class="mb-4 text-muted small">
+                    <i class="fa fa-info-circle me-1"></i> Our team will process your request
+                    shortly. You will receive a confirmation call or message on your provided phone
+                    number. </div>
+
+                  <div class="d-grid gap-2 d-sm-flex justify-content-sm-center btn-nav-wrapper">
+                    <a href="/" class="btn btn-primary px-4 btn-nav-action">Back to Home</a>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
       </div>
     </t>

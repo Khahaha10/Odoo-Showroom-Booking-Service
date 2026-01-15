@@ -1,8 +1,10 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_service_vehicle_brand,service.vehicle.brand,model_service_vehicle_brand,base.group_user,1,1,1,1
 access_service_vehicle_brand_portal,service.vehicle.brand.portal,model_service_vehicle_brand,base.group_portal,1,0,0,0
+access_service_vehicle_brand_public,service.vehicle.brand.public,model_service_vehicle_brand,base.group_public,1,0,0,0
 access_service_vehicle_fuel_type,service.vehicle.fuel.type,model_service_vehicle_fuel_type,base.group_user,1,1,1,1
 access_service_vehicle_model_portal,service.vehicle.model.portal,model_service_vehicle_model,base.group_portal,1,0,0,0
+access_service_vehicle_model_public,service.vehicle.model.public,model_service_vehicle_model,base.group_public,1,0,0,0
 access_service_vehicle_type_portal,service.vehicle.type.portal,model_service_vehicle_type,base.group_portal,1,0,0,0
 access_service_type_portal,service.type.portal,model_service_type,base.group_portal,1,0,0,0
 access_service_vehicle_type,service.vehicle.type,model_service_vehicle_type,base.group_user,1,1,1,1
