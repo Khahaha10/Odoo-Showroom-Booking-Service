@@ -54,6 +54,8 @@ class CarVehicle(models.Model):
         [
             ("mt", "Manual"),
             ("at", "Automatic"),
+            ("cvt", "CVT"),
+            ("semi", "Semi-Automatic"),
         ],
         string="Transmission",
     )
