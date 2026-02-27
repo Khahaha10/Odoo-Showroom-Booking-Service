@@ -95,7 +95,6 @@
                             </button>
                         </div>
                         <div class="oe_title">
-                            <field name="error_msg" widget="text" readonly="1" />
                             <label for="name" string="Booking Number" />
                             <h3>
                                 <field class="text-break" name="name" placeholder="Booking Number"
@@ -103,40 +102,46 @@
                             </h3>
                         </div>
                         <group>
-                            <group name="service_information" string="Service Information">
+                            <group name="customer_and_appointment_information"
+                                string="Customer &amp; Appointment Information">
                                 <field name="customer_name" />
                                 <field name="contact_number" />
                                 <field name="contact_email" />
-                                <field name="plan_service_date" widget="datetime" />
-                                <field name="service_type" />
-                                <field name="supervisor_user_id" widget="many2one_avatar_user" />
-                                <field name="assigned_technician_id" widget="many2one_avatar_user"
-                                    invisible="state not in ['assigned', 'in_progress', 'completed']" />
-                                <field name="complaint_issue" string="Complaints" widget="textarea" />
+                                <field name="appointment_id" invisible="1" />
+                                <field name="appointment_number" invisible="not appointment_id" />
+                                <field name="appointment_creation_date"
+                                    invisible="not appointment_id" />
                             </group>
-                            <group name="vehicle_information" string="Vehicle Information">
+                            <group name="service_and_vehicle_information"
+                                string="Service &amp; Vehicle Information">
                                 <field name="plat_number" />
                                 <field name="vehicle_brand" />
                                 <field name="vehicle_model"
                                     domain="[('vehicle_brand', '=', vehicle_brand)]" />
                                 <field name="vehicle_year_manufacture" options="{'format': false}" />
                                 <field name="kilometers" />
+                                <field name="plan_service_date" widget="datetime" />
+                                <field name="service_type" />
+                                <field name="complaint_issue" string="Complaints" widget="textarea" />
                                 <field name="media_document" widget="many2many_binary"
                                     string="Media Documents" readonly="1" />
                             </group>
                         </group>
                         <notebook>
-                            <page string="Notes">
+                            <page string="Assignment &amp; Timesheet">
                                 <group>
-                                    <field name="internal_notes" widget="textarea" />
-                                    <field name="cancel_reason" invisible="state != 'cancelled'" />
-                                </group>
-                            </page>
-                            <page string="Timesheet" invisible="state == 'cancelled'">
-                                <group>
-                                    <field name="assigned_datetime" />
-                                    <field name="in_progress_datetime" />
-                                    <field name="completed_datetime" />
+                                    <group>
+                                        <field name="supervisor_user_id"
+                                            widget="many2one_avatar_user" />
+                                        <field name="assigned_technician_id"
+                                            widget="many2one_avatar_user"
+                                            invisible="state not in ['assigned', 'in_progress', 'completed']" />
+                                    </group>
+                                    <group>
+                                        <field name="assigned_datetime" />
+                                        <field name="in_progress_datetime" />
+                                        <field name="completed_datetime" />
+                                    </group>
                                 </group>
                             </page>
                             <page string="Spareparts">
@@ -166,21 +171,26 @@
                                     readonly="is_checklist_readonly" />
                             </page>
                             <page string="Inspection Checklist">
-                                <group>
-                                    <field name="inspection_checklist_line_ids"
-                                        readonly="is_checklist_readonly">
-                                        <list editable="bottom">
-                                            <field name="inspection_type_id" />
-                                            <field name="checklist_ok" />
-                                        </list>
-                                    </field>
-                                </group>
+                                <field name="inspection_checklist_line_ids"
+                                    readonly="is_checklist_readonly">
+                                    <list editable="bottom">
+                                        <field name="inspection_type_id" />
+                                        <field name="checklist_ok" />
+                                    </list>
+                                </field>
                             </page>
                             <page string="Totals">
                                 <group>
                                     <field name="total_sparepart" />
                                     <field name="total_service_fee" readonly="1" />
                                     <field name="total_amount" />
+                                </group>
+                            </page>
+                            <page string="Notes &amp; Cancellation">
+                                <group>
+                                    <field name="internal_notes" widget="textarea" />
+                                    <field name="error_msg" widget="text" readonly="1" invisible="1" />
+                                    <field name="cancel_reason" invisible="state != 'cancelled'" />
                                 </group>
                             </page>
                         </notebook>

@@ -63,18 +63,12 @@
                                 <field name="name" readonly="1" />
                             </h1>
                         </div>
-                        <group string="Customer Information">
-                            <field name="customer_name" />
-                            <field name="contact_number" />
-                            <field name="contact_email" />
-                        </group>
                         <group>
-                            <group string="Appointment Details">
-                                <field name="plan_service_date" />
-                                <field name="service_type" />
-                                <field name="complaint_issue" />
-                                <field name="media_document" widget="many2many_binary" readonly="1" />
-                                <field name="cancel_reason" invisible="state != 'cancelled'" />
+                            <group string="Customer &amp; Contact Information">
+                                <field name="customer_name" />
+                                <field name="contact_number" />
+                                <field name="contact_email" />
+                                <field name="create_date" string="Appointment Created On" readonly="1" />
                             </group>
                             <group string="Vehicle Information">
                                 <field name="plat_number" />
@@ -85,6 +79,21 @@
                                 <field name="kilometers" />
                             </group>
                         </group>
+                        <notebook>
+                            <page string="Appointment Details">
+                                <group>
+                                    <field name="plan_service_date" />
+                                    <field name="service_type" />
+                                    <field name="complaint_issue" />
+                                    <field name="media_document" widget="many2many_binary" readonly="1" />
+                                </group>
+                            </page>
+                            <page string="Notes &amp; Cancellation">
+                                <group>
+                                    <field name="cancel_reason" invisible="state != 'cancelled'" />
+                                </group>
+                            </page>
+                        </notebook>
                     </sheet>
                 </form>
             </field>

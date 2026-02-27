@@ -97,6 +97,20 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
         copy=False,
         help="The service appointment from which this booking was created."
     )
+    appointment_creation_date = fields.Datetime(
+        string="Appointment Date",
+        related='appointment_id.create_date',
+        readonly=True,
+        store=True,
+        help="Date when the originating appointment was created."
+    )
+    appointment_number = fields.Char(
+        string="Appointment Number",
+        related='appointment_id.name',
+        readonly=True,
+        store=True,
+        help="Number of the originating appointment."
+    )
 
     media_document = fields.Many2many("ir.attachment", "service_booking_media_rel", "booking_id", "attachment_id", string="Attachments")
     internal_media_document = fields.Many2many("ir.attachment", "service_booking_internal_media_rel", "booking_id", "attachment_id", string="Internal Documents")
