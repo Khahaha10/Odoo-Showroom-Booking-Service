@@ -123,13 +123,13 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
     
     state = fields.Selection(
         [
-            ("new", "New"),
+            ("booked", "Booked"),
             ("assigned", "Assigned"),
             ("in_progress", "In Progress"),
             ("completed", "Completed"),
             ("cancelled", "Cancelled"),
         ],
-        default="new",
+        default="booked",
         string="Status",
         tracking=1,
     )
@@ -196,7 +196,7 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
         for record in self:
             idx = 1
             match record.state:
-                case "new":
+                case "booked":
                     idx = 1
                 case "assigned":
                     idx = 2

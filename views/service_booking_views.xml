@@ -67,7 +67,7 @@
                         <button name="action_cancel" type="object" string="Cancel"
                             invisible="state in ['cancelled', 'completed']" />
                         <field name="state" widget="statusbar"
-                            statusbar_visible="booked,assigned,in_progress,completed,cancelled" />
+                            statusbar_visible="booked,assigned,in_progress,completed" />
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
