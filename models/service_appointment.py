@@ -67,7 +67,7 @@ class ServiceAppointment(models.Model):
     state = fields.Selection(
         [
             ("draft", "Draft"),
-            ("done", "Done"),
+            ("booked", "Booked"),
             ("cancelled", "Cancelled"),
         ],
         default="draft",

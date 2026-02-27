@@ -123,13 +123,13 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
     
     state = fields.Selection(
         [
-            ("booked", "Booked"),
+            ("new", "New"),
             ("assigned", "Assigned"),
             ("in_progress", "In Progress"),
             ("completed", "Completed"),
             ("cancelled", "Cancelled"),
         ],
-        default="booked",
+        default="new",
         string="Status",
         tracking=1,
     )
@@ -196,7 +196,7 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
         for record in self:
             idx = 1
             match record.state:
-                case "booked":
+                case "new":
                     idx = 1
                 case "assigned":
                     idx = 2
@@ -573,6 +573,10 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
             })
 
     def action_complete(self):
+        for rec in self:
+            if not rec.spare_part_line_ids and not rec.service_line_ids:
+                raise ValidationError(_("Cannot complete the service booking. Please add at least one spare part or service."))
+
         ICPSudo = self.env["ir.config_parameter"].sudo()
         automate_delivery_order_done = ICPSudo.get_param(
             "infinys_service_showroom.automate_delivery_order_done", default="False"
