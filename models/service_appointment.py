@@ -1,6 +1,7 @@
 import logging
 from odoo import api, fields, models, _
 from datetime import date, timedelta
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -155,11 +156,18 @@ class ServiceAppointment(models.Model):
                 raise ValidationError(_("Appointment must be 'In Progress' to mark as 'Done'."))
 
     def action_cancel(self):
-        for rec in self:
-            if rec.state in ['draft', 'in_progress']:
-                rec.write({'state': 'cancelled'})
-            else:
-                raise ValidationError(_("Appointment can only be cancelled from 'Draft' or 'In Progress' state."))
+        self.ensure_one()
+        if self.state not in ['draft', 'in_progress']:
+            raise ValidationError(_("Appointment can only be cancelled from 'Draft' or 'In Progress' state."))
+        
+        return {
+            'name': _('Cancel Appointment'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'cancel.reason.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_appointment_id': self.id},
+        }
 
     @api.model
     def create(self, vals):
@@ -308,7 +316,7 @@ class ServiceAppointment(models.Model):
 
         new_job_order = self.env['service.booking'].create(job_order_vals)
         self.write({
-            'state': 'done',
+            'state': 'in_progress',
             'job_order_id': new_job_order.id,
         })
 

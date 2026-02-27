@@ -665,15 +665,15 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
                 activity.action_feedback()
 
     def action_cancel(self):
-        for rec in self:
-            return {
-                'name': _('Cancel Service Booking'),
-                'type': 'ir.actions.act_window',
-                'res_model': 'service.booking.cancel.wizard',
-                'view_mode': 'form',
-                'target': 'new',
-                'context': {'default_booking_id': self.id},
-            }
+        self.ensure_one()
+        return {
+            'name': _('Cancel Service Booking'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'cancel.reason.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_booking_id': self.id},
+        }
 
     def get_portal_url(self, report_type=None, download=None, query_string=None, anchor=None):
         self.ensure_one()

@@ -39,3 +39,4 @@ access_service_appointment_portal,service.appointment.portal,model_service_appoi
 access_service_booking_report,service.booking.report,model_service_booking,base.group_user,1,0,0,0
 access_crm_lead_report,crm.lead.report,model_crm_lead,base.group_user,1,0,0,0
 access_ir_attachment_user,ir.attachment.user,base.model_ir_attachment,base.group_user,1,1,1,1
+access_cancel_reason_wizard,cancel.reason.wizard,model_cancel_reason_wizard,base.group_user,1,1,1,1

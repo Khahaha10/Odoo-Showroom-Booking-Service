@@ -38,7 +38,7 @@
                             string="Mark as Done"
                             type="object"
                             class="oe_highlight"
-                            invisible="state != 'in_progress' or job_order_id.state != 'completed'"
+                            invisible="state != 'in_progress'"
                             confirm="Are you sure you want to mark this appointment as 'Done'?" />
                         <button name="action_cancel"
                             string="Cancel"
@@ -74,7 +74,7 @@
                                 <field name="service_type" />
                                 <field name="complaint_issue" />
                                 <field name="media_document" widget="many2many_binary" readonly="1" />
-                                <field name="cancel_reason" invisible="state != 'cancelled'"/>
+                                <field name="cancel_reason" invisible="state != 'cancelled'" />
                             </group>
                             <group string="Vehicle Information">
                                 <field name="plat_number" />
