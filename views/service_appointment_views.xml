@@ -68,13 +68,13 @@
                                 <field name="customer_name" />
                                 <field name="contact_number" />
                                 <field name="contact_email" />
-                                <field name="create_date" string="Appointment Created On" readonly="1" />
+                                <field name="create_date" string="Appointment Created On"
+                                    readonly="1" />
                             </group>
                             <group string="Vehicle Information">
                                 <field name="plat_number" />
                                 <field name="vehicle_brand" />
                                 <field name="vehicle_model" />
-                                <field name="vehicle_type" />
                                 <field name="vehicle_year_manufacture" options="{'format': false}" />
                                 <field name="kilometers" />
                             </group>
@@ -85,7 +85,8 @@
                                     <field name="plan_service_date" />
                                     <field name="service_type" />
                                     <field name="complaint_issue" />
-                                    <field name="media_document" widget="many2many_binary" readonly="1" />
+                                    <field name="media_document" widget="many2many_binary"
+                                        readonly="1" />
                                 </group>
                             </page>
                             <page string="Notes &amp; Cancellation">
