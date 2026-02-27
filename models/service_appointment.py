@@ -67,7 +67,8 @@ class ServiceAppointment(models.Model):
     state = fields.Selection(
         [
             ("draft", "Draft"),
-            ("booked", "Booked"),
+            ("in_progress", "In Progress"),
+            ("done", "Done"),
             ("cancelled", "Cancelled"),
         ],
         default="draft",
@@ -91,6 +92,74 @@ class ServiceAppointment(models.Model):
         string="Last Reminder Date (New Appointment)",
         help="Date when the last reminder was sent for a new appointment needing a job order."
     )
+    
+    @api.constrains('state', 'job_order_id')
+    def _check_job_order_creation(self):
+        for rec in self:
+            if rec.state == 'in_progress' and not rec.job_order_id:
+                raise ValidationError(_("A Job Order must be created for appointments in 'In Progress' state."))
+
+    def action_create_job_order(self):
+        self.ensure_one()
+        if self.job_order_id:
+            raise ValidationError(_("A Job Order already exists for this appointment."))
+
+        job_order_vals = {
+            'customer_name': self.customer_name.id,
+            'contact_number': self.contact_number,
+            'contact_email': self.contact_email,
+            'plat_number': self.plat_number,
+            'vehicle_brand': self.vehicle_brand.id,
+            'vehicle_model': self.vehicle_model.id,
+            'vehicle_type': self.vehicle_type.id,
+            'vehicle_year_manufacture': self.vehicle_year_manufacture,
+            'kilometers': self.kilometers,
+            'complaint_issue': self.complaint_issue,
+            'plan_service_date': self.plan_service_date,
+            'service_type': self.service_type.id,
+            'media_document': [(6, 0, self.media_document.ids)],
+            'appointment_id': self.id,
+        }
+
+        new_job_order = self.env['service.booking'].create(job_order_vals)
+        self.write({
+            'state': 'in_progress', # Changed from 'done' to 'in_progress'
+            'job_order_id': new_job_order.id,
+        })
+
+        return {
+            'name': _('Job Order Created'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'service.booking',
+            'view_mode': 'form',
+            'res_id': new_job_order.id,
+            'target': 'current',
+        }
+
+    def action_mark_in_progress(self):
+        for rec in self:
+            if rec.state == 'draft':
+                rec.action_create_job_order() # Automatically create job order when moving to in_progress
+            else:
+                raise ValidationError(_("Appointment must be in 'Draft' state to mark as 'In Progress'."))
+
+    def action_mark_done(self):
+        for rec in self:
+            if rec.state == 'in_progress':
+                if not rec.job_order_id:
+                    raise ValidationError(_("No Job Order found for this appointment."))
+                if rec.job_order_id.state != 'completed':
+                    raise ValidationError(_("The associated Job Order must be 'Completed' before marking the appointment as 'Done'."))
+                rec.write({'state': 'done'})
+            else:
+                raise ValidationError(_("Appointment must be 'In Progress' to mark as 'Done'."))
+
+    def action_cancel(self):
+        for rec in self:
+            if rec.state in ['draft', 'in_progress']:
+                rec.write({'state': 'cancelled'})
+            else:
+                raise ValidationError(_("Appointment can only be cancelled from 'Draft' or 'In Progress' state."))
 
     @api.model
     def create(self, vals):
