@@ -48,7 +48,7 @@ class ServiceAppointment(models.Model):
         string='Vehicle Type',
         required=False
     )
-    vehicle_year_manufacture = fields.Integer(string="Year of Manufacture")
+    vehicle_year_manufacture = fields.Char(string="Year of Manufacture")
     kilometers = fields.Integer(string="Current Kilometers")
 
     complaint_issue = fields.Text(string="Complaints")
