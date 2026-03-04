@@ -205,11 +205,12 @@
             <field name="model">service.booking</field>
             <field name="arch" type="xml">
                 <list default_order="state_idx asc">
+                    <field name="is_date_overdue" column_invisible="1" />
                     <field name="name" />
                     <field name="customer_name" />
                     <field name="contact_number" />
                     <field name="contact_email" />
-                    <field name="plan_service_date" widget="datetime" />
+                    <field name="plan_service_date" widget="datetime" decoration-danger="is_date_overdue" />
                     <field name="service_type" />
                     <field name="plat_number" />
                     <field name="vehicle_model" />

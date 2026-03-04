@@ -56,6 +56,7 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
     plan_service_date = fields.Date(
         string="Booking Date", required=True, default=fields.Date.context_today
     )
+    is_date_overdue = fields.Boolean(compute='_compute_is_date_overdue')
     service_date = fields.Date(
         string="Service Date", required=True, default=fields.Date.context_today
     )
@@ -181,6 +182,16 @@ class ServiceBooking(models.Model, MailActivityMixin, MailThread, PortalMixin):
         compute="_compute_is_checklist_readonly",
         store=False,
     )
+
+    @api.depends('plan_service_date', 'state')
+    def _compute_is_date_overdue(self):
+        today = fields.Date.today()
+        for rec in self:
+            rec.is_date_overdue = (
+                rec.plan_service_date and
+                rec.plan_service_date < today and
+                rec.state not in ('completed', 'cancelled')
+            )
 
     @api.onchange('vehicle_brand')
     def _onchange_vehicle_brand(self):

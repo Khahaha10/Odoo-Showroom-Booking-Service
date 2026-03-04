@@ -6,12 +6,13 @@
             <field name="model">service.appointment</field>
             <field name="arch" type="xml">
                 <list string="Service Appointments">
+                    <field name="is_date_overdue" column_invisible="1" />
                     <field name="name" />
                     <field name="customer_name" />
                     <field name="plat_number" />
                     <field name="vehicle_brand" />
                     <field name="vehicle_model" />
-                    <field name="plan_service_date" />
+                    <field name="plan_service_date" decoration-danger="is_date_overdue" />
                     <field name="service_type" />
                     <field name="state" widget="badge" decoration-info="state == 'draft'"
                         decoration-warning="state == 'in_progress'"

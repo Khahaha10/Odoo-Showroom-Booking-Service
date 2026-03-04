@@ -56,6 +56,7 @@ class ServiceAppointment(models.Model):
     plan_service_date = fields.Date(
         string="Planned Service Date", required=True, default=fields.Date.context_today
     )
+    is_date_overdue = fields.Boolean(compute='_compute_is_date_overdue')
     service_type = fields.Many2one(
         "service.type",
         string="Service Type",
@@ -94,6 +95,16 @@ class ServiceAppointment(models.Model):
         help="Date when the last reminder was sent for a new appointment needing a job order."
     )
     
+    @api.depends('plan_service_date', 'state')
+    def _compute_is_date_overdue(self):
+        today = fields.Date.today()
+        for rec in self:
+            rec.is_date_overdue = (
+                rec.plan_service_date and
+                rec.plan_service_date < today and
+                rec.state not in ('done', 'cancelled')
+            )
+
     @api.constrains('state', 'job_order_id')
     def _check_job_order_creation(self):
         for rec in self:
