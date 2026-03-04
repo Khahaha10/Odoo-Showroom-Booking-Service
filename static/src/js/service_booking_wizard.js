@@ -8,6 +8,7 @@ publicWidget.registry.ServiceBookingWizard = publicWidget.Widget.extend({
     "click .next-step": "_onNextStep",
     "click .prev-step": "_onPrevStep",
     "change #customer_vehicle_select": "_onVehicleChange",
+    "change #vehicle_brand": "_onBrandChange",
   },
 
   start: function () {
@@ -90,6 +91,44 @@ publicWidget.registry.ServiceBookingWizard = publicWidget.Widget.extend({
       this.currentStep--;
       this._updateStep(this.currentStep);
     }
+  },
+
+  _onBrandChange: function (ev) {
+    const brandId = ev.currentTarget.value;
+    const modelSelect = this.el.querySelector("#vehicle_model");
+    modelSelect.innerHTML = '<option value="">Select Model...</option>';
+    modelSelect.disabled = !brandId;
+
+    if (!brandId) return;
+
+    fetch("/web/dataset/call_kw", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        method: "call",
+        params: {
+          model: "service.vehicle.model",
+          method: "search_read",
+          args: [[["vehicle_brand", "=", parseInt(brandId)]]],
+          kwargs: { fields: ["id", "name"], order: "name asc" },
+        },
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const models = data.result || [];
+        models.forEach((model) => {
+          const option = document.createElement("option");
+          option.value = model.id;
+          option.textContent = model.name;
+          modelSelect.appendChild(option);
+        });
+        modelSelect.disabled = false;
+      })
+      .catch((err) => console.error("Error fetching models:", err));
   },
 
   _onVehicleChange: function (ev) {

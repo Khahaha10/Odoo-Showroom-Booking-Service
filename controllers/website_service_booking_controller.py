@@ -8,7 +8,7 @@ class WebsiteServiceBooking(http.Controller):
     @http.route(["/service-booking/new"], type="http", auth="public", website=True)
     def service_booking_form(self, **kwargs):
         brands = request.env["service.vehicle.brand"].sudo().search([])
-        models = request.env["service.vehicle.model"].sudo().search([])
+        models = []
         service_types = request.env["service.type"].sudo().search([])
         
         user = request.env.user
