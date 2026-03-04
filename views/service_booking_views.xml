@@ -229,6 +229,7 @@
                 <search>
                     <field name="name" string="Booking Number"
                         filter_domain="['|', ('name', 'ilike', self), ('plat_number', 'ilike', self)]" />
+                    <field name="assigned_technician_id" string="Technician" />
                     <filter string="Booked" name="filter_booked" domain="[('state', '=', 'booked')]" />
                     <filter string="Assigned" name="filter_assigned"
                         domain="[('state', '=', 'assigned')]" />
@@ -238,6 +239,18 @@
                         domain="[('state', '=', 'completed')]" />
                     <filter string="Cancelled" name="filter_cancelled"
                         domain="[('state', '=', 'cancelled')]" />
+                    <separator />
+                    <filter string="My Job Orders" name="filter_my_job_orders"
+                        domain="[('assigned_technician_id', '=', uid)]" />
+                    <group expand="0" string="Group By">
+                        <filter name="group_by_state" string="Status"
+                            context="{'group_by': 'state'}" />
+                        <filter name="group_by_technician" string="Technician"
+                            context="{'group_by': 'assigned_technician_id'}" />
+                    </group>
+                    <searchpanel>
+                        <field name="state" string="Status" select="one" icon="fa-filter" />
+                    </searchpanel>
                 </search>
             </field>
         </record>
