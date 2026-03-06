@@ -24,7 +24,7 @@ class PartUsedLines(models.Model):
         string="On Hand", compute="_compute_product_info", store=False
     )
 
-    @api.depends('product_id')
+    @api.depends("product_id")
     def _compute_product_info(self):
         for rec in self:
             if rec.product_id:
@@ -39,10 +39,12 @@ class PartUsedLines(models.Model):
         string="Part Name", compute="_compute_product_name_display", store=False
     )
 
-    @api.depends('product_id')
+    @api.depends("product_id")
     def _compute_product_name_display(self):
         for rec in self:
-            rec.product_name_display = rec.product_id.sudo().display_name if rec.product_id else False
+            rec.product_name_display = (
+                rec.product_id.sudo().display_name if rec.product_id else False
+            )
 
     subtotal = fields.Float(string="Subtotal", compute="_compute_subtotal", store=True)
 

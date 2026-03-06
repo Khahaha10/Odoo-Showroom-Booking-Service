@@ -6,7 +6,7 @@ class WebsiteCarShowroom(http.Controller):
 
     @http.route(["/cars"], type="http", auth="public", website=True)
     def cars_list(self, **kwargs):
-        Car = request.env["showroom.car.vehicle"].sudo()    
+        Car = request.env["showroom.car.vehicle"].sudo()
         domain = [("website_published", "=", True), ("active", "=", True)]
 
         brand_id = kwargs.get("brand_id")
@@ -27,14 +27,18 @@ class WebsiteCarShowroom(http.Controller):
 
         order_param = kwargs.get("order", "name asc")
         valid_orders = {
-            'name asc': 'name',
-            'name desc': 'name desc',
-            'price asc': 'price',
-            'price desc': 'price desc',
-            'year desc': 'year desc',
-            'id desc': 'Newest Arrivals'
+            "name asc": "name",
+            "name desc": "name desc",
+            "price asc": "price",
+            "price desc": "price desc",
+            "year desc": "year desc",
+            "id desc": "Newest Arrivals",
         }
-        order = valid_orders.get(order_param, 'name') if order_param in valid_orders else 'name'
+        order = (
+            valid_orders.get(order_param, "name")
+            if order_param in valid_orders
+            else "name"
+        )
 
         cars = Car.search(domain, order=order)
         brands = request.env["service.vehicle.brand"].sudo().search([])
@@ -179,6 +183,6 @@ class WebsiteCarShowroom(http.Controller):
 
         lead = request.env["crm.lead"].sudo().create(lead_vals)
 
-        return request.render("infinys_service_showroom.car_visit_thanks", {
-            "lead": lead
-        })
+        return request.render(
+            "infinys_service_showroom.car_visit_thanks", {"lead": lead}
+        )

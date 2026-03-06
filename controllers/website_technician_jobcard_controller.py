@@ -51,7 +51,8 @@ class TechnicianJobCards(CustomerPortal):
             "content": {"input": "content", "label": _("Search in Content")},
             "booking_number": {
                 "input": "booking_number",
-                                 "label": _("Search in Job Order Number"),            },
+                "label": _("Search in Job Order Number"),
+            },
             "plate_number": {
                 "input": "plate_number",
                 "label": _("Search in Plate Number"),

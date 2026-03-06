@@ -18,7 +18,7 @@
                 <form>
                     <sheet>
                         <group>
-                            <field name="name"/>
+                            <field name="name" />
 
                         </group>
                     </sheet>
@@ -30,7 +30,7 @@
             <field name="model">service.vehicle.type</field>
             <field name="arch" type="xml">
                 <list editable="bottom">
-                    <field name="name"/>
+                    <field name="name" />
                 </list>
             </field>
         </record>

@@ -6,13 +6,13 @@
     <field name="model">showroom.car.vehicle</field>
     <field name="arch" type="xml">
       <list string="Showroom Vehicles">
-        <field name="name"/>
-        <field name="brand_id"/>
-        <field name="model_id"/>
-        <field name="year"/>
-        <field name="price"/>
-        <field name="website_published"/>
-        <field name="active"/>
+        <field name="name" />
+        <field name="brand_id" />
+        <field name="model_id" />
+        <field name="year" />
+        <field name="price" />
+        <field name="website_published" />
+        <field name="active" />
       </list>
     </field>
   </record>
@@ -23,43 +23,43 @@
     <field name="arch" type="xml">
       <form string="Showroom Vehicle">
         <sheet>
-          <div class="oe_button_box" name="button_box"/>
+          <div class="oe_button_box" name="button_box" />
           <group>
             <group>
-              <field name="name" string="Car Name"/>
-              <field name="brand_id" readonly="1" force_save="1"/>
-              <field name="model_id" options="{'no_create': True, 'no_create_edit': True}"/>
-              <field name="type_id" readonly="1" force_save="1"/>
-              <field name="fuel_type_id" readonly="1" force_save="1"/>
-              <field name="year" string="Year"/>
-              <field name="transmission" string="Transmission"/>
-              <field name="odometer" string="Odometer (km)"/>
+              <field name="name" string="Car Name" />
+              <field name="brand_id" readonly="1" force_save="1" />
+              <field name="model_id" options="{'no_create': True, 'no_create_edit': True}" />
+              <field name="type_id" readonly="1" force_save="1" />
+              <field name="fuel_type_id" readonly="1" force_save="1" />
+              <field name="year" string="Year" />
+              <field name="transmission" string="Transmission" />
+              <field name="odometer" string="Odometer (km)" />
             </group>
             <group>
-              <field name="price" string="Price"/>
-              <field name="currency_id" string="Currency" groups="base.group_multi_currency"/>
-              <field name="website_published" string="Published on Website"/>
-              <field name="active" string="Active"/>
+              <field name="price" string="Price" />
+              <field name="currency_id" string="Currency" groups="base.group_multi_currency" />
+              <field name="website_published" string="Published on Website" />
+              <field name="active" string="Active" />
             </group>
           </group>
 
           <notebook>
             <page string="Images">
               <group>
-                <field name="main_image" widget="image" class="oe_avatar" string="Main Image"/>
+                <field name="main_image" widget="image" class="oe_avatar" string="Main Image" />
               </group>
               <group string="Gallery">
                 <field name="image_ids">
                   <list editable="bottom" string="Gallery Images">
-                    <field name="name" string="Title"/>
-                    <field name="image" widget="image" string="Image"/>
+                    <field name="name" string="Title" />
+                    <field name="image" widget="image" string="Image" />
                   </list>
                 </field>
               </group>
             </page>
 
             <page string="Description">
-              <field name="description"/>
+              <field name="description" />
             </page>
           </notebook>
         </sheet>

@@ -45,7 +45,7 @@ publicWidget.registry.CarVisitWizard = publicWidget.Widget.extend({
     ev.preventDefault();
     const currentStepDiv = this.el.querySelector("#v-step" + this.currentStep);
     const inputs = currentStepDiv.querySelectorAll(
-      "input[required], select[required], textarea[required]"
+      "input[required], select[required], textarea[required]",
     );
     let isValid = true;
 
@@ -56,7 +56,7 @@ publicWidget.registry.CarVisitWizard = publicWidget.Widget.extend({
         input.addEventListener(
           "input",
           () => input.classList.remove("is-invalid"),
-          { once: true }
+          { once: true },
         );
       } else {
         input.classList.remove("is-invalid");

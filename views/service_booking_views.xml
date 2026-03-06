@@ -210,7 +210,8 @@
                     <field name="customer_name" />
                     <field name="contact_number" />
                     <field name="contact_email" />
-                    <field name="plan_service_date" widget="datetime" decoration-danger="is_date_overdue" />
+                    <field name="plan_service_date" widget="datetime"
+                        decoration-danger="is_date_overdue" />
                     <field name="service_type" />
                     <field name="plat_number" />
                     <field name="vehicle_model" />

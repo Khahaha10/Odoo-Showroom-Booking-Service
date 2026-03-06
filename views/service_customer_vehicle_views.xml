@@ -6,10 +6,10 @@
             <field name="model">service.customer.vehicle</field>
             <field name="arch" type="xml">
                 <list string="Vehicles">
-                    <field name="vehicle_plate_no"/>
-                    <field name="vehicle_brand_id"/>
-                    <field name="vehicle_model_id"/>
-                    <field name="vehicle_year" options="{'format': false}"/>
+                    <field name="vehicle_plate_no" />
+                    <field name="vehicle_brand_id" />
+                    <field name="vehicle_model_id" />
+                    <field name="vehicle_year" options="{'format': false}" />
                 </list>
             </field>
         </record>
